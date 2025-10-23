@@ -15,8 +15,22 @@ nav a {
   padding: 10px;
 }
 
+#partyInfoForm {
+  width: 20%;
+}
+
+#difficultyDisplay {
+  width: 30%;
+  margin: 20px;
+}
+
+#difficultyList {
+  width: 20%;
+}
+
 #difficultyList ul {
   list-style-type: none;
+  padding-left: 0;
 }
 
 #encounterDisplay {
@@ -28,6 +42,7 @@ nav a {
 
 #encounterDisplay li {
   list-style: none;
+  padding-left: 0;
   padding-bottom: 10px;
 }
 
@@ -39,6 +54,7 @@ nav a {
 
 #enemyList li {
   list-style: none;
+  padding-left: 0;
   padding-bottom: 10px;
 }
 

@@ -1,7 +1,7 @@
 function XPBudget({ budget }) {
   return (
     <div id="difficultyList">
-      <p>XP Budget</p>
+      <h2>XP Budget</h2>
       <ul>
         <li>Trivial: {budget.trivial} XP</li>
         <li>Low: {budget.low} XP</li>
