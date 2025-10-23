@@ -275,5 +275,59 @@ export const enemies = [
             }
             }
         }
+    },
+    {
+        id: 6,
+        name: "Orc Scrapper",
+        level: 0,
+        traits: [
+            "common",
+            "med",
+            "humanoid",
+            "orc"
+        ],
+        perception: 5,
+        skills: {
+            athletics: 5,
+            intimidation: 2
+        },
+        attributeModifiers: {
+            str: 3,
+            dex: 2,
+            con: 2,
+            int: 0,
+            wis: 1,
+            cha: 0
+        },
+        defenses: {
+            armorClass: 14,
+            saves: {
+            fortitude: 5,
+            reflex: 4,
+            will: 2
+            }
+        },
+        maxHitPoints: 18,
+        immunities: [],
+        speed: 25,
+        actions: {
+            attacks: {
+            Battle_Axe: {
+                attackBonus: 7,
+                damage: "1d8+3",
+                damageType: "piercing"
+            },
+            Fist: {
+                attackBonus: 7,
+                damage: "1d4+3",
+                damageType: "bludgeoning"
+            },
+            Javelin: {
+                attackBonus: 4,
+                damage: "1d6+3",
+                damageType: "piercing"
+            }
+            }
+        }
     }
 ]
