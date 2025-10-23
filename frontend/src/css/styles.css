@@ -1,0 +1,55 @@
+header {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    justify-content: space-evenly;
+}
+
+nav {
+    height: 50%;
+    width: 30%;
+    align-items: end;
+}
+
+nav a {
+    padding: 10px;
+}
+
+#difficultyList ul{
+    list-style-type: none;
+}
+
+#encounterDisplay {
+    border: black;
+    border-width: 2px;
+    border-style: solid;
+    margin-bottom: 10px;
+}
+
+#encounterDisplay li {
+    list-style: none;
+    padding-bottom: 10px;
+}
+
+#enemyList {
+    border: black;
+    border-width: 2px;
+    border-style: solid;
+}
+
+#enemyList li {
+    list-style: none;
+    padding-bottom: 10px;
+}
+
+.enemy {
+    list-style: none;
+    border: black;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.enemy li {
+    display: inline;
+    padding-right: 10px;
+}
