@@ -1,4 +1,4 @@
-export const enemies = [
+export const dummyEnemies = [
   {
     id: 1,
     name: "Animated Armor",
