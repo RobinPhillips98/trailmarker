@@ -2,7 +2,9 @@ header {
   display: flex;
   gap: 10px;
   width: 100%;
-  justify-content: space-evenly;
+  background-color: darkslategray;
+  color: #d0d0d0;
+  justify-content: space-around;
 }
 
 nav {
@@ -13,10 +15,17 @@ nav {
 
 nav a {
   padding: 10px;
+  color: white;
 }
 
 #partyInfoForm {
   width: 20%;
+  padding-left: 100px;
+}
+
+.listDisplay {
+  /* position: absolute; */
+  width: 99%;
 }
 
 #difficultyDisplay {
@@ -38,6 +47,9 @@ nav a {
   border-width: 2px;
   border-style: solid;
   margin-bottom: 10px;
+  height: 150px;
+  overflow: scroll;
+  padding-top: 10px;
 }
 
 #encounterDisplay li {
@@ -50,6 +62,9 @@ nav a {
   border: black;
   border-width: 2px;
   border-style: solid;
+  height: 500px;
+  overflow: scroll;
+  padding-top: 10px;
 }
 
 #enemyList li {
@@ -63,6 +78,12 @@ nav a {
   border: black;
   border-width: 1px;
   border-style: solid;
+  width: 50%;
+}
+
+.addRemoveButton {
+  margin-left: 20px;
+  margin-right: 0px;
 }
 
 .enemy li {

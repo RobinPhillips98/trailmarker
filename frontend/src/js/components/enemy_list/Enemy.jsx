@@ -13,7 +13,7 @@ function Enemy({ handleAdd, enemy }) {
           <li>{trait}</li>
         ))}
         <li>
-          <button onClick={handleClick}>Add</button>
+          <button onClick={handleClick} className="addRemoveButton">Add</button>
         </li>
       </ul>
     </div>

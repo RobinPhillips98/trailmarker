@@ -12,7 +12,7 @@ function Header(props) {
       />
       <CurrentDifficultyDisplay difficulty={props.difficulty} xp={props.xp} />
       <XPBudget budget={props.budget} />
-      <NavBar />
+      {/* <NavBar /> */}
     </header>
   );
 }

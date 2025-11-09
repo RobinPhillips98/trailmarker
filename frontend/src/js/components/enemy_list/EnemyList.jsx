@@ -19,9 +19,9 @@ function EnemyList(props) {
   }, [])
 
   return (
-    <div id="enemyList">
+    <div className="listDisplay">
       <h2>Enemies</h2>
-      <ul>
+      <ul id="enemyList">
         {enemies.map((enemy) => (
           <li key={enemy.id}>
             <Enemy handleAdd={props.handleAdd} enemy={enemy} />

@@ -23,7 +23,7 @@ function SelectedEnemy(props) {
       <li>
         <button onClick={handleClickAdd}>+</button>
       </li>
-      <button onClick={handleClickRemove}>Remove</button>
+      <button onClick={handleClickRemove} className="addRemoveButton">Remove</button>
     </ul>
   );
 }

@@ -2,9 +2,9 @@ import SelectedEnemy from "./SelectedEnemy";
 
 function EncounterDisplay(props) {
   return (
-    <div id="encounterDisplay">
+    <div className="listDisplay">
       <h2>Encounter</h2>
-      <ul>
+      <ul id="encounterDisplay">
         {props.enemies.map((enemy) => (
           <li key={enemy.id}>
             <SelectedEnemy
