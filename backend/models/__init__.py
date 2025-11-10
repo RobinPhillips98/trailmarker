@@ -14,7 +14,7 @@ class Enemy(Base):
     skills = Column(JSON, nullable=False)
     attribute_modifiers = Column(JSON, nullable=False)
     defenses = Column(JSON, nullable=False)
-    max_hit_points = Column(JSON, nullable=False)
+    max_hit_points = Column(Integer, nullable=False)
     immunities = Column(ARRAY(String))
     speed = Column(Integer, nullable=False)
     actions = Column(JSON)

@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
-    "start:backend": "cd ../backend/api && poetry run uvicorn main:app --reload",
+    "start:backend": "cd ../backend && poetry run uvicorn server:app --reload",
     "start": "concurrently 'npm run start:backend' 'npm run dev'"
   },
   "dependencies": {

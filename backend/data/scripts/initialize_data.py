@@ -121,7 +121,7 @@ def build_enemy_dict(raw_dict: dict[any], id: int) -> dict[any]:
         "traits": [],
         "perception": 0,
         "skills": {},
-        "attributeModifiers": {
+        "attribute_modifiers": {
             "str": 0,
             "dex": 0,
             "con": 0,
@@ -133,7 +133,7 @@ def build_enemy_dict(raw_dict: dict[any], id: int) -> dict[any]:
             "armorClass": 0,
             "saves": {"fortitude": 0, "reflex": 0, "will": 0},
         },
-        "maxHitPoints": 0,
+        "max_hit_points": 0,
         "immunities": [],
         "speed": 0,
         "actions": {"attacks": {}},
@@ -154,7 +154,7 @@ def build_enemy_dict(raw_dict: dict[any], id: int) -> dict[any]:
     enemy["defenses"]["armorClass"] = system_attributes["ac"]["value"]
     add_saves(raw_dict, enemy)
 
-    enemy["maxHitPoints"] = system_attributes["hp"]["max"]
+    enemy["max_hit_points"] = system_attributes["hp"]["max"]
     if "immunities" in system_attributes:
         add_immunities(system_attributes, enemy)
 
@@ -183,7 +183,7 @@ def add_skills(raw_dict: dict[any], enemy: dict[any]) -> None:
 def add_attribute_modifiers(raw_dict: dict[any], enemy: dict[any]) -> None:
     abilities = raw_dict["system"]["abilities"]
     for ability in abilities:
-        enemy["attributeModifiers"][ability] = abilities[ability]["mod"]
+        enemy["attribute_modifiers"][ability] = abilities[ability]["mod"]
 
 
 def add_saves(raw_dict: dict[any], enemy: dict[any]) -> None:
