@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, ARRAY, JSON
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy import ARRAY, JSON, Column, Integer, String
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
+
 
 class Enemy(Base):
     __tablename__ = "enemies"
@@ -19,8 +20,10 @@ class Enemy(Base):
     speed = Column(Integer, nullable=False)
     actions = Column(JSON)
 
+
 class Encounter(Base):
     __tablename__ = "encounters"
 
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
     enemies = Column(ARRAY(Integer))

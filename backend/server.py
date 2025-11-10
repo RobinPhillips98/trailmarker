@@ -1,16 +1,11 @@
-import os
-from pathlib import Path
-from typing import Annotated, Optional
-
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
 
 import models
 from api.routes import enemies
 from db import engine
-    
+
 app = FastAPI(debug=True)
 
 origins = [
@@ -35,7 +30,7 @@ models.Base.metadata.create_all(bind=engine)
 #         yield db
 #     finally:
 #         db.close()
-    
+
 # db = Annotated[Session, Depends(get_db)]
 
 
