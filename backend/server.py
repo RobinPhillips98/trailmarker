@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 import models
-from api.routes import enemies
+from api.routes import enemies, encounters
 from db import engine
 
 app = FastAPI(debug=True)
@@ -21,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(enemies.router)
+app.include_router(encounters.router)
 
 models.Base.metadata.create_all(bind=engine)
 

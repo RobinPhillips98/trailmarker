@@ -26,4 +26,4 @@ class Encounter(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
-    enemies = Column(ARRAY(Integer))
+    enemies = Column(JSON)

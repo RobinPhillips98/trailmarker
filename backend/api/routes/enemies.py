@@ -14,7 +14,7 @@ from ..dependencies import get_db
 
 router = APIRouter()
 
-db = Annotated[Session, Depends(get_db)]
+db_dependency = Annotated[Session, Depends(get_db)]
 
 
 class Actions(BaseModel):
@@ -41,7 +41,7 @@ class Enemies(BaseModel):
 
 
 @router.get("/enemies", response_model=Enemies, status_code=status.HTTP_200_OK)
-def get_enemies(db: db):
+def get_enemies(db: db_dependency):
     first_row = db.query(models.Enemy).first()
     if not first_row:
         post_enemies()
@@ -52,10 +52,20 @@ def get_enemies(db: db):
     return Enemies(enemies=enemy_list)
 
 
+@router.get("/enemies/{enemy_id}", response_model=Enemy, status_code=status.HTTP_200_OK)
+def get_enemy(enemy_id, db: db_dependency):
+    query = db.query(models.Enemy).where(models.Enemy.id == enemy_id)
+
+    result = db.execute(query)
+    enemy = result.scalars().first()
+
+    return enemy
+
+
 @router.post(
     "/enemies", response_model=Enemy, status_code=status.HTTP_201_CREATED
 )
-async def add_enemy(enemy: Enemy, db: db):
+async def add_enemy(enemy: Enemy, db: db_dependency):
     try:
         db_enemy = models.Enemy(
             name=enemy.name,
