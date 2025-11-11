@@ -17,7 +17,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 class Encounter(BaseModel):
     id: int
     name: str
-    enemies: list[dict[str, int]]
+    enemies: list[dict[str, str | int]]
 
 
 class Encounters(BaseModel):

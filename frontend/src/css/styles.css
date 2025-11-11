@@ -58,6 +58,29 @@ nav a {
   padding-bottom: 10px;
 }
 
+/* #savedEncounters {
+  border: black;
+  display: inline-block;
+  border-width: 2px;
+  border-style: solid;
+  margin-bottom: 10px;
+  height: 150px;
+  padding-top: 10px;
+} */
+
+.encounter {
+  display: inline-flex;
+  border: black;
+  border-width: 1px;
+  border-style: solid;
+  margin-left: 5em;
+  margin-bottom: 2em;
+}
+
+.encounter button {
+  margin:5px;
+}
+
 #enemyList {
   border: black;
   border-width: 2px;

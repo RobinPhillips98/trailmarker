@@ -1,9 +1,15 @@
 import SelectedEnemy from "./SelectedEnemy";
+import SaveButton from "./SaveButton";
 
 function EncounterDisplay(props) {
   return (
     <div className="listDisplay">
       <h2>Encounter</h2>
+      <SaveButton
+        enemies={props.enemies}
+        fetchEncounters={props.fetchEncounters}
+        clearEncounter={props.clearEncounter}
+      />
       <ul id="encounterDisplay">
         {props.enemies.map((enemy) => (
           <li key={enemy.id}>
