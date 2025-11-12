@@ -1,5 +1,5 @@
 function Enemy({ handleAdd, enemy }) {
-  const handleClick = () => {
+  function handleClick() {
     handleAdd(enemy);
   };
 

@@ -9,9 +9,9 @@ import api from "./api";
 function App() {
   const [selectedEnemies, setSelectedEnemies] = useState([]);
 
-  const addEnemy = (enemy) => {
+  function addEnemy(enemy) {
     const exists = selectedEnemies.some(
-      (currentEnemy) => currentEnemy.id === enemy.id,
+      (currentEnemy) => currentEnemy.id === enemy.id
     );
     if (!exists) {
       enemy["quantity"] = 1;
@@ -19,7 +19,7 @@ function App() {
     } else {
       incrementQuantity(enemy);
     }
-  };
+  }
 
   function incrementQuantity(enemy) {
     setSelectedEnemies((prev) => {
@@ -30,7 +30,7 @@ function App() {
     });
   }
 
-  const decrementQuantity = (enemy) => {
+  function decrementQuantity(enemy) {
     if (enemy.quantity === 1) removeEnemy(enemy);
     else {
       setSelectedEnemies((prev) => {
@@ -40,29 +40,29 @@ function App() {
         return [...prev];
       });
     }
-  };
+  }
 
-  const removeEnemy = (enemy) => {
+  function removeEnemy(enemy) {
     setSelectedEnemies((prev) =>
-      prev.filter((currentEnemy) => currentEnemy !== enemy),
+      prev.filter((currentEnemy) => currentEnemy !== enemy)
     );
-  };
+  }
 
-  const clearEnemies = () => {
+  function clearEnemies() {
     setSelectedEnemies([]);
-  };
+  }
 
   const [partySize, setPartySize] = useState(4);
 
-  const handlePartySize = (event) => {
+  function handlePartySize(event) {
     setPartySize(event.target.value);
-  };
+  }
 
   const [partyLevel, setPartyLevel] = useState(1);
 
-  const handlePartyLevel = (event) => {
+  function handlePartyLevel(event) {
     setPartyLevel(event.target.value);
-  };
+  }
 
   const [budget, setBudget] = useState({});
 
@@ -132,40 +132,18 @@ function App() {
     else setDifficulty("extreme");
   }, [xp, budget]);
 
-  const loadEncounter = (encounter) => {
+  function loadEncounter(encounter) {
     clearEnemies();
 
     encounter.enemies.forEach(async (enemy) => {
-      const response = await api.get(`enemies/${enemy.id}`)
+      const response = await api.get(`enemies/${enemy.id}`);
       const currentEnemy = response.data;
-      addEnemy(currentEnemy)
+      addEnemy(currentEnemy);
       for (let i = 1; i < enemy.quantity; i++) {
         incrementQuantity(currentEnemy);
       }
-    })
-  };
-
-  const [encounters, setEncounters] = useState([]);
-
-  const fetchEncounters = async () => {
-    try {
-      const response = await api.get('/encounters');
-      setEncounters(response.data.encounters);
-    } catch (error) {
-      console.error("Error fetching encounters", error);
-    }
-  };
-
-  const deleteEncounter = async (encounter) => {
-    await api.delete(`encounters/${encounter.id}`);
-    fetchEncounters();
+    });
   }
-
-  useEffect(() => {
-    fetchEncounters()
-  }, [])
-
-  
 
   return (
     <>
@@ -181,16 +159,11 @@ function App() {
           handleRemove={removeEnemy}
           handleDecrement={decrementQuantity}
           handleAdd={incrementQuantity}
-          fetchEncounters={fetchEncounters}
           clearEncounter={clearEnemies}
           enemies={selectedEnemies}
         />
-        <SavedEncounters
-          encounters = {encounters}
-          handleLoad={loadEncounter}
-          handleDelete={deleteEncounter}
-        />
-        <EnemyList handleAdd={addEnemy}/>
+        <SavedEncounters handleLoad={loadEncounter} />
+        <EnemyList handleAdd={addEnemy} />
       </main>
     </>
   );

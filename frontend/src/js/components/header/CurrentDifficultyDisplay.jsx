@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 function CurrentDifficultyDisplay({ difficulty, xp }) {
   const [description, setDescription] = useState("");
 
+  // Set difficulty description based on current difficulty
   useEffect(() => {
     switch (difficulty) {
       case "trivial":

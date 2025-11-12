@@ -8,7 +8,7 @@ function SaveButton(props) {
     setEncounterName(event.target.value);
   };
 
-  function save() {
+  async function save() {
     const enemy_array = props.enemies.map((enemy) => ({
       id: enemy.id,
       name: enemy.name,
@@ -21,9 +21,8 @@ function SaveButton(props) {
       enemies: enemy_array,
     };
 
-    api.post("/encounters", encounter);
+    await api.post("/encounters", encounter);
     setEncounterName("");
-    props.fetchEncounters();
   }
 
   return (

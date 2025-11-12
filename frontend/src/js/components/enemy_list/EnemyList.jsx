@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 function EnemyList(props) {
   const [enemies, setEnemies] = useState([]);
 
-  const fetchEnemies = async () => {
+  async function fetchEnemies() {
     try {
       const response = await api.get('/enemies');
       setEnemies(response.data.enemies);

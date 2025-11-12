@@ -7,7 +7,6 @@ function EncounterDisplay(props) {
       <h2>Encounter</h2>
       <SaveButton
         enemies={props.enemies}
-        fetchEncounters={props.fetchEncounters}
         clearEncounter={props.clearEncounter}
       />
       <ul id="encounterDisplay">
