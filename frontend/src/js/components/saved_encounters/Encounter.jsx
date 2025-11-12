@@ -1,9 +1,9 @@
 function Encounter({ handleLoad, handleDelete, encounter }) {
-  const handleClickLoad = () => {
+  function handleClickLoad() {
     handleLoad(encounter);
   };
 
-  const handleClickDelete = () => {
+  function handleClickDelete() {
     handleDelete(encounter);
   };
 
