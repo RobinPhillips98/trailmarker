@@ -1,6 +1,6 @@
 import Encounter from "./Encounter";
 import { useState, useEffect } from "react";
-import { Button, Modal } from "antd";
+import { Button, Modal, Card } from "antd";
 import api from "../../api";
 
 function SavedEncounters({ handleLoad }) {
@@ -38,9 +38,9 @@ function SavedEncounters({ handleLoad }) {
   }, [isModalOpen]);
 
   return (
-    <>
-      <Button type="primary" onClick={showModal}>
-        Saved Encounters
+    <div>
+      <Button style={{margin: "10px 0"}} type="primary" onClick={showModal}>
+        Open Saved Encounters
       </Button>
       <Modal
         title="Saved Encounters"
@@ -50,16 +50,16 @@ function SavedEncounters({ handleLoad }) {
         onCancel={handleCancel}
       >
         {encounters.map((encounter) => (
-          <li key={encounter.id} className="savedEncounter">
+          <Card size="small" title={encounter.name} style={{marginBottom: 10}}>
             <Encounter
               encounter={encounter}
               handleLoad={handleLoad}
               handleDelete={deleteEncounter}
             />
-          </li>
+          </Card>
         ))}
       </Modal>
-    </>
+    </div>
   );
 }
 

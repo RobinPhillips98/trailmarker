@@ -1,3 +1,5 @@
+import { Button } from "antd";
+
 function SelectedEnemy(props) {
   const enemy = props.enemy;
 
@@ -14,16 +16,28 @@ function SelectedEnemy(props) {
   }
 
   return (
-    <ul className="enemy">
+    <ul className="selectedEnemy">
       <li>{enemy.name}</li>
       <li>
-        <button onClick={handleClickDecrement}>-</button>
+        <Button color="danger" variant="solid" onClick={handleClickDecrement}>
+          -
+        </Button>
       </li>
       <li>{enemy.quantity}</li>
       <li>
-        <button onClick={handleClickAdd}>+</button>
+        <Button type="primary" onClick={handleClickAdd}>
+          +
+        </Button>
       </li>
-      <button onClick={handleClickRemove} className="addRemoveButton">Remove</button>
+      <Button
+        style={{ marginLeft: 10 }}
+        danger
+        variant="filled"
+        onClick={handleClickRemove}
+        className="addRemoveButton"
+      >
+        Remove
+      </Button>
     </ul>
   );
 }

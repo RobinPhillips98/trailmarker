@@ -155,6 +155,7 @@ function App() {
         difficulty={difficulty}
       />
       <main>
+        <SavedEncounters handleLoad={loadEncounter} />
         <EncounterDisplay
           handleRemove={removeEnemy}
           handleDecrement={decrementQuantity}
@@ -162,7 +163,6 @@ function App() {
           clearEncounter={clearEnemies}
           enemies={selectedEnemies}
         />
-        <SavedEncounters handleLoad={loadEncounter} />
         <EnemyList handleAdd={addEnemy} />
       </main>
     </>

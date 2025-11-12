@@ -1,26 +1,30 @@
 import SelectedEnemy from "./SelectedEnemy";
-import SaveButton from "./SaveButton";
+import EncounterOptions from "./EncounterOptions";
+import { List } from "antd";
 
 function EncounterDisplay(props) {
   return (
-    <div className="listDisplay">
-      <h2>Encounter</h2>
-      <SaveButton
+    <div>
+      <EncounterOptions
         enemies={props.enemies}
         clearEncounter={props.clearEncounter}
       />
-      <ul id="encounterDisplay">
+      <List
+        header={<h2>Encounter</h2>}
+        bordered={true}
+        size="small"
+      >
         {props.enemies.map((enemy) => (
-          <li key={enemy.id}>
+          <List.Item key={enemy.id}>
             <SelectedEnemy
               enemy={enemy}
               handleRemove={props.handleRemove}
               handleDecrement={props.handleDecrement}
               handleAdd={props.handleAdd}
             />
-          </li>
+          </List.Item>
         ))}
-      </ul>
+      </List>
     </div>
   );
 }

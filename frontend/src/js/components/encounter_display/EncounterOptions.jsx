@@ -1,7 +1,8 @@
 import api from "../../api";
 import { useState } from "react";
+import { Button, Input, Space } from "antd";
 
-function SaveButton(props) {
+function EncounterOptions(props) {
   const [encounterName, setEncounterName] = useState("");
 
   const handleChange = (event) => {
@@ -26,18 +27,23 @@ function SaveButton(props) {
   }
 
   return (
-    <div>
-      <button onClick={save}>Save Encounter</button>
-      <input
-        type="text"
-        id="name"
-        placeholder="Enter encounter name..."
-        value={encounterName}
-        onChange={handleChange}
-      />
-      <button onClick={props.clearEncounter}>Clear Encounter</button>
+    <div >
+      <Button style={{marginRight: 10, marginBottom: 10}} type="primary" onClick={save}>
+        Save Encounter
+      </Button>
+      <Space.Compact>
+        <Input
+          type="text"
+          id="name"
+          placeholder="Enter encounter name..."
+          value={encounterName}
+          onChange={handleChange}
+        />
+      </Space.Compact>
+      <br />
+      <Button danger onClick={props.clearEncounter}>Clear Encounter</Button>
     </div>
   );
 }
 
-export default SaveButton;
+export default EncounterOptions;

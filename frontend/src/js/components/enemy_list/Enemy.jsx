@@ -1,22 +1,26 @@
+import { Button, Card } from "antd";
+
 function Enemy({ handleAdd, enemy }) {
   function handleClick() {
     handleAdd(enemy);
-  };
+  }
 
   return (
-    <div>
-      <ul className="enemy">
-        <li>{enemy.name}</li>
-        <li>Level: {enemy.level}</li>
-        <li>Traits: </li>
-        {enemy.traits.map((trait) => (
-          <li>{trait}</li>
-        ))}
-        <li>
-          <button onClick={handleClick} className="addRemoveButton">Add</button>
-        </li>
-      </ul>
-    </div>
+    <Card size="small" title={enemy.name} style={{ width: 300 }}>
+      <p>Level: {enemy.level}</p>
+      <p>
+        Traits:{" "}
+        {enemy.traits.map((trait, index, arr) => {
+          if (index === arr.length - 1)
+            return <span>{trait}</span>;
+          else
+            return <span>{trait} | </span>;
+        })}
+      </p>
+      <Button type="primary" onClick={handleClick} className="addRemoveButton">
+        Add
+      </Button>
+    </Card>
   );
 }
 

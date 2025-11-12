@@ -1,24 +1,50 @@
+import { Button, Table } from "antd";
+
 function Encounter({ handleLoad, handleDelete, encounter }) {
   function handleClickLoad() {
     handleLoad(encounter);
-  };
+  }
 
   function handleClickDelete() {
     handleDelete(encounter);
-  };
+  }
+
+  const dataSource = encounter.enemies.map((enemy) => {
+    return { ...enemy, ["key"]: enemy.id };
+  });
+
+  const columns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Quantity",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+  ];
 
   return (
-    <div className="encounter">
-        <h3>{encounter.name}</h3>
-        <ul>
-          {encounter.enemies.map((enemy) => (
-            <li>
-              {enemy.quantity} {enemy.name}
-            </li>
-          ))}
-        </ul>
-        <button onClick={handleClickLoad}>Load Encounter</button>
-        <button onClick={handleClickDelete}>Delete Encounter</button>
+    <div>
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        pagination={false}
+        bordered={true}
+        style={{marginBottom: 10}}
+      />
+      <Button
+        type="primary"
+        style={{ marginRight: 10 }}
+        onClick={handleClickLoad}
+      >
+        Load Encounter
+      </Button>
+      <Button danger onClick={handleClickDelete}>
+        Delete Encounter
+      </Button>
     </div>
   );
 }

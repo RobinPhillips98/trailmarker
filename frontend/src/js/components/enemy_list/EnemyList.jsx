@@ -1,34 +1,37 @@
 import Enemy from "./Enemy";
 import api from "../../api";
 import { useEffect, useState } from "react";
+import { List } from "antd";
 
 function EnemyList(props) {
   const [enemies, setEnemies] = useState([]);
 
   async function fetchEnemies() {
     try {
-      const response = await api.get('/enemies');
+      const response = await api.get("/enemies");
       setEnemies(response.data.enemies);
     } catch (error) {
       console.error("Error fetching enemies", error);
     }
-  };
+  }
 
   useEffect(() => {
-    fetchEnemies()
-  }, [])
+    fetchEnemies();
+  }, []);
 
   return (
-    <div className="listDisplay">
-      <h2>Enemies</h2>
-      <ul id="enemyList">
-        {enemies.map((enemy) => (
-          <li key={enemy.id}>
-            <Enemy handleAdd={props.handleAdd} enemy={enemy} />
-          </li>
-        ))}
-      </ul>
-    </div>
+    <List
+      header={<h2>Enemies</h2>}
+      bordered={true}
+      style={{marginTop: 10}}
+      grid={{ gutter: 16, column: 5 }}
+      dataSource={enemies}
+      renderItem={(enemy) => (
+        <List.Item>
+          <Enemy handleAdd={props.handleAdd} enemy={enemy} />
+        </List.Item>
+      )}
+    />
   );
 }
 
