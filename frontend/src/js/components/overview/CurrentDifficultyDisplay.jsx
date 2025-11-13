@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 
+import { Typography } from "antd";
+const { Title, Text } = Typography;
+
 function CurrentDifficultyDisplay({ difficulty, xp }) {
   const [description, setDescription] = useState("");
 
@@ -37,11 +40,11 @@ function CurrentDifficultyDisplay({ difficulty, xp }) {
   }, [difficulty]);
 
   return (
-    <div id="difficultyDisplay">
-      <h2>
+    <div style={{ width: "30%", margin: 20 }}>
+      <Title level={2}>
         Current Difficulty: {difficulty} ({xp})
-      </h2>
-      <p>{description}</p>
+      </Title>
+      <Text>{description}</Text>
     </div>
   );
 }

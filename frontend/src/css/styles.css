@@ -1,45 +1,5 @@
-header {
-  display: flex;
-  gap: 10px;
-  width: 100%;
-  background-color: darkslategray;
-  color: #d0d0d0;
-  justify-content: space-around;
-}
-
-nav {
-  height: 50%;
-  width: 30%;
-  align-items: end;
-}
-
-nav a {
-  padding: 10px;
-  color: white;
-}
-
-#partyInfoForm {
-  width: 20%;
-  padding-left: 100px;
-}
-
-.listDisplay {
-  /* position: absolute; */
-  width: 99%;
-}
-
-#difficultyDisplay {
-  width: 30%;
-  margin: 20px;
-}
-
-#difficultyList {
-  width: 20%;
-}
-
-#difficultyList ul {
-  list-style-type: none;
-  padding-left: 0;
+html {
+  background-color: black;
 }
 
 .selectedEnemy li {

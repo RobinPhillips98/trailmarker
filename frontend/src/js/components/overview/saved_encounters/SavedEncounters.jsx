@@ -1,7 +1,7 @@
 import Encounter from "./Encounter";
 import { useState, useEffect } from "react";
 import { Button, Modal, Card } from "antd";
-import api from "../../api";
+import api from "../../../api";
 
 function SavedEncounters({ handleLoad }) {
   const [encounters, setEncounters] = useState([]);
@@ -39,7 +39,7 @@ function SavedEncounters({ handleLoad }) {
 
   return (
     <div>
-      <Button style={{margin: "10px 0"}} type="primary" onClick={showModal}>
+      <Button style={{ marginBottom: 10 }} type="primary" onClick={showModal}>
         Open Saved Encounters
       </Button>
       <Modal
@@ -50,7 +50,11 @@ function SavedEncounters({ handleLoad }) {
         onCancel={handleCancel}
       >
         {encounters.map((encounter) => (
-          <Card size="small" title={encounter.name} style={{marginBottom: 10}}>
+          <Card
+            size="small"
+            title={encounter.name}
+            style={{ marginBottom: 10 }}
+          >
             <Encounter
               encounter={encounter}
               handleLoad={handleLoad}

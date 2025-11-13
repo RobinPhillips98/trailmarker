@@ -33,7 +33,7 @@ function Encounter({ handleLoad, handleDelete, encounter }) {
         columns={columns}
         pagination={false}
         bordered={true}
-        style={{marginBottom: 10}}
+        style={{ marginBottom: 10 }}
       />
       <Button
         type="primary"

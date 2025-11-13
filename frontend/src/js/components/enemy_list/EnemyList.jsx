@@ -23,7 +23,7 @@ function EnemyList(props) {
     <List
       header={<h2>Enemies</h2>}
       bordered={true}
-      style={{marginTop: 10}}
+      style={{ marginTop: 10, height: 500, overflow: "scroll"}}
       grid={{ gutter: 16, column: 5 }}
       dataSource={enemies}
       renderItem={(enemy) => (

@@ -11,10 +11,8 @@ function Enemy({ handleAdd, enemy }) {
       <p>
         Traits:{" "}
         {enemy.traits.map((trait, index, arr) => {
-          if (index === arr.length - 1)
-            return <span>{trait}</span>;
-          else
-            return <span>{trait} | </span>;
+          if (index === arr.length - 1) return <span>{trait}</span>;
+          else return <span>{trait} | </span>;
         })}
       </p>
       <Button type="primary" onClick={handleClick} className="addRemoveButton">

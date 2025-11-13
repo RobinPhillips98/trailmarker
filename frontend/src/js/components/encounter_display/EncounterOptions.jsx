@@ -10,6 +10,10 @@ function EncounterOptions(props) {
   };
 
   async function save() {
+    if (props.enemies.length === 0) {
+      alert("Encounter is empty, please add enemies.")
+      return;
+    }
     const enemy_array = props.enemies.map((enemy) => ({
       id: enemy.id,
       name: enemy.name,

@@ -19,7 +19,7 @@ function SelectedEnemy(props) {
     <ul className="selectedEnemy">
       <li>{enemy.name}</li>
       <li>
-        <Button color="danger" variant="solid" onClick={handleClickDecrement}>
+        <Button color="volcano" variant="solid" onClick={handleClickDecrement}>
           -
         </Button>
       </li>
