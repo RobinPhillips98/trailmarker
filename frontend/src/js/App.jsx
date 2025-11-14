@@ -3,8 +3,7 @@ import { AuthProvider } from "./contexts/AuthContext.jsx";
 import Register from "./components/Register.jsx";
 import Login from "./components/Login.jsx";
 import Homepage from "./components/homepage/Homepage.jsx";
-import { Anchor, ConfigProvider, Layout, theme } from "antd";
-import AnchorLink from "antd/es/anchor/AnchorLink.js";
+import { ConfigProvider, Layout, theme } from "antd";
 import NavBar from "./components/NavBar.jsx";
 const { Header, Content } = Layout;
 
@@ -22,6 +21,7 @@ function App() {
       <AuthProvider>
         <ConfigProvider theme={themeConfig}>
           <NavBar />
+          <br />
           <Routes>
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />

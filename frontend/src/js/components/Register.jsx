@@ -1,30 +1,44 @@
-import { useState, useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
+import { Button, Form, Input } from "antd";
 
 function Register() {
-    const [formData, setFormData] = useState({
-        username: '',
-        password: ''
-    });
+  const { register } = useContext(AuthContext);
 
-    const { register } = useContext(AuthContext);
+  function handleSubmit(values) {
+    register(values.username, values.password);
+  }
 
-    function handleChange(e) {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  return (
+    <Form
+      name="register"
+      onFinish={handleSubmit}
+      labelCol={{ span: 8 }}
+      wrapperCol={{ span: 16 }}
+      style={{ maxWidth: 600 }}
+    >
+      <Form.Item
+        label="Username"
+        name="username"
+        rules={[{ required: true, message: "Please input your username!" }]}
+      >
+        <Input />
+      </Form.Item>
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        register(formData.username, formData.password);
-    };
-
-    return (
-        <form onSubmit={handleSubmit}>
-            <input type="text" name="username" placeholder="Username" onChange={handleChange} />
-            <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-            <button type="submit">Register</button>
-        </form>
-    );
-};
+      <Form.Item
+        label="Password"
+        name="password"
+        rules={[{ required: true, message: "Please input your password!" }]}
+      >
+        <Input.Password />
+      </Form.Item>
+      <Form.Item label={null}>
+        <Button type="primary" htmlType="submit">
+          Register
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+}
 
 export default Register;

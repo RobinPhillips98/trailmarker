@@ -1,31 +1,32 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Menu } from "antd";
 
 function NavBar() {
-  const [current, setCurrent] = useState("home");
-  function onClick(e) {
-    setCurrent(e.key);
-  }
+  const location = useLocation();
+  const [current, setCurrent] = useState(location.pathname);
+
+  useEffect(() => {
+    setCurrent(location.pathname);
+  }, [location])
 
   const menuItems = [
     {
-      key: "home",
+      key: "/",
       label: <Link to="/">Home</Link>,
     },
     {
-      key: "register",
+      key: "/register",
       label: <Link to="/register">Register</Link>,
     },
     {
-      key: "login",
+      key: "/login",
       label: <Link to="/login">Login</Link>,
     },
   ];
 
   return (
     <Menu
-      onClick={onClick}
       selectedKeys={[current]}
       mode="horizontal"
       items={menuItems}
