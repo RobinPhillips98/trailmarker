@@ -1,5 +1,5 @@
 import Enemy from "./Enemy";
-import api from "../../api";
+import api from "../../../api";
 import { useEffect, useState } from "react";
 import { List } from "antd";
 
@@ -23,7 +23,7 @@ function EnemyList(props) {
     <List
       header={<h2>Enemies</h2>}
       bordered={true}
-      style={{ marginTop: 10, height: 500, overflow: "scroll"}}
+      style={{ marginTop: 10, height: 900, overflow: "scroll"}}
       grid={{ gutter: 16, column: 5 }}
       dataSource={enemies}
       renderItem={(enemy) => (

@@ -1,7 +1,7 @@
 import Encounter from "./Encounter";
 import { useState, useEffect } from "react";
 import { Button, Modal, Card } from "antd";
-import api from "../../../api";
+import api from "../../../../api";
 
 function SavedEncounters({ handleLoad }) {
   const [encounters, setEncounters] = useState([]);

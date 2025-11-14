@@ -1,4 +1,4 @@
-import api from "../../api";
+import api from "../../../api";
 import { useState } from "react";
 import { Button, Input, Space } from "antd";
 
