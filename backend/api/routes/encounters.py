@@ -1,17 +1,12 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.future import select
-from sqlalchemy.orm import Session
 
 import models
 
-from ..dependencies import get_db
+from ..dependencies import db_dependency
 
 router = APIRouter()
-
-db_dependency = Annotated[Session, Depends(get_db)]
 
 
 class Encounter(BaseModel):
