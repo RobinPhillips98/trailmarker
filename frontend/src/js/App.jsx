@@ -6,6 +6,7 @@ import Homepage from "./components/homepage/Homepage.jsx";
 import { ConfigProvider, Layout, theme } from "antd";
 import NavBar from "./components/NavBar.jsx";
 import Characters from "./components/characters/Characters.jsx";
+import CharacterCreationForm from "./components/characters/CharacterCreationForm.jsx";
 const { Header, Content } = Layout;
 
 function App() {
@@ -26,6 +27,10 @@ function App() {
           <Routes>
             <Route path="/" element={<Homepage />} />
             <Route path="/characters" element={<Characters />} />
+            <Route
+              path="/characters/create"
+              element={<CharacterCreationForm />}
+            />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
           </Routes>

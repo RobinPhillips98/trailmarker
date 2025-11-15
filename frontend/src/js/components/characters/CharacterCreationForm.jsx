@@ -11,20 +11,21 @@ import {
   skills,
   saves,
 } from "./characterData";
+import { useNavigate } from "react-router-dom";
 
 export default function CharacterCreationForm() {
   const { token } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [form] = Form.useForm();
 
   async function onFinish(character) {
     await api.post("/characters", character, {
       headers: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
-    form.resetFields();
-    alert("Characted created!");
+    navigate("/characters");
   }
 
   return (
@@ -232,17 +233,21 @@ export default function CharacterCreationForm() {
                     {...restField}
                     name={[name, "damage"]}
                     label="Damage"
-                    rules={[{ required: true, message: "Please input a damage" }]}
+                    rules={[
+                      { required: true, message: "Please input a damage" },
+                    ]}
                   >
-                    <Input placeholder="1d8+4"/>
+                    <Input placeholder="1d8+4" />
                   </Form.Item>
                   <Form.Item
                     {...restField}
                     name={[name, "damageType"]}
                     label="DamageType"
-                    rules={[{ required: true, message: "Please input a damageType" }]}
+                    rules={[
+                      { required: true, message: "Please input a damageType" },
+                    ]}
                   >
-                    <Input placeholder="Slashing"/>
+                    <Input placeholder="Slashing" />
                   </Form.Item>
                   <Button
                     type="dashed"

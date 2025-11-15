@@ -67,14 +67,15 @@ def convert_to_db_character(character, current_user):
         },
     }
     actions_dict = {"attacks": []}
-    for attack in character.actions.attacks:
-        attack_dict = {
-            "name": attack.name,
-            "attackBonus": attack.attackBonus,
-            "damage": attack.damage,
-            "damageType": attack.damageType
-        }
-        actions_dict["attacks"].append(attack_dict)
+    if character.actions.attacks:
+        for attack in character.actions.attacks:
+            attack_dict = {
+                "name": attack.name,
+                "attackBonus": attack.attackBonus,
+                "damage": attack.damage,
+                "damageType": attack.damageType
+            }
+            actions_dict["attacks"].append(attack_dict)
 
     db_character = models.Character(
         user=current_user,

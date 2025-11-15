@@ -1,5 +1,66 @@
-import CharacterCreationForm from "./CharacterCreationForm";
+import { Button, Carousel } from "antd";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import api from "../../api";
+import CharacterDisplay from "./CharacterDisplay";
 
 export default function Characters() {
-  return <CharacterCreationForm />
+  const [characters, setCharacters] = useState([]);
+  const navigate = useNavigate();
+
+  const { token } = useContext(AuthContext);
+
+  async function deleteCharacter(character) {
+    await api.delete(`characters/${character.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setCharacters((prev) =>
+      prev.filter((currentCharacter) => currentCharacter !== character)
+    );
+  }
+
+  useEffect(() => {
+    async function fetchCharacters() {
+      try {
+        const response = await api.get("/characters", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCharacters(response.data.characters);
+      } catch (error) {
+        console.error("Error fetching characters", error);
+      }
+    }
+    if (token) fetchCharacters();
+    else {
+      alert("Sorry: You must be logged in to access this page");
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
+  function handleClick() {
+    navigate("/characters/create");
+  }
+
+  if (token)
+    return (
+      <>
+        <Carousel arrows infinite={false}>
+          {characters.map((character) => (
+            <CharacterDisplay
+              character={character}
+              deleteCharacter={deleteCharacter}
+            />
+          ))}
+        </Carousel>
+        <br />
+        <Button type="primary" onClick={handleClick}>
+          Create New Character
+        </Button>
+      </>
+    );
 }

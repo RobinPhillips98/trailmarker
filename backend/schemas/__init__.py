@@ -22,7 +22,7 @@ class Attacks(BaseModel):
     damageType: Optional[str] = None
 
 class Actions(BaseModel):
-    attacks: list[Attacks]
+    attacks: Optional[list[Attacks]] = None
 
 
 class Skills(BaseModel):
@@ -83,7 +83,7 @@ class Character(Creature):
     model_config = ConfigDict(populate_by_name=True)
 
     user_id: int
-    player: str
+    player: Optional[str] = ""
     xp: Optional[int] = 0
     ancestry: str
     background: str
@@ -115,7 +115,7 @@ class EnemyCreate(CreatureCreate):
 class CharacterCreate(CreatureCreate):
     model_config = ConfigDict(populate_by_name=True)
 
-    player: str
+    player: Optional[str] = ""
     xp: Optional[int] = 0
     ancestry: str
     background: str
