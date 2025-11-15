@@ -38,43 +38,32 @@ function EncounterOptions(props) {
     setEncounterName("");
   }
 
-  if (user) {
-    return (
-      <div>
-        <Button
-          style={{ marginRight: 10, marginBottom: 10 }}
-          type="primary"
-          onClick={save}
+  return (
+    <div>
+      <Button
+        style={{ marginRight: 10, marginBottom: 10 }}
+        type="primary"
+        onClick={save}
+        disabled={!user}
+      >
+        Save Encounter
+      </Button>
+      <Space.Compact>
+        <Input
+          type="text"
+          id="name"
+          placeholder="Enter encounter name..."
+          value={encounterName}
+          onChange={handleChange}
           disabled={!user}
-        >
-          Save Encounter
-        </Button>
-        <Space.Compact>
-          <Input
-            type="text"
-            id="name"
-            placeholder="Enter encounter name..."
-            value={encounterName}
-            onChange={handleChange}
-          />
-        </Space.Compact>
-        <br />
-        <Button danger onClick={props.clearEncounter}>
-          Clear Encounter
-        </Button>
-      </div>
-    );
-  } else {
-    return (
-      <>
-        <Title level={4}>Please login to save encounters</Title>
-        <br />
-        <Button danger onClick={props.clearEncounter}>
-          Clear Encounter
-        </Button>
-      </>
-    );
-  }
+        />
+      </Space.Compact>
+      <br />
+      <Button danger onClick={props.clearEncounter}>
+        Clear Encounter
+      </Button>
+    </div>
+  );
 }
 
 export default EncounterOptions;

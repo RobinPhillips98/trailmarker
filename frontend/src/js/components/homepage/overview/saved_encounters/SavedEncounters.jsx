@@ -8,7 +8,7 @@ import { AuthContext } from "../../../../contexts/AuthContext";
 function SavedEncounters({ handleLoad }) {
   const [encounters, setEncounters] = useState([]);
 
-  const { token } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
 
   async function deleteEncounter(encounter) {
     await api.delete(`encounters/${encounter.id}`, {
@@ -50,7 +50,12 @@ function SavedEncounters({ handleLoad }) {
 
   return (
     <div>
-      <Button style={{ marginBottom: 10 }} type="primary" onClick={showModal}>
+      <Button
+        style={{ marginBottom: 10 }}
+        type="primary"
+        onClick={showModal}
+        disabled={!user}
+      >
         Open Saved Encounters
       </Button>
       <Modal

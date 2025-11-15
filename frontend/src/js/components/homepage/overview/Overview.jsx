@@ -5,8 +5,41 @@ import EncounterOptions from "../encounter_display/EncounterOptions";
 import SavedEncounters from "./saved_encounters/SavedEncounters";
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
+import api from "../../../api";
 
 function Overview({ selectedEnemies, handleLoad, clearEncounter }) {
+  const [switched, setSwitched] = useState(false);
+
+  const { token } = useContext(AuthContext);
+
+  useEffect(() => {
+    async function getPartyInfoFromServer() {
+      try {
+        const response = await api.get("/characters", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const characters = response.data.characters;
+        setPartyLevel(characters.at(0).level);
+        if (characters.length >= 2) setPartySize(characters.length);
+        else {
+          alert(
+            "Less than 2 characters saved, setting party size to minimum 2"
+          );
+          setPartySize(2);
+        }
+      } catch (error) {
+        console.error("Error fetching characters", error);
+      }
+    }
+    if (switched) getPartyInfoFromServer();
+  }, [switched, token]);
+
+  function handleChange() {
+    setSwitched(!switched);
+  }
+
   const [partySize, setPartySize] = useState(4);
 
   function handlePartySize(value) {
@@ -87,23 +120,22 @@ function Overview({ selectedEnemies, handleLoad, clearEncounter }) {
     else setDifficulty("extreme");
   }, [xp, budget]);
 
-  const { user } = useContext(AuthContext);
-
-  const savedEncountersComponent = user ? <SavedEncounters handleLoad={handleLoad}/> : null;
-
   return (
     <div style={{ display: "flex", gap: 10, justifyContent: "space-around" }}>
       <div style={{ alignContent: "space-around" }}>
-        {/* <SavedEncounters handleLoad={handleLoad}/> */}
-        {savedEncountersComponent}
+        <SavedEncounters handleLoad={handleLoad}/>
         <EncounterOptions
           enemies={selectedEnemies}
           clearEncounter={clearEncounter}
         />
       </div>
       <PartyInfoForm
+        partySize={partySize}
+        partyLevel={partyLevel}
+        switched={switched}
         handlePartySize={handlePartySize}
         handlePartyLevel={handlePartyLevel}
+        handleChange={handleChange}
       />
       <XPBudget budget={budget} />
       <CurrentDifficultyDisplay difficulty={difficulty} xp={xp} />
