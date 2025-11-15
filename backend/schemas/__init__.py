@@ -15,8 +15,14 @@ class Encounters(BaseModel):
 
 
 # Stats
+class Attacks(BaseModel):
+    name: str
+    attackBonus: int
+    damage: Optional[str] = None
+    damageType: Optional[str] = None
+
 class Actions(BaseModel):
-    attacks: dict[str, dict[str, int | str]]
+    attacks: list[Attacks]
 
 
 class Skills(BaseModel):

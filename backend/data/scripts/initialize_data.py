@@ -58,7 +58,7 @@ def convert_data(raw_path: str, bestiary_path: str, rebuild: bool) -> None:
             continue
 
         print(f"Reformatting {file}...")
-        enemy = build_enemy_dict(raw_dict, id)
+        enemy = build_enemy_dict(raw_dict)
 
         reformatted_file = file.replace("-bb", "")
         print(f"Saving {reformatted_file}...\n")
@@ -133,7 +133,7 @@ def build_enemy_dict(raw_dict: dict[any]) -> dict[any]:
         "max_hit_points": 0,
         "immunities": [],
         "speed": 0,
-        "actions": {"attacks": {}},
+        "actions": {"attacks": []},
     }
 
     enemy["name"] = raw_dict["prototypeToken"]["name"]
@@ -203,6 +203,7 @@ def add_attacks(raw_dict, enemy):
     for item in items:
         if "attack" in item["system"]:
             attack_dict = {}
+            attack_dict["name"] = item["name"]
             attack_dict["attackBonus"] = item["system"]["bonus"]["value"]
             # for some reason in the JSON files from foundryVTT there is a
             # key with a random value between damageRolls and the values
@@ -213,10 +214,8 @@ def add_attacks(raw_dict, enemy):
                 attack_dict["damage"] = damage_rolls[key]["damage"]
                 attack_dict["damageType"] = damage_rolls[key]["damageType"]
             except IndexError:
-                pass  # Some attacks don't do damage, so don't add it
-            enemy["actions"]["attacks"].update(
-                {f"{item['name']}": attack_dict}
-            )  # noqa
+                pass  # Some attacks don't do damage, so don't add them
+            enemy["actions"]["attacks"].append(attack_dict)
 
 
 def usage_error() -> None:

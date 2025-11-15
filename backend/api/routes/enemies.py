@@ -42,27 +42,7 @@ def get_enemy(enemy_id, db: db_dependency):
 )
 async def add_enemy(enemy: EnemyCreate, db: db_dependency):
     try:
-        defense_dict = {
-            "armor_class": enemy.defenses.armor_class,
-            "saves": {
-                "fortitude": enemy.defenses.saves.fortitude,
-                "reflex": enemy.defenses.saves.reflex,
-                "will": enemy.defenses.saves.will,
-            },
-        }
-        db_enemy = models.Enemy(
-            name=enemy.name,
-            level=enemy.level,
-            traits=enemy.traits,
-            perception=enemy.perception,
-            skills=dict(enemy.skills),
-            attribute_modifiers=dict(enemy.attribute_modifiers),
-            defenses=defense_dict,
-            max_hit_points=enemy.max_hit_points,
-            immunities=enemy.immunities,
-            speed=enemy.speed,
-            actions=dict(enemy.actions),
-        )
+        db_enemy = convert_to_db_enemy(enemy)
 
         db.add(db_enemy)
         db.commit()
@@ -75,6 +55,43 @@ async def add_enemy(enemy: EnemyCreate, db: db_dependency):
             status_code=500, detail=f"Internal server error: {str(e)}"
         )
     return db_enemy
+
+def convert_to_db_enemy(enemy):
+            # Some parts of the dict need to be manually built since the Pydantic models
+        # don't covert well to dictionaries when they have models inside models
+        defense_dict = {
+            "armor_class": enemy.defenses.armor_class,
+            "saves": {
+                "fortitude": enemy.defenses.saves.fortitude,
+                "reflex": enemy.defenses.saves.reflex,
+                "will": enemy.defenses.saves.will,
+            },
+        }
+        actions_dict = {"attacks": []}
+        for attack in enemy.actions.attacks:
+            attack_dict = {
+                "name": attack.name,
+                "attackBonus": attack.attackBonus,
+                "damage": attack.damage,
+                "damageType": attack.damageType
+            }
+            actions_dict["attacks"].append(attack_dict)
+
+        db_enemy = models.Enemy(
+            name=enemy.name,
+            level=enemy.level,
+            traits=enemy.traits,
+            perception=enemy.perception,
+            skills=dict(enemy.skills),
+            attribute_modifiers=dict(enemy.attribute_modifiers),
+            defenses=defense_dict,
+            max_hit_points=enemy.max_hit_points,
+            immunities=enemy.immunities,
+            speed=enemy.speed,
+            actions=actions_dict,
+        )
+
+        return db_enemy
 
 
 def post_enemies():

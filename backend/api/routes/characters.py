@@ -41,31 +41,7 @@ def get_character(character_id, db: db_dependency):
 )
 async def add_character(character: CharacterCreate, db: db_dependency, current_user: models.User = Depends(get_current_active_user)):
     try:
-        defense_dict = {
-            "armor_class": character.defenses.armor_class,
-            "saves": {
-                "fortitude": character.defenses.saves.fortitude,
-                "reflex": character.defenses.saves.reflex,
-                "will": character.defenses.saves.will,
-            },
-        }
-        db_character = models.Character(
-            user=current_user,
-            name=character.name,
-            player=character.player,
-            xp=character.xp,
-            ancestry=character.ancestry,
-            background=character.background,
-            class_=character.class_,
-            level=character.level,
-            perception=character.perception,
-            skills=dict(character.skills),
-            attribute_modifiers=dict(character.attribute_modifiers),
-            defenses=defense_dict,
-            max_hit_points=character.max_hit_points,
-            speed=character.speed,
-            actions=dict(character.actions),
-        )
+        db_character = convert_to_db_character(character, current_user)
 
         db.add(db_character)
         db.commit()
@@ -77,6 +53,47 @@ async def add_character(character: CharacterCreate, db: db_dependency, current_u
         raise HTTPException(
             status_code=500, detail=f"Internal server error: {str(e)}"
         )
+    return db_character
+
+def convert_to_db_character(character, current_user):
+    # Some parts of the dict need to be manually built since the Pydantic models
+    # don't covert well to dictionaries when they have models inside models
+    defense_dict = {
+        "armor_class": character.defenses.armor_class,
+        "saves": {
+            "fortitude": character.defenses.saves.fortitude,
+            "reflex": character.defenses.saves.reflex,
+            "will": character.defenses.saves.will,
+        },
+    }
+    actions_dict = {"attacks": []}
+    for attack in character.actions.attacks:
+        attack_dict = {
+            "name": attack.name,
+            "attackBonus": attack.attackBonus,
+            "damage": attack.damage,
+            "damageType": attack.damageType
+        }
+        actions_dict["attacks"].append(attack_dict)
+
+    db_character = models.Character(
+        user=current_user,
+        name=character.name,
+        player=character.player,
+        xp=character.xp,
+        ancestry=character.ancestry,
+        background=character.background,
+        class_=character.class_,
+        level=character.level,
+        perception=character.perception,
+        skills=dict(character.skills),
+        attribute_modifiers=dict(character.attribute_modifiers),
+        defenses=defense_dict,
+        max_hit_points=character.max_hit_points,
+        speed=character.speed,
+        actions=actions_dict,
+    )
+
     return db_character
 
 
