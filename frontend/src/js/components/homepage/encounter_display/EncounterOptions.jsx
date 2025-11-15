@@ -4,7 +4,6 @@ import { Button, Input, Space, Typography } from "antd";
 import { AuthContext } from "../../../contexts/AuthContext";
 const { Title } = Typography;
 
-
 function EncounterOptions(props) {
   const [encounterName, setEncounterName] = useState("");
 
@@ -12,7 +11,7 @@ function EncounterOptions(props) {
     setEncounterName(event.target.value);
   };
 
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
 
   async function save() {
     if (props.enemies.length === 0) {
@@ -31,7 +30,11 @@ function EncounterOptions(props) {
       enemies: enemy_array,
     };
 
-    await api.post("/encounters", encounter);
+    await api.post("/encounters", encounter, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setEncounterName("");
   }
 

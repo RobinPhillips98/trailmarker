@@ -1,5 +1,5 @@
-from sqlalchemy import ARRAY, JSON, Column, Integer, String
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import ARRAY, JSON, Column, Integer, String, ForeignKey
+from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
 
@@ -10,6 +10,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
+
+    encounters = relationship("Encounter", back_populates="user")
 
 
 class Enemy(Base):
@@ -33,5 +35,7 @@ class Encounter(Base):
     __tablename__ = "encounters"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user = relationship("User", back_populates="encounters")
     name = Column(String)
     enemies = Column(JSON)

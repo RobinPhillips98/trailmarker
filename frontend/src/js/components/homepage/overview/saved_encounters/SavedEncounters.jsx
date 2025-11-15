@@ -2,18 +2,13 @@ import Encounter from "./Encounter";
 import { useState, useEffect } from "react";
 import { Button, Modal, Card } from "antd";
 import api from "../../../../api";
+import { useContext } from "react";
+import { AuthContext } from "../../../../contexts/AuthContext";
 
 function SavedEncounters({ handleLoad }) {
   const [encounters, setEncounters] = useState([]);
 
-  async function fetchEncounters() {
-    try {
-      const response = await api.get("/encounters");
-      setEncounters(response.data.encounters);
-    } catch (error) {
-      console.error("Error fetching encounters", error);
-    }
-  }
+  const { token } = useContext(AuthContext);
 
   async function deleteEncounter(encounter) {
     await api.delete(`encounters/${encounter.id}`);
@@ -34,8 +29,20 @@ function SavedEncounters({ handleLoad }) {
   };
 
   useEffect(() => {
+    async function fetchEncounters() {
+      try {
+        const response = await api.get("/encounters", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setEncounters(response.data.encounters);
+      } catch (error) {
+        console.error("Error fetching encounters", error);
+      }
+    };
     fetchEncounters();
-  }, [isModalOpen]);
+  }, [isModalOpen, token]);
 
   return (
     <div>
