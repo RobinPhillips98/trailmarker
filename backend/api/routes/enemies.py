@@ -1,40 +1,16 @@
 import os
 from pathlib import Path
-from typing import Optional
 
 import requests
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel
 from sqlalchemy.future import select
 
 import models
+from schemas import Enemies, Enemy
 
 from ..dependencies import db_dependency
 
 router = APIRouter()
-
-
-class Actions(BaseModel):
-    attacks: dict[str, dict[str, int | str]]
-
-
-class Enemy(BaseModel):
-    id: int
-    name: str
-    level: int
-    traits: list[str]
-    perception: int
-    skills: dict[str, int]
-    attribute_modifiers: dict[str, int]
-    defenses: dict[str, int | dict[str, int]]
-    max_hit_points: int
-    immunities: list[str]
-    speed: int
-    actions: Optional[Actions]
-
-
-class Enemies(BaseModel):
-    enemies: list[Enemy]
 
 
 @router.get("/enemies", response_model=Enemies, status_code=status.HTTP_200_OK)
@@ -49,7 +25,9 @@ def get_enemies(db: db_dependency):
     return Enemies(enemies=enemy_list)
 
 
-@router.get("/enemies/{enemy_id}", response_model=Enemy, status_code=status.HTTP_200_OK)
+@router.get(
+    "/enemies/{enemy_id}", response_model=Enemy, status_code=status.HTTP_200_OK
+)
 def get_enemy(enemy_id, db: db_dependency):
     query = db.query(models.Enemy).where(models.Enemy.id == enemy_id)
 
@@ -64,14 +42,22 @@ def get_enemy(enemy_id, db: db_dependency):
 )
 async def add_enemy(enemy: Enemy, db: db_dependency):
     try:
+        defense_dict = {
+            "armor_class": enemy.defenses.armor_class,
+            "saves": {
+                "fortitude": enemy.defenses.saves.fortitude,
+                "reflex": enemy.defenses.saves.reflex,
+                "will": enemy.defenses.saves.will,
+            },
+        }
         db_enemy = models.Enemy(
             name=enemy.name,
             level=enemy.level,
             traits=enemy.traits,
             perception=enemy.perception,
-            skills=enemy.skills,
-            attribute_modifiers=enemy.attribute_modifiers,
-            defenses=enemy.defenses,
+            skills=dict(enemy.skills),
+            attribute_modifiers=dict(enemy.attribute_modifiers),
+            defenses=defense_dict,
             max_hit_points=enemy.max_hit_points,
             immunities=enemy.immunities,
             speed=enemy.speed,

@@ -11,7 +11,11 @@ function SavedEncounters({ handleLoad }) {
   const { token } = useContext(AuthContext);
 
   async function deleteEncounter(encounter) {
-    await api.delete(`encounters/${encounter.id}`);
+    await api.delete(`encounters/${encounter.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     setEncounters((prev) =>
       prev.filter((currentEncounter) => currentEncounter !== encounter)
     );
@@ -40,7 +44,7 @@ function SavedEncounters({ handleLoad }) {
       } catch (error) {
         console.error("Error fetching encounters", error);
       }
-    };
+    }
     fetchEncounters();
   }, [isModalOpen, token]);
 

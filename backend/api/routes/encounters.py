@@ -1,27 +1,19 @@
-from fastapi import APIRouter, HTTPException, status, Depends
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.future import select
 
 import models
+from schemas import Encounter, Encounters
 
-from ..dependencies import db_dependency
 from ..auth_helpers import get_current_active_user
+from ..dependencies import db_dependency
 
 router = APIRouter()
 
 
-class Encounter(BaseModel):
-    id: int
-    name: str
-    enemies: list[dict[str, str | int]]
-
-
-class Encounters(BaseModel):
-    encounters: list[Encounter]
-
-
 @router.get("/encounters", response_model=Encounters, status_code=status.HTTP_200_OK)
-def get_encounters(db: db_dependency, current_user: models.User = Depends(get_current_active_user)):
+def get_encounters(
+    db: db_dependency, current_user: models.User = Depends(get_current_active_user)
+):
     query = select(models.Encounter)
     query = query.where(models.Encounter.user_id == current_user.id)
     result = db.execute(query)
@@ -30,7 +22,11 @@ def get_encounters(db: db_dependency, current_user: models.User = Depends(get_cu
     return Encounters(encounters=encounter_list)
 
 
-@router.get("/encounters/{encounter_id}", response_model=Encounter, status_code=status.HTTP_200_OK)
+@router.get(
+    "/encounters/{encounter_id}",
+    response_model=Encounter,
+    status_code=status.HTTP_200_OK,
+)
 def get_encounter(encounter_id, db: db_dependency):
     query = db.query(models.Encounter).where(models.Encounter.id == encounter_id)
 
@@ -43,13 +39,17 @@ def get_encounter(encounter_id, db: db_dependency):
     return encounter
 
 
-@router.post("/encounters", response_model=Encounter, status_code=status.HTTP_201_CREATED)
-def add_encounter(encounter: Encounter, db: db_dependency, current_user: models.User = Depends(get_current_active_user)):
+@router.post(
+    "/encounters", response_model=Encounter, status_code=status.HTTP_201_CREATED
+)
+def add_encounter(
+    encounter: Encounter,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_active_user),
+):
     try:
         db_encounter = models.Encounter(
-            name=encounter.name,
-            enemies=encounter.enemies,
-            user=current_user
+            name=encounter.name, enemies=encounter.enemies, user=current_user
         )
         db.add(db_encounter)
         db.commit()
@@ -58,21 +58,27 @@ def add_encounter(encounter: Encounter, db: db_dependency, current_user: models.
         raise http_err
     except Exception as e:
         print(f"Error in add_enemy: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Internal server error: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
     return encounter
 
 
-@router.delete("/encounters/{encounter_id}", response_model=object, status_code=status.HTTP_200_OK)
-def delete_encounter(encounter_id, db: db_dependency, current_user: models.User = Depends(get_current_active_user)):
+@router.delete(
+    "/encounters/{encounter_id}", response_model=object, status_code=status.HTTP_200_OK
+)
+def delete_encounter(
+    encounter_id,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_active_user),
+):
     query = db.query(models.Encounter).where(models.Encounter.id == encounter_id)
 
     result = db.execute(query)
     encounter = result.scalars().first()
 
     if not encounter:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Encounter not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Encounter not found"
+        )
 
     if encounter.user_id != current_user.id:
         raise HTTPException(

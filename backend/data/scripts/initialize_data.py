@@ -122,12 +122,12 @@ def build_enemy_dict(raw_dict: dict[any], id: int) -> dict[any]:
         "perception": 0,
         "skills": {},
         "attribute_modifiers": {
-            "str": 0,
-            "dex": 0,
-            "con": 0,
-            "int": 0,
-            "wis": 0,
-            "cha": 0,
+            "strength": 0,
+            "dexterity": 0,
+            "constitution": 0,
+            "intelligence": 0,
+            "wisdom": 0,
+            "charisma": 0,
         },
         "defenses": {
             "armorClass": 0,
@@ -151,7 +151,7 @@ def build_enemy_dict(raw_dict: dict[any], id: int) -> dict[any]:
     add_attribute_modifiers(raw_dict, enemy)
 
     system_attributes = raw_dict["system"]["attributes"]
-    enemy["defenses"]["armorClass"] = system_attributes["ac"]["value"]
+    enemy["defenses"]["armor_class"] = system_attributes["ac"]["value"]
     add_saves(raw_dict, enemy)
 
     enemy["max_hit_points"] = system_attributes["hp"]["max"]
@@ -182,9 +182,12 @@ def add_skills(raw_dict: dict[any], enemy: dict[any]) -> None:
 
 def add_attribute_modifiers(raw_dict: dict[any], enemy: dict[any]) -> None:
     abilities = raw_dict["system"]["abilities"]
-    for ability in abilities:
-        enemy["attribute_modifiers"][ability] = abilities[ability]["mod"]
-
+    enemy["attribute_modifiers"]["strength"] = abilities["str"]["mod"]
+    enemy["attribute_modifiers"]["dexterity"] = abilities["dex"]["mod"]
+    enemy["attribute_modifiers"]["constitution"] = abilities["con"]["mod"]
+    enemy["attribute_modifiers"]["intelligence"] = abilities["int"]["mod"]
+    enemy["attribute_modifiers"]["wisdom"] = abilities["wis"]["mod"]
+    enemy["attribute_modifiers"]["charisma"] = abilities["cha"]["mod"]
 
 def add_saves(raw_dict: dict[any], enemy: dict[any]) -> None:
     saves = raw_dict["system"]["saves"]
@@ -214,7 +217,9 @@ def add_attacks(raw_dict, enemy):
                 attack_dict["damageType"] = damage_rolls[key]["damageType"]
             except IndexError:
                 pass  # Some attacks don't do damage, so don't add it
-            enemy["actions"]["attacks"].update({f"{item['name']}": attack_dict})  # noqa
+            enemy["actions"]["attacks"].update(
+                {f"{item['name']}": attack_dict}
+            )  # noqa
 
 
 def usage_error() -> None:
