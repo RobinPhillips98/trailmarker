@@ -1,6 +1,9 @@
 import api from "../../../api";
-import { useState } from "react";
-import { Button, Input, Space } from "antd";
+import { useContext, useState } from "react";
+import { Button, Input, Space, Typography } from "antd";
+import { AuthContext } from "../../../contexts/AuthContext";
+const { Title } = Typography;
+
 
 function EncounterOptions(props) {
   const [encounterName, setEncounterName] = useState("");
@@ -9,9 +12,11 @@ function EncounterOptions(props) {
     setEncounterName(event.target.value);
   };
 
+  const { user } = useContext(AuthContext);
+
   async function save() {
     if (props.enemies.length === 0) {
-      alert("Encounter is empty, please add enemies.")
+      alert("Encounter is empty, please add enemies.");
       return;
     }
     const enemy_array = props.enemies.map((enemy) => ({
@@ -30,24 +35,43 @@ function EncounterOptions(props) {
     setEncounterName("");
   }
 
-  return (
-    <div >
-      <Button style={{marginRight: 10, marginBottom: 10}} type="primary" onClick={save}>
-        Save Encounter
-      </Button>
-      <Space.Compact>
-        <Input
-          type="text"
-          id="name"
-          placeholder="Enter encounter name..."
-          value={encounterName}
-          onChange={handleChange}
-        />
-      </Space.Compact>
-      <br />
-      <Button danger onClick={props.clearEncounter}>Clear Encounter</Button>
-    </div>
-  );
+  if (user) {
+    return (
+      <div>
+        <Button
+          style={{ marginRight: 10, marginBottom: 10 }}
+          type="primary"
+          onClick={save}
+          disabled={!user}
+        >
+          Save Encounter
+        </Button>
+        <Space.Compact>
+          <Input
+            type="text"
+            id="name"
+            placeholder="Enter encounter name..."
+            value={encounterName}
+            onChange={handleChange}
+          />
+        </Space.Compact>
+        <br />
+        <Button danger onClick={props.clearEncounter}>
+          Clear Encounter
+        </Button>
+      </div>
+    );
+  } else {
+    return (
+      <>
+        <Title level={4}>Please login to save encounters</Title>
+        <br />
+        <Button danger onClick={props.clearEncounter}>
+          Clear Encounter
+        </Button>
+      </>
+    );
+  }
 }
 
 export default EncounterOptions;

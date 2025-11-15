@@ -1,29 +1,48 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu } from "antd";
+import { Menu, Button } from "antd";
+import { AuthContext } from "../contexts/AuthContext";
 
 function NavBar() {
   const location = useLocation();
   const [current, setCurrent] = useState(location.pathname);
 
+  const { user, logout } = useContext(AuthContext);
+
   useEffect(() => {
     setCurrent(location.pathname);
-  }, [location])
+  }, [location]);
 
-  const menuItems = [
-    {
-      key: "/",
-      label: <Link to="/">Home</Link>,
-    },
-    {
-      key: "/register",
-      label: <Link to="/register">Register</Link>,
-    },
-    {
-      key: "/login",
-      label: <Link to="/login">Login</Link>,
-    },
-  ];
+  const menuItems = user
+    ? [
+  {
+    key: "/",
+    label: <Link to="/">Home</Link>,
+  },
+        {
+          key: "/characters",
+          label: <Link to="/characters">Saved Characters</Link>,
+          disabled: true,
+        },
+        {
+          key: "/login",
+          label: <Link onClick={logout}>Logout</Link>,
+        },
+      ]
+    : [
+        {
+          key: "/",
+          label: <Link to="/">Home</Link>,
+        },
+        {
+          key: "/register",
+          label: <Link to="/register">Register</Link>,
+        },
+        {
+          key: "/login",
+          label: <Link to="/login">Login</Link>,
+        },
+      ];
 
   return (
     <Menu

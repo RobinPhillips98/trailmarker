@@ -3,7 +3,8 @@ import CurrentDifficultyDisplay from "./CurrentDifficultyDisplay";
 import XPBudget from "./XPBudget";
 import EncounterOptions from "../encounter_display/EncounterOptions";
 import SavedEncounters from "./saved_encounters/SavedEncounters";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 function Overview({ selectedEnemies, handleLoad, clearEncounter }) {
   const [partySize, setPartySize] = useState(4);
@@ -86,10 +87,15 @@ function Overview({ selectedEnemies, handleLoad, clearEncounter }) {
     else setDifficulty("extreme");
   }, [xp, budget]);
 
+  const { user } = useContext(AuthContext);
+
+  const savedEncountersComponent = user ? <SavedEncounters handleLoad={handleLoad}/> : null;
+
   return (
     <div style={{ display: "flex", gap: 10, justifyContent: "space-around" }}>
       <div style={{ alignContent: "space-around" }}>
-        <SavedEncounters handleLoad={handleLoad} />
+        {/* <SavedEncounters handleLoad={handleLoad}/> */}
+        {savedEncountersComponent}
         <EncounterOptions
           enemies={selectedEnemies}
           clearEncounter={clearEncounter}
