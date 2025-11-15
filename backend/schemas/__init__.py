@@ -84,7 +84,7 @@ class Character(Creature):
 
     user_id: int
     player: str
-    xp: int
+    xp: Optional[int] = 0
     ancestry: str
     background: str
     class_: str = Field(..., alias="class")
@@ -115,9 +115,8 @@ class EnemyCreate(CreatureCreate):
 class CharacterCreate(CreatureCreate):
     model_config = ConfigDict(populate_by_name=True)
 
-    user_id: int
     player: str
-    xp: int
+    xp: Optional[int] = 0
     ancestry: str
     background: str
     class_: str = Field(..., alias="class")

@@ -22,7 +22,6 @@ function NavBar() {
         {
           key: "/characters",
           label: <Link to="/characters">Saved Characters</Link>,
-          disabled: true,
         },
         {
           key: "/login",

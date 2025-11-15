@@ -5,6 +5,7 @@ import Login from "./components/Login.jsx";
 import Homepage from "./components/homepage/Homepage.jsx";
 import { ConfigProvider, Layout, theme } from "antd";
 import NavBar from "./components/NavBar.jsx";
+import Characters from "./components/characters/Characters.jsx";
 const { Header, Content } = Layout;
 
 function App() {
@@ -23,9 +24,10 @@ function App() {
           <NavBar />
           <br />
           <Routes>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/characters" element={<Characters />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Homepage />} />
           </Routes>
         </ConfigProvider>
       </AuthProvider>
