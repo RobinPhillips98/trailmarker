@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, status
 from sqlalchemy.future import select
 
 import models
-from schemas import Enemies, Enemy
+from schemas import Enemies, Enemy, EnemyCreate
 
 from ..dependencies import db_dependency
 
@@ -40,7 +40,7 @@ def get_enemy(enemy_id, db: db_dependency):
 @router.post(
     "/enemies", response_model=Enemy, status_code=status.HTTP_201_CREATED
 )
-async def add_enemy(enemy: Enemy, db: db_dependency):
+async def add_enemy(enemy: EnemyCreate, db: db_dependency):
     try:
         defense_dict = {
             "armor_class": enemy.defenses.armor_class,
@@ -74,7 +74,7 @@ async def add_enemy(enemy: Enemy, db: db_dependency):
         raise HTTPException(
             status_code=500, detail=f"Internal server error: {str(e)}"
         )
-    return enemy
+    return db_enemy
 
 
 def post_enemies():

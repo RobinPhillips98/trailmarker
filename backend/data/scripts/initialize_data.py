@@ -41,7 +41,6 @@ def convert_data(raw_path: str, bestiary_path: str, rebuild: bool) -> None:
 
     check_dir(bestiary_path)
 
-    id = 0
     files = os.listdir(raw_path)
     files.sort()
     for file in files:
@@ -60,7 +59,6 @@ def convert_data(raw_path: str, bestiary_path: str, rebuild: bool) -> None:
 
         print(f"Reformatting {file}...")
         enemy = build_enemy_dict(raw_dict, id)
-        id += 1
 
         reformatted_file = file.replace("-bb", "")
         print(f"Saving {reformatted_file}...\n")
@@ -113,9 +111,8 @@ def check_skip(rebuild: bool, bestiary_path: str, filename: str) -> bool:
         return False
 
 
-def build_enemy_dict(raw_dict: dict[any], id: int) -> dict[any]:
+def build_enemy_dict(raw_dict: dict[any]) -> dict[any]:
     enemy = {
-        "id": id,
         "name": "",
         "level": 0,
         "traits": [],

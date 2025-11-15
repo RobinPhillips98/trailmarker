@@ -12,6 +12,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
 
     encounters = relationship("Encounter", back_populates="user")
+    characters = relationship("Character", back_populates="user")
 
 
 class Enemy(Base):
@@ -27,6 +28,28 @@ class Enemy(Base):
     defenses = Column(JSON, nullable=False)
     max_hit_points = Column(Integer, nullable=False)
     immunities = Column(ARRAY(String))
+    speed = Column(Integer, nullable=False)
+    actions = Column(JSON)
+
+
+class Character(Base):
+    __tablename__ = "characters"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    user = relationship("User", back_populates="characters")
+    name = Column(String, nullable=False)
+    player = Column(String)
+    xp = Column(Integer)
+    ancestry = Column(String, nullable=False)
+    background = Column(String, nullable=False)
+    class_ = Column("class", String, nullable=False)
+    level = Column(Integer, nullable=False)
+    perception = Column(Integer, nullable=False)
+    skills = Column(JSON, nullable=False)
+    attribute_modifiers = Column(JSON, nullable=False)
+    defenses = Column(JSON, nullable=False)
+    max_hit_points = Column(Integer, nullable=False)
     speed = Column(Integer, nullable=False)
     actions = Column(JSON)
 

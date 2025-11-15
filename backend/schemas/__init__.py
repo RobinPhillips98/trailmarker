@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 
 
 # Encounters
@@ -64,7 +64,6 @@ class Creature(BaseModel):
     id: int
     name: str
     level: int
-    traits: list[str]
     perception: int
     skills: Skills
     attribute_modifiers: Attributes
@@ -74,12 +73,55 @@ class Creature(BaseModel):
     actions: Optional[Actions]
 
 
+class Character(Creature):
+    model_config = ConfigDict(populate_by_name=True)
+
+    user_id: int
+    player: str
+    xp: int
+    ancestry: str
+    background: str
+    class_: str = Field(..., alias="class")
+
+
+
 class Enemy(Creature):
+    traits: list[str]
     immunities: list[str]
+
+
+class CreatureCreate(BaseModel):
+    name: str
+    level: int
+    perception: int
+    skills: Skills
+    attribute_modifiers: Attributes
+    defenses: Defenses
+    max_hit_points: int
+    speed: int
+    actions: Optional[Actions]
+
+class EnemyCreate(CreatureCreate):
+    traits: list[str]
+    immunities: list[str]
+
+
+class CharacterCreate(CreatureCreate):
+    model_config = ConfigDict(populate_by_name=True)
+
+    user_id: int
+    player: str
+    xp: int
+    ancestry: str
+    background: str
+    class_: str = Field(..., alias="class")
 
 
 class Enemies(BaseModel):
     enemies: list[Enemy]
+
+class Characters(BaseModel):
+    characters: list[Character]
 
 
 # Authentication

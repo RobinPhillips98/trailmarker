@@ -59,7 +59,7 @@ def add_encounter(
     except Exception as e:
         print(f"Error in add_enemy: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
-    return encounter
+    return db_encounter
 
 
 @router.delete(
