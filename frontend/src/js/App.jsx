@@ -26,7 +26,7 @@ export default function App() {
           <br />
           <Routes>
             <Route path="/" element={<Homepage />} />
-            <Route path="/characters" element={<Characters />} />
+            <Route path="/characters" element={<Characters editing={false} />} />
             <Route
               path="/characters/create"
               element={<CharacterCreationForm />}

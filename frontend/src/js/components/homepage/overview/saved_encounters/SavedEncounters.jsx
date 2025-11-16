@@ -22,13 +22,10 @@ export default function SavedEncounters({ handleLoad }) {
   }
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
+  function showModal() {
     setIsModalOpen(true);
   };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
+  function handleClose() {
     setIsModalOpen(false);
   };
 
@@ -62,8 +59,10 @@ export default function SavedEncounters({ handleLoad }) {
         title="Saved Encounters"
         closable={{ "aria-label": "Custom Close Button" }}
         open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
+        footer={
+          <Button key="ok" onClick={handleClose}>
+            Close
+          </Button>}
       >
         {encounters.map((encounter) => (
           <Card

@@ -1,5 +1,6 @@
-import { Button, Card, Descriptions, List } from "antd";
+import { Button, Card, Descriptions, Divider, List } from "antd";
 import { splitCamelCase, toTitleCase } from "./characterHelpers";
+import CharacterEditModal from "./CharacterEditModal";
 export default function CharacterDisplay({ character, deleteCharacter }) {
   function handleClick() {
     deleteCharacter(character);
@@ -149,6 +150,8 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
         size="small"
         style={{ marginBottom: 10 }}
       />
+      <CharacterEditModal character={character} />
+      <Divider type="vertical"/>
       <Button danger onClick={handleClick}>
         Delete Character
       </Button>

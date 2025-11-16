@@ -15,7 +15,7 @@ import {
 } from "./characterHelpers";
 import { useNavigate } from "react-router-dom";
 
-export default function CharacterCreationForm() {
+export default function CharacterCreationForm({ savedCharacter, editing }) {
   const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -26,25 +26,80 @@ export default function CharacterCreationForm() {
     }
   }, [token, navigate]);
 
-  const [form] = Form.useForm();
+  const initialValues = editing
+    ? {
+        name: savedCharacter.name,
+        player: savedCharacter.player,
+        xp: savedCharacter.xp,
+        ancestry: savedCharacter.ancestry,
+        background: savedCharacter.background,
+        class: savedCharacter.class,
+        level: savedCharacter.level,
+        max_hit_points: savedCharacter.max_hit_points,
+        defenses: {
+          armor_class: savedCharacter.defenses.armor_class,
+          saves: {
+            fortitude: savedCharacter.defenses.saves.fortitude,
+            reflex: savedCharacter.defenses.saves.reflex,
+            will: savedCharacter.defenses.saves.will,
+          },
+        },
+        speed: savedCharacter.speed,
+        perception: savedCharacter.perception,
+        actions: {
+          attacks: savedCharacter.attacks,
+        },
+      }
+    : {
+        level: "1",
+        max_hit_points: 0,
+        defenses: {
+          armor_class: 0,
+          saves: {
+            fortitude: 0,
+            reflex: 0,
+            will: 0,
+          },
+        },
+        speed: 0,
+        perception: 0,
+      };
 
   async function onFinish(character) {
-    await api.post("/characters", character, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    navigate("/characters");
+    if (editing) {
+      character.id = savedCharacter.id;
+      await api.patch("/characters", character, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      window.location.reload();
+    } else {
+      await api.post("/characters", character, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      navigate("/characters");
+    }
   }
+
+  const initialAttacks = editing
+    ? savedCharacter.actions.attacks.map((attack) => ({
+        name: attack.name,
+        attackBonus: attack.attackBonus,
+        damage: attack.damage,
+        damageType: attack.damageType,
+      }))
+    : [{}];
 
   return (
     <Form
-      name="basic"
-      form={form}
+      name="character"
       labelCol={{ span: 8 }}
       wrapperCol={{ span: 16 }}
       style={{ maxWidth: 600 }}
-      initialValues={{ level: "1", variant: "filled" }}
+      initialValues={initialValues}
       onFinish={onFinish}
       autoComplete="off"
       size="small"
@@ -151,6 +206,9 @@ export default function CharacterCreationForm() {
           <Form.Item
             label={toTitleCase(attribute)}
             name={["attribute_modifiers", attribute]}
+            initialValue={
+              editing ? savedCharacter.attribute_modifiers[attribute] : 0
+            }
             rules={[
               {
                 required: true,
@@ -173,6 +231,7 @@ export default function CharacterCreationForm() {
           <Form.Item
             label={toTitleCase(skill)}
             name={["skills", skill]}
+            initialValue={editing ? savedCharacter.skills[skill] : 0}
             rules={[
               {
                 required: true,
@@ -213,7 +272,7 @@ export default function CharacterCreationForm() {
         style={{ marginLeft: 100, width: 300 }}
         variant="borderless"
       >
-        <Form.List name={["actions", "attacks"]}>
+        <Form.List name={["actions", "attacks"]} initialValue={initialAttacks}>
           {(fields, { add, remove }) => (
             <>
               {fields.map(({ name, ...restField }) => (
@@ -291,7 +350,7 @@ export default function CharacterCreationForm() {
       <br />
       <Form.Item label={null}>
         <Button type="primary" htmlType="submit">
-          Create Character
+          Save Character
         </Button>
       </Form.Item>
     </Form>
