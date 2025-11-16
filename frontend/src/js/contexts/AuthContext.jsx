@@ -51,6 +51,7 @@ function AuthProvider({ children }) {
     setToken(null);
     setUser(null);
     localStorage.removeItem("token");
+    alert("Logged out!");
     navigate("/login");
   }
 

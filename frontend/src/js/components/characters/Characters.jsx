@@ -9,7 +9,7 @@ export default function Characters() {
   const [characters, setCharacters] = useState([]);
   const navigate = useNavigate();
 
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
 
   async function deleteCharacter(character) {
     await api.delete(`characters/${character.id}`, {
@@ -35,12 +35,12 @@ export default function Characters() {
         console.error("Error fetching characters", error);
       }
     }
-    if (token) fetchCharacters();
+    if (token && user) fetchCharacters();
     else {
       alert("Sorry: You must be logged in to access this page");
       navigate("/login");
     }
-  }, [token, navigate]);
+  }, [token, user, navigate]);
 
   function handleClick() {
     navigate("/characters/create");

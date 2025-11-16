@@ -16,15 +16,15 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export default function CharacterCreationForm({ savedCharacter, editing }) {
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!token) {
+    if (!token || !user) {
       alert("Sorry: You must be logged in to access this page");
       navigate("/login");
     }
-  }, [token, navigate]);
+  }, [token, user, navigate]);
 
   const initialValues = editing
     ? {
