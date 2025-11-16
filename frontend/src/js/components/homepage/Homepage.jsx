@@ -72,6 +72,7 @@ function Homepage() {
         clearEncounter={clearEnemies}
         handleLoad={loadEncounter}
       />
+      <br />
       <EncounterDisplay
         handleRemove={removeEnemy}
         handleDecrement={decrementQuantity}

@@ -123,7 +123,7 @@ function Overview({ selectedEnemies, handleLoad, clearEncounter }) {
   return (
     <div style={{ display: "flex", gap: 10, justifyContent: "space-around" }}>
       <div style={{ alignContent: "space-around" }}>
-        <SavedEncounters handleLoad={handleLoad}/>
+        <SavedEncounters handleLoad={handleLoad} />
         <EncounterOptions
           enemies={selectedEnemies}
           clearEncounter={clearEncounter}

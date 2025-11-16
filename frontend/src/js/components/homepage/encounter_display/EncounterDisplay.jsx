@@ -4,7 +4,7 @@ import { List } from "antd";
 function EncounterDisplay(props) {
   return (
     <div>
-      <List header={<h2>Encounter</h2>} bordered={true} size="small">
+      <List header={<h2>Encounter</h2>} bordered={true} size="small" style={{maxHeight: 300, overflow: "scroll"}}>
         {props.enemies.map((enemy) => (
           <List.Item key={enemy.id}>
             <SelectedEnemy

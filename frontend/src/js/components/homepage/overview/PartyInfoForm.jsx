@@ -47,7 +47,7 @@ function PartyInfoForm({
   switched,
   handlePartySize,
   handlePartyLevel,
-  handleChange
+  handleChange,
 }) {
   const { user } = useContext(AuthContext);
 

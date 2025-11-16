@@ -1,4 +1,4 @@
-import { Button, Carousel } from "antd";
+import { Button, Tabs } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -46,17 +46,21 @@ export default function Characters() {
     navigate("/characters/create");
   }
 
+  const characterTabs = characters.map((character) => ({
+    key: character.name,
+    label: character.name,
+    children: (
+      <CharacterDisplay
+        character={character}
+        deleteCharacter={deleteCharacter}
+      />
+    ),
+  }));
+
   if (token)
     return (
       <>
-        <Carousel arrows infinite={false}>
-          {characters.map((character) => (
-            <CharacterDisplay
-              character={character}
-              deleteCharacter={deleteCharacter}
-            />
-          ))}
-        </Carousel>
+        <Tabs items={characterTabs} />
         <br />
         <Button type="primary" onClick={handleClick}>
           Create New Character

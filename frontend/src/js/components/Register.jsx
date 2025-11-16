@@ -1,9 +1,18 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { Button, Form, Input } from "antd";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
-  const { register } = useContext(AuthContext);
+  const { register, user } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      alert("You already logged in. Please log out before registering");
+      navigate("/");
+    }
+  }, [user, navigate])
 
   function handleSubmit(values) {
     register(values.username, values.password);
@@ -16,6 +25,7 @@ function Register() {
       labelCol={{ span: 8 }}
       wrapperCol={{ span: 16 }}
       style={{ maxWidth: 600 }}
+      scrollToFirstError={{focus: true}}
     >
       <Form.Item
         label="Username"

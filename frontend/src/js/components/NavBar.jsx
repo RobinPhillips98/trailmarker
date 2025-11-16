@@ -15,17 +15,18 @@ function NavBar() {
 
   const menuItems = user
     ? [
-  {
-    key: "/",
-    label: <Link to="/">Home</Link>,
-  },
+        {
+          key: "/",
+          label: <Link to="/">Home</Link>,
+        },
         {
           key: "/characters",
           label: <Link to="/characters">Saved Characters</Link>,
         },
         {
           key: "/login",
-          label: <Link onClick={logout}>Logout</Link>,
+          label: <Link onClick={logout} >Logout</Link>,
+          danger: true
         },
       ]
     : [
@@ -43,13 +44,7 @@ function NavBar() {
         },
       ];
 
-  return (
-    <Menu
-      selectedKeys={[current]}
-      mode="horizontal"
-      items={menuItems}
-    />
-  );
+  return <Menu selectedKeys={[current]} mode="horizontal" items={menuItems} />;
 }
 
 export default NavBar;

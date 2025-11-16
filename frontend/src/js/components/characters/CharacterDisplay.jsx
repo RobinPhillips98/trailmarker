@@ -1,4 +1,5 @@
-import { Button, Descriptions, List } from "antd";
+import { Button, Card, Descriptions, List } from "antd";
+import { splitCamelCase, toTitleCase } from "./characterHelpers";
 export default function CharacterDisplay({ character, deleteCharacter }) {
   function handleClick() {
     deleteCharacter(character);
@@ -8,7 +9,7 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
     {
       key: "name",
       label: "Name",
-      children: character.name,
+      children: toTitleCase(character.name),
       span: 2,
     },
     {
@@ -20,17 +21,17 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
     {
       key: "ancestry",
       label: "Ancestry",
-      children: character.ancestry,
+      children: toTitleCase(character.ancestry),
     },
     {
       key: "background",
       label: "Background",
-      children: character.background,
+      children: toTitleCase(character.background),
     },
     {
       key: "class",
       label: "Class",
-      children: character.class,
+      children: toTitleCase(character.class),
     },
     {
       key: "level",
@@ -70,7 +71,8 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
           {Object.keys(character.attribute_modifiers).map((attribute) => {
             return (
               <List.Item>
-                {attribute}: {character.attribute_modifiers[attribute]}
+                {toTitleCase(attribute)}:{" "}
+                {character.attribute_modifiers[attribute]}
               </List.Item>
             );
           })}
@@ -86,7 +88,7 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
           {Object.keys(character.defenses.saves).map((save) => {
             return (
               <List.Item>
-                {save}: {character.defenses.saves[save]}
+                {toTitleCase(save)}: {character.defenses.saves[save]}
               </List.Item>
             );
           })}
@@ -103,12 +105,39 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
           dataSource={Object.keys(character.skills)}
           renderItem={(skill) => (
             <List.Item>
-              {skill}: {character.skills[skill]}
+              {toTitleCase(skill)}: {character.skills[skill]}
             </List.Item>
           )}
         />
       ),
-      span: 2,
+      span: 3,
+    },
+    {
+      key: "attacks",
+      label: "Attacks",
+      children: (
+        <List
+          size="small"
+          grid={{ gutter: 16, column: 5 }}
+          dataSource={character.actions.attacks}
+          renderItem={(attack) => (
+            <List.Item>
+              <Card title={attack.name} style={{ maxWidth: 300 }}>
+                <List
+                  size="small"
+                  dataSource={Object.keys(attack).slice(1)}
+                  renderItem={(item) => (
+                    <List.Item>
+                      {toTitleCase(splitCamelCase(item))}: {attack[item]}
+                    </List.Item>
+                  )}
+                ></List>
+              </Card>
+            </List.Item>
+          )}
+        />
+      ),
+      span: 3,
     },
   ];
 

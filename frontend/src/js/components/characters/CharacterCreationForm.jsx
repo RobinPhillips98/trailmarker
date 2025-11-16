@@ -1,21 +1,30 @@
 import api from "../../api";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, InputNumber, Select, Space } from "antd";
+import { Button, Card, Form, Input, InputNumber, Select } from "antd";
 import {
   ancestries,
   backgrounds,
   classes,
+  damageTypes,
   attributes,
   skills,
   saves,
-} from "./characterData";
+  toTitleCase,
+} from "./characterHelpers";
 import { useNavigate } from "react-router-dom";
 
 export default function CharacterCreationForm() {
   const { token } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!token) {
+      alert("Sorry: You must be logged in to access this page");
+      navigate("/login");
+    }
+  }, [token, navigate]);
 
   const [form] = Form.useForm();
 
@@ -40,6 +49,7 @@ export default function CharacterCreationForm() {
       autoComplete="off"
       size="small"
       requiredMark="optional"
+      scrollToFirstError={{ focus: true }}
     >
       <Form.Item
         label="Name"
@@ -52,7 +62,7 @@ export default function CharacterCreationForm() {
         <Input />
       </Form.Item>
       <Form.Item label="XP" name="xp">
-        <InputNumber />
+        <InputNumber min={0} max={1000} />
       </Form.Item>
       <Form.Item
         label="Ancestry"
@@ -105,7 +115,7 @@ export default function CharacterCreationForm() {
           { required: true, message: "Please input a hit point maximum value" },
         ]}
       >
-        <InputNumber />
+        <InputNumber min={0} max={100} />
       </Form.Item>
       <Form.Item
         label="Armor Class"
@@ -114,21 +124,21 @@ export default function CharacterCreationForm() {
           { required: true, message: "Please input an armor class value" },
         ]}
       >
-        <InputNumber />
+        <InputNumber min={0} max={30} />
       </Form.Item>
       <Form.Item
         label="Speed"
         name="speed"
         rules={[{ required: true, message: "Please input a speed value" }]}
       >
-        <InputNumber />
+        <InputNumber min={0} max={50} />
       </Form.Item>
       <Form.Item
         label="Perception"
         name="perception"
         rules={[{ required: true, message: "Please input a perception value" }]}
       >
-        <InputNumber />
+        <InputNumber min={-10} max={20} />
       </Form.Item>
 
       <Card
@@ -139,16 +149,16 @@ export default function CharacterCreationForm() {
       >
         {attributes.map((attribute) => (
           <Form.Item
-            label={attribute}
-            name={["attribute_modifiers", attribute.toLowerCase()]}
+            label={toTitleCase(attribute)}
+            name={["attribute_modifiers", attribute]}
             rules={[
               {
                 required: true,
-                message: `Please input a ${attribute.toLowerCase()} value`,
+                message: `Please input a ${attribute} value`,
               },
             ]}
           >
-            <InputNumber />
+            <InputNumber min={-2} max={5} />
           </Form.Item>
         ))}
       </Card>
@@ -161,16 +171,16 @@ export default function CharacterCreationForm() {
       >
         {skills.map((skill) => (
           <Form.Item
-            label={skill}
-            name={["skills", skill.toLowerCase()]}
+            label={toTitleCase(skill)}
+            name={["skills", skill]}
             rules={[
               {
                 required: true,
-                message: `Please input a ${skill.toLowerCase()} value`,
+                message: `Please input a ${skill} value`,
               },
             ]}
           >
-            <InputNumber />
+            <InputNumber min={-10} max={30} />
           </Form.Item>
         ))}
       </Card>
@@ -183,16 +193,16 @@ export default function CharacterCreationForm() {
       >
         {saves.map((save) => (
           <Form.Item
-            label={save}
-            name={["defenses", "saves", save.toLowerCase()]}
+            label={toTitleCase(save)}
+            name={["defenses", "saves", save]}
             rules={[
               {
                 required: true,
-                message: `Please input a ${save.toLowerCase()} value`,
+                message: `Please input a ${save} value`,
               },
             ]}
           >
-            <InputNumber />
+            <InputNumber min={-5} max={30} />
           </Form.Item>
         ))}
       </Card>
@@ -227,7 +237,7 @@ export default function CharacterCreationForm() {
                       },
                     ]}
                   >
-                    <InputNumber />
+                    <InputNumber min={-5} max={30} />
                   </Form.Item>
                   <Form.Item
                     {...restField}
@@ -235,6 +245,11 @@ export default function CharacterCreationForm() {
                     label="Damage"
                     rules={[
                       { required: true, message: "Please input a damage" },
+                      {
+                        pattern: /^\dd(4|6|8|10|12)([+-]\d\d?)?$/i,
+                        message:
+                          "Damage must be in the form #d# or #d#±# (ex. 1d4 or 1d8+4)",
+                      },
                     ]}
                   >
                     <Input placeholder="1d8+4" />
@@ -242,12 +257,12 @@ export default function CharacterCreationForm() {
                   <Form.Item
                     {...restField}
                     name={[name, "damageType"]}
-                    label="DamageType"
+                    label="Damage Type"
                     rules={[
-                      { required: true, message: "Please input a damageType" },
+                      { required: true, message: "Please input a damage type" },
                     ]}
                   >
-                    <Input placeholder="Slashing" />
+                    <Select options={damageTypes} />
                   </Form.Item>
                   <Button
                     type="dashed"

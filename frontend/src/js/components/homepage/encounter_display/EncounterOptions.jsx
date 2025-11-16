@@ -29,13 +29,18 @@ function EncounterOptions(props) {
       name: encounterName,
       enemies: enemy_array,
     };
-
-    await api.post("/encounters", encounter, {
+    try {
+      await api.post("/encounters", encounter, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     setEncounterName("");
+    alert("Encounter saved!");
+    } catch (error) {
+      alert(error)
+    }
+    
   }
 
   return (
