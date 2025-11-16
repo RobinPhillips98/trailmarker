@@ -1,13 +1,15 @@
+from datetime import datetime, timedelta, timezone
+
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
-from datetime import datetime, timedelta, timezone
 
-from .dependencies import db_dependency
 from models import User
 from schemas import TokenData
+
+from .dependencies import db_dependency
 
 SECRET_KEY = "test-secret-key"
 ALGORITHM = "HS256"
@@ -50,7 +52,9 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(db: db_dependency, token: str = Depends(oauth2_scheme)):
+async def get_current_user(
+    db: db_dependency, token: str = Depends(oauth2_scheme)
+):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -71,5 +75,7 @@ async def get_current_user(db: db_dependency, token: str = Depends(oauth2_scheme
     return user
 
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)):
+async def get_current_active_user(
+    current_user: User = Depends(get_current_user),
+):
     return current_user

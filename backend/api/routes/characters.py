@@ -8,9 +8,14 @@ from ..auth_helpers import get_current_active_user
 from ..dependencies import db_dependency
 
 router = APIRouter()
-@router.get("/characters", response_model=Characters, status_code=status.HTTP_200_OK)
+
+
+@router.get(
+    "/characters", response_model=Characters, status_code=status.HTTP_200_OK
+)
 def get_characters(
-    db: db_dependency, current_user: models.User = Depends(get_current_active_user)
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_active_user),
 ):
     query = select(models.Character)
     query = query.where(models.Character.user_id == current_user.id)
@@ -19,13 +24,16 @@ def get_characters(
     character_list = [e.__dict__ for e in characters]
     return Characters(characters=character_list)
 
+
 @router.get(
     "/characters/{character_id}",
     response_model=Character,
     status_code=status.HTTP_200_OK,
 )
 def get_character(character_id, db: db_dependency):
-    query = db.query(models.Character).where(models.Character.id == character_id)
+    query = db.query(models.Character).where(
+        models.Character.id == character_id
+    )
 
     result = db.execute(query)
     character = result.scalars().first()
@@ -37,9 +45,15 @@ def get_character(character_id, db: db_dependency):
 
 
 @router.post(
-    "/characters", response_model=Character, status_code=status.HTTP_201_CREATED
+    "/characters",
+    response_model=Character,
+    status_code=status.HTTP_201_CREATED,
 )
-async def add_character(character: CharacterCreate, db: db_dependency, current_user: models.User = Depends(get_current_active_user)):
+async def add_character(
+    character: CharacterCreate,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_active_user),
+):
     try:
         db_character = convert_to_db_character(character, current_user)
 
@@ -55,8 +69,9 @@ async def add_character(character: CharacterCreate, db: db_dependency, current_u
         )
     return db_character
 
+
 def convert_to_db_character(character, current_user):
-    # Some parts of the dict need to be manually built since the Pydantic models
+    # Some parts of the dict need to be manually built since Pydantic models
     # don't covert well to dictionaries when they have models inside models
     defense_dict = {
         "armor_class": character.defenses.armor_class,
@@ -73,7 +88,7 @@ def convert_to_db_character(character, current_user):
                 "name": attack.name,
                 "attackBonus": attack.attackBonus,
                 "damage": attack.damage,
-                "damageType": attack.damageType
+                "damageType": attack.damageType,
             }
             actions_dict["attacks"].append(attack_dict)
 
@@ -99,14 +114,18 @@ def convert_to_db_character(character, current_user):
 
 
 @router.delete(
-    "/characters/{character_id}", response_model=object, status_code=status.HTTP_200_OK
+    "/characters/{character_id}",
+    response_model=object,
+    status_code=status.HTTP_200_OK,
 )
 def delete_character(
     character_id,
     db: db_dependency,
     current_user: models.User = Depends(get_current_active_user),
 ):
-    query = db.query(models.Character).where(models.Character.id == character_id)
+    query = db.query(models.Character).where(
+        models.Character.id == character_id
+    )
 
     result = db.execute(query)
     character = result.scalars().first()

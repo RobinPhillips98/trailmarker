@@ -186,6 +186,7 @@ def add_attribute_modifiers(raw_dict: dict[any], enemy: dict[any]) -> None:
     enemy["attribute_modifiers"]["wisdom"] = abilities["wis"]["mod"]
     enemy["attribute_modifiers"]["charisma"] = abilities["cha"]["mod"]
 
+
 def add_saves(raw_dict: dict[any], enemy: dict[any]) -> None:
     saves = raw_dict["system"]["saves"]
     for save in saves:

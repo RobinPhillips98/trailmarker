@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 # Encounters
@@ -20,6 +20,7 @@ class Attacks(BaseModel):
     attackBonus: int
     damage: Optional[str] = None
     damageType: Optional[str] = None
+
 
 class Actions(BaseModel):
     attacks: Optional[list[Attacks]] = None
@@ -90,7 +91,6 @@ class Character(Creature):
     class_: str = Field(..., alias="class")
 
 
-
 class Enemy(Creature):
     traits: list[str]
     immunities: list[str]
@@ -106,6 +106,7 @@ class CreatureCreate(BaseModel):
     max_hit_points: int
     speed: int
     actions: Optional[Actions]
+
 
 class EnemyCreate(CreatureCreate):
     traits: list[str]
@@ -124,6 +125,7 @@ class CharacterCreate(CreatureCreate):
 
 class Enemies(BaseModel):
     enemies: list[Enemy]
+
 
 class Characters(BaseModel):
     characters: list[Character]

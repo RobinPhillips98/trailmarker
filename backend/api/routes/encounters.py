@@ -10,9 +10,12 @@ from ..dependencies import db_dependency
 router = APIRouter()
 
 
-@router.get("/encounters", response_model=Encounters, status_code=status.HTTP_200_OK)
+@router.get(
+    "/encounters", response_model=Encounters, status_code=status.HTTP_200_OK
+)
 def get_encounters(
-    db: db_dependency, current_user: models.User = Depends(get_current_active_user)
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_active_user),
 ):
     query = select(models.Encounter)
     query = query.where(models.Encounter.user_id == current_user.id)
@@ -28,7 +31,9 @@ def get_encounters(
     status_code=status.HTTP_200_OK,
 )
 def get_encounter(encounter_id, db: db_dependency):
-    query = db.query(models.Encounter).where(models.Encounter.id == encounter_id)
+    query = db.query(models.Encounter).where(
+        models.Encounter.id == encounter_id
+    )
 
     result = db.execute(query)
     encounter = result.scalars().first()
@@ -40,7 +45,9 @@ def get_encounter(encounter_id, db: db_dependency):
 
 
 @router.post(
-    "/encounters", response_model=Encounter, status_code=status.HTTP_201_CREATED
+    "/encounters",
+    response_model=Encounter,
+    status_code=status.HTTP_201_CREATED,
 )
 def add_encounter(
     encounter: Encounter,
@@ -58,19 +65,25 @@ def add_encounter(
         raise http_err
     except Exception as e:
         print(f"Error in add_enemy: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Internal server error: {str(e)}"
+        )
     return db_encounter
 
 
 @router.delete(
-    "/encounters/{encounter_id}", response_model=object, status_code=status.HTTP_200_OK
+    "/encounters/{encounter_id}",
+    response_model=object,
+    status_code=status.HTTP_200_OK,
 )
 def delete_encounter(
     encounter_id,
     db: db_dependency,
     current_user: models.User = Depends(get_current_active_user),
 ):
-    query = db.query(models.Encounter).where(models.Encounter.id == encounter_id)
+    query = db.query(models.Encounter).where(
+        models.Encounter.id == encounter_id
+    )
 
     result = db.execute(query)
     encounter = result.scalars().first()

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 import models
-from api.routes import encounters, enemies, auth, user, characters
+from api.routes import auth, characters, encounters, enemies, user
 from db import engine
 
 app = FastAPI(debug=True)
