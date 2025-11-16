@@ -6,7 +6,7 @@ import EncounterDisplay from "./encounter_display/EncounterDisplay";
 import EnemyList from "./enemy_list/EnemyList";
 import Overview from "./overview/Overview";
 
-function Homepage() {
+export default function Homepage() {
   const [selectedEnemies, setSelectedEnemies] = useState([]);
 
   function addEnemy(enemy) {
@@ -84,5 +84,3 @@ function Homepage() {
     </main>
   );
 }
-
-export default Homepage;

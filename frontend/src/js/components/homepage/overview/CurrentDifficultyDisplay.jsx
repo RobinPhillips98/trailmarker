@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Typography } from "antd";
 const { Title, Text } = Typography;
 
-function CurrentDifficultyDisplay({ difficulty, xp }) {
+export default function CurrentDifficultyDisplay({ difficulty, xp }) {
   const [description, setDescription] = useState("");
 
   // Set difficulty description based on current difficulty
@@ -48,5 +48,3 @@ function CurrentDifficultyDisplay({ difficulty, xp }) {
     </div>
   );
 }
-
-export default CurrentDifficultyDisplay;

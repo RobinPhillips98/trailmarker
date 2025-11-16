@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, Button } from "antd";
 import { AuthContext } from "../contexts/AuthContext";
 
-function NavBar() {
+export default function NavBar() {
   const location = useLocation();
   const [current, setCurrent] = useState(location.pathname);
 
@@ -46,5 +46,3 @@ function NavBar() {
 
   return <Menu selectedKeys={[current]} mode="horizontal" items={menuItems} />;
 }
-
-export default NavBar;

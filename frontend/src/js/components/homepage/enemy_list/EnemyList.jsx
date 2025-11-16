@@ -3,7 +3,7 @@ import api from "../../../api";
 import { useEffect, useState } from "react";
 import { List } from "antd";
 
-function EnemyList(props) {
+export default function EnemyList(props) {
   const [enemies, setEnemies] = useState([]);
 
   async function fetchEnemies() {
@@ -34,5 +34,3 @@ function EnemyList(props) {
     />
   );
 }
-
-export default EnemyList;

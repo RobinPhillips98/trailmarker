@@ -7,7 +7,7 @@ import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
 import api from "../../../api";
 
-function Overview({ selectedEnemies, handleLoad, clearEncounter }) {
+export default function Overview({ selectedEnemies, handleLoad, clearEncounter }) {
   const [switched, setSwitched] = useState(false);
 
   const { token } = useContext(AuthContext);
@@ -142,5 +142,3 @@ function Overview({ selectedEnemies, handleLoad, clearEncounter }) {
     </div>
   );
 }
-
-export default Overview;

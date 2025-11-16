@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext.jsx";
 import { Button, Form, Input } from "antd";
 
-function Login() {
+export default function Login() {
   const { login } = useContext(AuthContext);
 
   function handleSubmit(values) {
@@ -41,5 +41,3 @@ function Login() {
     </Form>
   );
 }
-
-export default Login;

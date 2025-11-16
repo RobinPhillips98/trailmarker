@@ -1,6 +1,6 @@
 import { Button, Card } from "antd";
 
-function Enemy({ handleAdd, enemy }) {
+export default function Enemy({ handleAdd, enemy }) {
   function handleClick() {
     handleAdd(enemy);
   }
@@ -21,5 +21,3 @@ function Enemy({ handleAdd, enemy }) {
     </Card>
   );
 }
-
-export default Enemy;

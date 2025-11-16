@@ -1,7 +1,7 @@
 import SelectedEnemy from "./SelectedEnemy";
 import { List } from "antd";
 
-function EncounterDisplay(props) {
+export default function EncounterDisplay(props) {
   return (
     <div>
       <List header={<h2>Encounter</h2>} bordered={true} size="small" style={{maxHeight: 300, overflow: "scroll"}}>
@@ -19,5 +19,3 @@ function EncounterDisplay(props) {
     </div>
   );
 }
-
-export default EncounterDisplay;

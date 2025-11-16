@@ -5,7 +5,7 @@ import api from "../../../../api";
 import { useContext } from "react";
 import { AuthContext } from "../../../../contexts/AuthContext";
 
-function SavedEncounters({ handleLoad }) {
+export default function SavedEncounters({ handleLoad }) {
   const [encounters, setEncounters] = useState([]);
 
   const { user, token } = useContext(AuthContext);
@@ -82,5 +82,3 @@ function SavedEncounters({ handleLoad }) {
     </div>
   );
 }
-
-export default SavedEncounters;

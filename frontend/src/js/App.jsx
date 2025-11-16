@@ -9,7 +9,7 @@ import Characters from "./components/characters/Characters.jsx";
 import CharacterCreationForm from "./components/characters/CharacterCreationForm.jsx";
 const { Header, Content } = Layout;
 
-function App() {
+export default function App() {
   const themeConfig = {
     token: {
       colorPrimary: "#722ed1",
@@ -39,5 +39,3 @@ function App() {
     </Router>
   );
 }
-
-export default App;

@@ -3,7 +3,17 @@ import { useContext } from "react";
 import { AuthContext } from "../../../contexts/AuthContext";
 const { Title } = Typography;
 
-const sizeOptions = [
+export default function PartyInfoForm({
+  partySize,
+  partyLevel,
+  switched,
+  handlePartySize,
+  handlePartyLevel,
+  handleChange,
+}) {
+  const { user } = useContext(AuthContext);
+
+  const sizeOptions = [
   {
     value: "2",
     label: "2",
@@ -41,16 +51,6 @@ const levelOptions = [
   },
 ];
 
-function PartyInfoForm({
-  partySize,
-  partyLevel,
-  switched,
-  handlePartySize,
-  handlePartyLevel,
-  handleChange,
-}) {
-  const { user } = useContext(AuthContext);
-
   return (
     <div id="#partyInfoForm">
       <Title level={4}>Use saved characters?</Title>
@@ -74,5 +74,3 @@ function PartyInfoForm({
     </div>
   );
 }
-
-export default PartyInfoForm;

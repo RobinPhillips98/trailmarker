@@ -1,6 +1,6 @@
 import { List } from "antd";
 
-function XPBudget({ budget }) {
+export default function XPBudget({ budget }) {
   const budgetDisplay = [
     `Trivial: ${budget.trivial} XP`,
     `Low: ${budget.low} XP`,
@@ -18,5 +18,3 @@ function XPBudget({ budget }) {
     />
   );
 }
-
-export default XPBudget;

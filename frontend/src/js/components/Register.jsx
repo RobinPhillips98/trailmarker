@@ -3,7 +3,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import { Button, Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
 
-function Register() {
+export default function Register() {
   const { register, user } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -50,5 +50,3 @@ function Register() {
     </Form>
   );
 }
-
-export default Register;

@@ -1,6 +1,6 @@
 import { Button } from "antd";
 
-function SelectedEnemy(props) {
+export default function SelectedEnemy(props) {
   const enemy = props.enemy;
 
   function handleClickDecrement() {
@@ -41,5 +41,3 @@ function SelectedEnemy(props) {
     </ul>
   );
 }
-
-export default SelectedEnemy;

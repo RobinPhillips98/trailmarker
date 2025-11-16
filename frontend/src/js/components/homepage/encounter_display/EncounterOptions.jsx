@@ -4,7 +4,7 @@ import { Button, Input, Space, Typography } from "antd";
 import { AuthContext } from "../../../contexts/AuthContext";
 const { Title } = Typography;
 
-function EncounterOptions(props) {
+export default function EncounterOptions(props) {
   const [encounterName, setEncounterName] = useState("");
 
   const handleChange = (event) => {
@@ -70,5 +70,3 @@ function EncounterOptions(props) {
     </div>
   );
 }
-
-export default EncounterOptions;

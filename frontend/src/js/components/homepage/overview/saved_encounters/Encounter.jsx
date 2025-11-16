@@ -1,6 +1,6 @@
 import { Button, Table } from "antd";
 
-function Encounter({ handleLoad, handleDelete, encounter }) {
+export default function Encounter({ handleLoad, handleDelete, encounter }) {
   function handleClickLoad() {
     handleLoad(encounter);
   }
@@ -48,5 +48,3 @@ function Encounter({ handleLoad, handleDelete, encounter }) {
     </div>
   );
 }
-
-export default Encounter;
