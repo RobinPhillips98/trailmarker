@@ -66,21 +66,25 @@ export default function CharacterCreationForm({ savedCharacter, editing }) {
       };
 
   async function onFinish(character) {
-    if (editing) {
-      character.id = savedCharacter.id;
-      await api.patch("/characters", character, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      window.location.reload();
-    } else {
-      await api.post("/characters", character, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      navigate("/characters");
+    try {
+      if (editing) {
+        character.id = savedCharacter.id;
+        await api.patch("/characters", character, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        window.location.reload();
+      } else {
+        await api.post("/characters", character, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        navigate("/characters");
+      }
+    } catch (error) {
+      alert(error.response.data.detail);
     }
   }
 

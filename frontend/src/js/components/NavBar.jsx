@@ -7,13 +7,13 @@ export default function NavBar() {
   const location = useLocation();
   const [current, setCurrent] = useState(location.pathname);
 
-  const { user, logout } = useContext(AuthContext);
+  const { user, token, logout } = useContext(AuthContext);
 
   useEffect(() => {
     setCurrent(location.pathname);
   }, [location]);
 
-  const menuItems = user
+  const menuItems = (user && token)
     ? [
         {
           key: "/",

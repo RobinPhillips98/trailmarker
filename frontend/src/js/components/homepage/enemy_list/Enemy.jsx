@@ -6,7 +6,7 @@ export default function Enemy({ handleAdd, enemy }) {
   }
 
   return (
-    <Card size="small" title={enemy.name} style={{ width: 300 }}>
+    <Card size="small" title={enemy.name} style={{ marginTop: 10, height: 200, width: 300 }}>
       <p>Level: {enemy.level}</p>
       <p>
         Traits:{" "}

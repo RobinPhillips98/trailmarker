@@ -60,7 +60,7 @@ export default function Characters() {
   if (token)
     return (
       <>
-        <Tabs items={characterTabs} />
+        <Tabs items={characterTabs}/>
         <br />
         <Button type="primary" onClick={handleClick}>
           Create New Character

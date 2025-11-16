@@ -129,7 +129,10 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
                   dataSource={Object.keys(attack).slice(1)}
                   renderItem={(item) => (
                     <List.Item>
-                      {toTitleCase(splitCamelCase(item))}: {attack[item]}
+                      {toTitleCase(splitCamelCase(item))}:{" "}
+                      {typeof attack[item] === "string"
+                        ? toTitleCase(attack[item])
+                        : attack[item]}
                     </List.Item>
                   )}
                 ></List>
@@ -151,7 +154,7 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
         style={{ marginBottom: 10 }}
       />
       <CharacterEditModal character={character} />
-      <Divider type="vertical"/>
+      <Divider type="vertical" />
       <Button danger onClick={handleClick}>
         Delete Character
       </Button>
