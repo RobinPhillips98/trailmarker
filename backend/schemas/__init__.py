@@ -81,7 +81,7 @@ class Creature(BaseModel):
 
 
 class Character(Creature):
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
     user_id: int
     player: Optional[str] = ""
@@ -107,6 +107,18 @@ class CreatureCreate(BaseModel):
     speed: int
     actions: Optional[Actions]
 
+class CreatureUpdate(BaseModel):
+    id: int
+    name: str
+    level: int
+    perception: int
+    skills: Skills
+    attribute_modifiers: Attributes
+    defenses: Defenses
+    max_hit_points: int
+    speed: int
+    actions: Optional[Actions]
+
 
 class EnemyCreate(CreatureCreate):
     traits: list[str]
@@ -114,6 +126,16 @@ class EnemyCreate(CreatureCreate):
 
 
 class CharacterCreate(CreatureCreate):
+    model_config = ConfigDict(populate_by_name=True)
+
+    player: Optional[str] = ""
+    xp: Optional[int] = 0
+    ancestry: str
+    background: str
+    class_: str = Field(..., alias="class")
+
+
+class CharacterUpdate(CreatureUpdate):
     model_config = ConfigDict(populate_by_name=True)
 
     player: Optional[str] = ""

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.future import select
 
 import models
-from schemas import Character, CharacterCreate, Characters
+from schemas import Character, CharacterCreate, Characters, CharacterUpdate
 
 from ..auth_helpers import get_current_active_user
 from ..dependencies import db_dependency
@@ -49,7 +49,7 @@ def get_character(character_id, db: db_dependency):
     response_model=Character,
     status_code=status.HTTP_201_CREATED,
 )
-async def add_character(
+def add_character(
     character: CharacterCreate,
     db: db_dependency,
     current_user: models.User = Depends(get_current_active_user),
@@ -68,6 +68,51 @@ async def add_character(
             status_code=500, detail=f"Internal server error: {str(e)}"
         )
     return db_character
+
+
+@router.patch(
+    "/characters",
+    response_model=Character,
+    status_code=status.HTTP_200_OK
+)
+def update_character(
+    character_update: CharacterUpdate,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_active_user)
+):
+    try:
+        db_character = db.get(models.Character, character_update.id)
+
+        if db_character is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Character not found"
+            )
+        
+        if db_character.user_id != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to update this character"
+            )
+
+        update_data = character_update.dict(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_character, key, value)
+        
+        db.commit()
+        db.refresh(db_character)
+
+        updated_character = Character.from_orm(db_character)
+        return updated_character
+
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in add_character: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Internal server error: {str(e)}"
+        )
+    
 
 
 def convert_to_db_character(character, current_user):
