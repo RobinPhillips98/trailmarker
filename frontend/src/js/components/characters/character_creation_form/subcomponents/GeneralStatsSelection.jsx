@@ -1,5 +1,11 @@
 import { Form, InputNumber, Select } from "antd";
 
+/**
+ * A component to allow a user to set general numerical stats for a player
+ * character, such as their level, hit point maximum, or armor class
+ *
+ * @returns {JSX.element}
+ */
 export default function GeneralStatsSelection() {
   return (
     <>

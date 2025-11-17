@@ -1,6 +1,13 @@
 import { Form, Input, InputNumber, Select } from "antd";
-import { ancestries, backgrounds, classes } from "../characterHelpers";
 
+import { ancestries, backgrounds, classes } from "../../characterHelpers";
+
+/**
+ * A component to allow a user to set general information about a player
+ * character, such as their name, player name, and class
+ *
+ * @returns {JSX.element}
+ */
 export default function GeneralInfoSelection() {
   return (
     <>

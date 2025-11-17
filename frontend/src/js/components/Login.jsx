@@ -1,7 +1,13 @@
 import { useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext.jsx";
 import { Button, Form, Input } from "antd";
 
+import { AuthContext } from "../contexts/AuthContext.jsx";
+
+/**
+ * The page for the user to log into their account
+ * 
+ * @returns {JSX.Element}
+ */
 export default function Login() {
   const { login } = useContext(AuthContext);
 

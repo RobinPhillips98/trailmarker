@@ -1,5 +1,11 @@
 import api from "../api";
 
+/**
+ * Attempts to retrieve a JSON Web Token from the API using the given credentials
+ * 
+ * @param {object} credentials An object containing the username and password given
+ * @returns 
+ */
 async function loginUser(credentials) {
   try {
     const params = new URLSearchParams();
@@ -19,6 +25,12 @@ async function loginUser(credentials) {
   }
 }
 
+/**
+ * Attempts to post the given user to the API, which will add it to the database
+ * if successful
+ * 
+ * @param {object} userData An object containing the data to register a given user
+ */
 async function registerUser(userData) {
   try {
     await api.post("/auth/register", userData);
@@ -28,6 +40,13 @@ async function registerUser(userData) {
   }
 }
 
+/**
+ * Attempts to fetch the current user from the database using the currently
+ * stored JSON web token
+ * 
+ * @param {string} token The currently stored JWT
+ * @returns 
+ */
 async function fetchUserProfile(token) {
   try {
     const response = await api.get("/users/me/", {

@@ -1,6 +1,16 @@
 import { Button, Card, Descriptions, Divider, List } from "antd";
+
 import { splitCamelCase, toTitleCase } from "./characterHelpers";
 import CharacterEditModal from "./CharacterEditModal";
+
+/**
+ * A component to display information about a given character
+ *
+ * @param {object} props
+ * @param {object} props.character The character being displayed
+ * @param {function} props.deleteCharacter The function to delete the displayed character
+ * @returns {JSX.element}
+ */
 export default function CharacterDisplay({ character, deleteCharacter }) {
   function handleClick() {
     deleteCharacter(character);

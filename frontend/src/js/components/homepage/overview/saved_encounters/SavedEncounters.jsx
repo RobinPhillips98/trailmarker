@@ -1,15 +1,28 @@
-import Encounter from "./Encounter";
-import { useState, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Button, Modal, Card } from "antd";
+
 import api from "../../../../api";
-import { useContext } from "react";
 import { AuthContext } from "../../../../contexts/AuthContext";
 
+import Encounter from "./Encounter";
+
+
+/**
+ * A component that displays a list of saved encounters
+ *
+ * @param {object} props
+ * @param {function} props.handleLoad The function to select this encounter's enemies
+ * @returns {JSX.Element}
+ */
 export default function SavedEncounters({ handleLoad }) {
   const [encounters, setEncounters] = useState([]);
 
   const { user, token } = useContext(AuthContext);
 
+  /**
+   * Deletes the given encounter from the database and removes it from the list
+   * @param {object} encounter
+   */
   async function deleteEncounter(encounter) {
     await api.delete(`encounters/${encounter.id}`, {
       headers: {
@@ -24,12 +37,16 @@ export default function SavedEncounters({ handleLoad }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   function showModal() {
     setIsModalOpen(true);
-  };
+  }
+
   function handleClose() {
     setIsModalOpen(false);
-  };
+  }
 
   useEffect(() => {
+    /**
+     * Fetches the current list of encounters from the database
+     */
     async function fetchEncounters() {
       try {
         const response = await api.get("/encounters", {
@@ -59,10 +76,12 @@ export default function SavedEncounters({ handleLoad }) {
         title="Saved Encounters"
         closable={{ "aria-label": "Custom Close Button" }}
         open={isModalOpen}
+        onCancel={handleClose}
         footer={
-          <Button key="ok" onClick={handleClose}>
+          <Button key="close" onClick={handleClose}>
             Close
-          </Button>}
+          </Button>
+        }
       >
         {encounters.map((encounter) => (
           <Card

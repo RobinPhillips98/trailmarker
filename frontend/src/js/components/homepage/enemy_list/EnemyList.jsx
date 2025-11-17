@@ -1,11 +1,23 @@
-import Enemy from "./Enemy";
-import api from "../../../api";
 import { useEffect, useState } from "react";
-import { List } from "antd";
+import { List, Typography } from "antd";
 
-export default function EnemyList(props) {
+import api from "../../../api";
+import Enemy from "./Enemy";
+
+/**
+ * A component to display a list of all enemies from the database
+ *
+ * @param {object} props
+ * @param {function} props.handleAdd The function to add an enemy to the encounter
+ * @returns {JSX.Element}
+ */
+export default function EnemyList({ handleAdd }) {
   const [enemies, setEnemies] = useState([]);
+  const { Title } = Typography;
 
+  /**
+   * Fetches all enemies from the database
+   */
   async function fetchEnemies() {
     try {
       const response = await api.get("/enemies");
@@ -21,14 +33,14 @@ export default function EnemyList(props) {
 
   return (
     <List
-      header={<h2>Enemies</h2>}
+      header={<Title level={3}>Enemies</Title>}
       bordered={true}
       style={{ marginTop: 10, height: "60vh", overflow: "scroll" }}
       grid={{ gutter: 16, column: 5 }}
       dataSource={enemies}
       renderItem={(enemy) => (
         <List.Item>
-          <Enemy handleAdd={props.handleAdd} enemy={enemy} />
+          <Enemy handleAdd={handleAdd} enemy={enemy} />
         </List.Item>
       )}
     />

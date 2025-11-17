@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
   loginUser,
   registerUser,
@@ -8,6 +9,13 @@ import {
 
 const AuthContext = createContext({});
 
+/**
+ * A provider to allow components to use authentication methods
+ *
+ * @param {object} props
+ * @param {JSX.Element} props.children The child components of the AuthProvider
+ * @returns {JSX.Element}
+ */
 function AuthProvider({ children }) {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
@@ -23,6 +31,13 @@ function AuthProvider({ children }) {
     }
   }, [token]);
 
+  /**
+   * A wrapper function for loginUser that saves a JSON Web Token to local storage
+   * if the login is successful, and alerts if it is not
+   *
+   * @param {string} username The username entered by the user
+   * @param {string} password The password entered by the user
+   */
   async function login(username, password) {
     try {
       const response = await loginUser({ username, password });
@@ -38,6 +53,13 @@ function AuthProvider({ children }) {
     }
   }
 
+  /**
+   * A wrapper function for registerUser that navigates to /login if the
+   * registration is successful, and alerts if it is not.
+   *
+   * @param {string} username The username entered by the user
+   * @param {string} password The password entered by the user
+   */
   async function register(username, password) {
     try {
       await registerUser({ username, password });
@@ -47,6 +69,10 @@ function AuthProvider({ children }) {
     }
   }
 
+  /**
+   * Logs the user out by deleting the JSON Web Token from local storage and
+   * setting token and user to null
+   */
   function logout() {
     setToken(null);
     setUser(null);

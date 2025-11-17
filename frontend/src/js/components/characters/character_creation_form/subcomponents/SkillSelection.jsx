@@ -1,6 +1,15 @@
 import { Card, Form, InputNumber } from "antd";
-import { skills, toTitleCase } from "../characterHelpers";
 
+import { skills, toTitleCase } from "../../characterHelpers";
+
+/**
+ * A component to allow a user to set a player character's skills
+ *
+ * @param {object} props
+ * @param {boolean} props.editing True if this is a saved character being edited, false if this is a new character
+ * @param {object} props.savedCharacter The character being edited
+ * @returns {JSX.element}
+ */
 export default function SkillSelection({ editing, savedCharacter }) {
   return (
     <Card

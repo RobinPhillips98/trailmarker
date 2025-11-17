@@ -1,15 +1,22 @@
-import { Button, Tabs } from "antd";
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { Button, Tabs } from "antd";
+
+import { AuthContext } from "../../contexts/AuthContext";
 import api from "../../api";
 import CharacterDisplay from "./CharacterDisplay";
 
+/**
+ * The page for displaying saved characters, with options to edit saved characters
+ * and create new characters
+ *
+ * @returns {JSX.element}
+ */
 export default function Characters() {
   const [characters, setCharacters] = useState([]);
   const navigate = useNavigate();
 
-  const { token, user } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
 
   async function deleteCharacter(character) {
     await api.delete(`characters/${character.id}`, {
@@ -23,6 +30,9 @@ export default function Characters() {
   }
 
   useEffect(() => {
+    /**
+     * Fetches all characters for the current user from the database
+     */
     async function fetchCharacters() {
       try {
         const response = await api.get("/characters", {
@@ -33,14 +43,15 @@ export default function Characters() {
         setCharacters(response.data.characters);
       } catch (error) {
         console.error("Error fetching characters", error);
+        alert(error.response.data.detail);
       }
     }
-    if (token && user) fetchCharacters();
+    if (token) fetchCharacters();
     else {
       alert("Sorry: You must be logged in to access this page");
       navigate("/login");
     }
-  }, [token, user, navigate]);
+  }, [token, navigate]);
 
   function handleClick() {
     navigate("/characters/create");
@@ -60,7 +71,7 @@ export default function Characters() {
   if (token)
     return (
       <>
-        <Tabs items={characterTabs}/>
+        <Tabs items={characterTabs} />
         <br />
         <Button type="primary" onClick={handleClick}>
           Create New Character

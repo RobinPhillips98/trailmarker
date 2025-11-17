@@ -1,7 +1,16 @@
 import { Button, Card, Form, Input, InputNumber, Select } from "antd";
-import { damageTypes } from "../characterHelpers";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 
+import { damageTypes } from "../../characterHelpers";
+
+/**
+ * A component to allow a user to add attacks to a player character
+ *
+ * @param {object} props
+ * @param {boolean} props.editing True if this is a saved character being edited, false if this is a new character
+ * @param {object} props.savedCharacter The character being edited
+ * @returns {JSX.element}
+ */
 export default function AttacksSelection({ editing, savedCharacter }) {
   const initialAttacks = editing
     ? savedCharacter.actions.attacks.map((attack) => ({
@@ -19,6 +28,8 @@ export default function AttacksSelection({ editing, savedCharacter }) {
       style={{ marginLeft: 100, width: 300 }}
       variant="borderless"
     >
+      {/* Allow user to add as many attacks as they want, with each attack
+      having the same style of input */}
       <Form.List name={["actions", "attacks"]} initialValue={initialAttacks}>
         {(fields, { add, remove }) => (
           <>
@@ -52,9 +63,9 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                   rules={[
                     { required: true, message: "Please input a damage" },
                     {
-                      pattern: /^\dd(4|6|8|10|12)([+-]\d\d?)?$/i,
+                      pattern: /^\dd(4|6|8|10|12)([+-]\d{1,2})?$/i,
                       message:
-                        "Damage must be in the form #d# or #d#±# (ex. 1d4 or 1d8+4)",
+                        "Input must be a valid damage roll (ex. 1d4 or 1d8+4)",
                     },
                   ]}
                 >

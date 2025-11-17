@@ -1,8 +1,10 @@
-import api from "../../api";
 import { useContext, useEffect } from "react";
-import { AuthContext } from "../../contexts/AuthContext";
-import { Button, Form} from "antd";
 import { useNavigate } from "react-router-dom";
+import { Button, Form } from "antd";
+
+import api from "../../../api";
+import { AuthContext } from "../../../contexts/AuthContext";
+
 import AttributeSelection from "./subcomponents/AttributeSelection";
 import SkillSelection from "./subcomponents/SkillSelection";
 import SavesSelection from "./subcomponents/SavesSelection";
@@ -10,7 +12,16 @@ import AttacksSelection from "./subcomponents/AttacksSelection";
 import GeneralInfoSelection from "./subcomponents/GeneralInfoSelection";
 import GeneralStatsSelection from "./subcomponents/GeneralStatsSelection";
 
-export default function CharacterCreationForm({ savedCharacter, editing }) {
+/**
+ * A component to allow a user to create or edit a player character
+ *
+ * @param {object} props
+ * @param {boolean} [props.editing] True if this is a saved character being edited, false if this is a new character
+ * @param {object} [props.savedCharacter] The character being edited
+ * @returns {JSX.element}
+ */
+export default function CharacterCreationForm(props) {
+  const { editing = false, savedCharacter = null } = props;
   const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -60,6 +71,12 @@ export default function CharacterCreationForm({ savedCharacter, editing }) {
         perception: 0,
       };
 
+  /**
+   * Attempts to save the current character to the database, either patching an
+   * existing character or posting a new character
+   * 
+   * @param {object} character The character to be saved
+   */
   async function onFinish(character) {
     try {
       if (editing) {

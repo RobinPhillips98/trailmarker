@@ -1,28 +1,34 @@
 import { Card, Form, InputNumber } from "antd";
-import { saves, toTitleCase } from "../characterHelpers";
 
+import { saves, toTitleCase } from "../../characterHelpers";
+
+/**
+ * A component to allow a user to set a player character's saving throws
+ *
+ * @returns {JSX.element}
+ */
 export default function SavesSelection() {
   return (
     <Card
-        title="Saving Throws"
-        size="small"
-        style={{ marginLeft: 100, width: 300 }}
-        variant="borderless"
-      >
-        {saves.map((save) => (
-          <Form.Item
-            label={toTitleCase(save)}
-            name={["defenses", "saves", save]}
-            rules={[
-              {
-                required: true,
-                message: `Please input a ${save} value`,
-              },
-            ]}
-          >
-            <InputNumber min={-5} max={30} />
-          </Form.Item>
-        ))}
-      </Card>
-  )
+      title="Saving Throws"
+      size="small"
+      style={{ marginLeft: 100, width: 300 }}
+      variant="borderless"
+    >
+      {saves.map((save) => (
+        <Form.Item
+          label={toTitleCase(save)}
+          name={["defenses", "saves", save]}
+          rules={[
+            {
+              required: true,
+              message: `Please input a ${save} value`,
+            },
+          ]}
+        >
+          <InputNumber min={-5} max={30} />
+        </Form.Item>
+      ))}
+    </Card>
+  );
 }

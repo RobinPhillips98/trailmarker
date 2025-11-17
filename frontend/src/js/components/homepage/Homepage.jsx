@@ -2,13 +2,26 @@ import { useState } from "react";
 
 import api from "../../api";
 
+import Overview from "./overview/Overview";
 import EncounterDisplay from "./encounter_display/EncounterDisplay";
 import EnemyList from "./enemy_list/EnemyList";
-import Overview from "./overview/Overview";
 
+/**
+ * The homepage of the site which displays information and options about the
+ * current encounter, the enemies selected in the current encounter, and a list
+ * of enemies that can be added to the current encounter.
+ * 
+ * @returns {JSX.Element}
+ */
 export default function Homepage() {
   const [selectedEnemies, setSelectedEnemies] = useState([]);
 
+  /**
+   * Adds the given enemy to the encounter, or if it's already in the encounter,
+   * increments its quantity
+   * 
+   * @param {object} enemy The enemy to be added
+   */
   function addEnemy(enemy) {
     const exists = selectedEnemies.some(
       (currentEnemy) => currentEnemy.id === enemy.id
@@ -52,6 +65,12 @@ export default function Homepage() {
     setSelectedEnemies([]);
   }
 
+  /**
+   * Overwrites the current encounter by clearing its enemies and adding the
+   * enemies from the given encounter instead
+   * 
+   * @param {object} encounter The encounter to be loaded
+   */
   async function loadEncounter(encounter) {
     const newEnemies = await Promise.all(
       encounter.enemies.map(async (enemy) => {
@@ -77,7 +96,6 @@ export default function Homepage() {
         handleRemove={removeEnemy}
         handleDecrement={decrementQuantity}
         handleAdd={incrementQuantity}
-        clearEncounter={clearEnemies}
         enemies={selectedEnemies}
       />
       <EnemyList handleAdd={addEnemy} />

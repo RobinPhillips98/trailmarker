@@ -71,14 +71,12 @@ def add_character(
 
 
 @router.patch(
-    "/characters",
-    response_model=Character,
-    status_code=status.HTTP_200_OK
+    "/characters", response_model=Character, status_code=status.HTTP_200_OK
 )
 def update_character(
     character_update: CharacterUpdate,
     db: db_dependency,
-    current_user: models.User = Depends(get_current_active_user)
+    current_user: models.User = Depends(get_current_active_user),
 ):
     try:
         db_character = db.get(models.Character, character_update.id)
@@ -86,19 +84,19 @@ def update_character(
         if db_character is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Character not found"
+                detail="Character not found",
             )
-        
+
         if db_character.user_id != current_user.id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not authorized to update this character"
+                detail="Not authorized to update this character",
             )
 
         update_data = character_update.dict(exclude_unset=True)
         for key, value in update_data.items():
             setattr(db_character, key, value)
-        
+
         db.commit()
         db.refresh(db_character)
 
@@ -112,7 +110,6 @@ def update_character(
         raise HTTPException(
             status_code=500, detail=f"Internal server error: {str(e)}"
         )
-    
 
 
 def convert_to_db_character(character, current_user):

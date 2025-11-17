@@ -107,6 +107,7 @@ class CreatureCreate(BaseModel):
     speed: int
     actions: Optional[Actions]
 
+
 class CreatureUpdate(BaseModel):
     id: int
     name: str

@@ -1,18 +1,39 @@
+import { useState, useEffect, useContext } from "react";
+
+import { AuthContext } from "../../../contexts/AuthContext";
+import api from "../../../api";
+import EncounterOptions from "../encounter_display/EncounterOptions";
+
+import SavedEncounters from "./saved_encounters/SavedEncounters";
 import PartyInfoForm from "./PartyInfoForm";
 import CurrentDifficultyDisplay from "./CurrentDifficultyDisplay";
 import XPBudget from "./XPBudget";
-import EncounterOptions from "../encounter_display/EncounterOptions";
-import SavedEncounters from "./saved_encounters/SavedEncounters";
-import { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../../../contexts/AuthContext";
-import api from "../../../api";
 
-export default function Overview({ selectedEnemies, handleLoad, clearEncounter }) {
+
+
+
+/**
+ * An overview with information and options for the current encounter
+ *
+ * @typedef {object} OverviewProps
+ * @property {object} selectedEnemies The currently selected enemies in the encounter
+ * @property {function} handleLoad The function to select this encounter's enemies
+ * @property {function} clearEncounter The function to clear all enemies from the encounter
+ *
+ * @param {OverviewProps} props
+ * @returns {JSX.Element}
+ */
+export default function Overview(props) {
+  const { selectedEnemies, handleLoad, clearEncounter } = props;
   const [switched, setSwitched] = useState(false);
 
   const { token } = useContext(AuthContext);
 
   useEffect(() => {
+    /**
+     * Fetches the current user's characters from the database and sets the party
+     * size and level based on the number of characters retrieved and their level
+     */
     async function getPartyInfoFromServer() {
       try {
         const response = await api.get("/characters", {
@@ -20,14 +41,19 @@ export default function Overview({ selectedEnemies, handleLoad, clearEncounter }
             Authorization: `Bearer ${token}`,
           },
         });
-        const characters = response.data.characters;
-        setPartyLevel(characters.at(0).level);
-        if (characters.length >= 2) setPartySize(characters.length);
-        else {
-          alert(
-            "Less than 2 characters saved, setting party size to minimum 2"
-          );
-          setPartySize(2);
+        if (response.data.characters.length > 0) {
+          const characters = response.data.characters;
+          setPartyLevel(characters.at(0).level);
+          if (characters.length >= 2) setPartySize(characters.length);
+          else {
+            alert(
+              "Less than 2 characters saved, setting party size to minimum 2"
+            );
+            setPartySize(2);
+          }
+        } else {
+          alert("No saved characters!");
+          setSwitched(false);
         }
       } catch (error) {
         console.error("Error fetching characters", error);

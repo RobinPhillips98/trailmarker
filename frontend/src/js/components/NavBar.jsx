@@ -1,8 +1,16 @@
 import { useContext, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, Button } from "antd";
+import { Menu } from "antd";
+
 import { AuthContext } from "../contexts/AuthContext";
 
+/**
+ * The nav bar at the top of the site, displaying links to the homepage and,
+ * depending on whether the user is logged in, the pages to register and login, or
+ * the page for saved characters and a button to log out.
+ * 
+ * @returns {JSX.Element}
+ */
 export default function NavBar() {
   const location = useLocation();
   const [current, setCurrent] = useState(location.pathname);

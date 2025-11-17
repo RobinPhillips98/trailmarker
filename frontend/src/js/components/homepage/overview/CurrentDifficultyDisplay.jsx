@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
-
 import { Typography } from "antd";
-const { Title, Text } = Typography;
 
+/**
+ * A component to display information about the current difficulty of the encounter
+ *
+ * @param {object} props
+ * @param {string} props.difficulty The name of the current difficulty
+ * @param {number} props.xp The experience point cost of the current encounter
+ * @returns {JSX.Element}
+ */
 export default function CurrentDifficultyDisplay({ difficulty, xp }) {
+  const { Title, Text } = Typography;
+
   const [description, setDescription] = useState("");
 
   // Set difficulty description based on current difficulty

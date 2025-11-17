@@ -1,8 +1,14 @@
 import { useContext, useEffect } from "react";
-import { AuthContext } from "../contexts/AuthContext";
-import { Button, Form, Input } from "antd";
 import { useNavigate } from "react-router-dom";
+import { Button, Form, Input } from "antd";
 
+import { AuthContext } from "../contexts/AuthContext";
+
+/**
+ * The page to allow the user to register a new account
+ *
+ * @returns {JSX.Element}
+ */
 export default function Register() {
   const { register, user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -12,7 +18,7 @@ export default function Register() {
       alert("You already logged in. Please log out before registering");
       navigate("/");
     }
-  }, [user, navigate])
+  }, [user, navigate]);
 
   function handleSubmit(values) {
     register(values.username, values.password);
@@ -25,7 +31,7 @@ export default function Register() {
       labelCol={{ span: 8 }}
       wrapperCol={{ span: 16 }}
       style={{ maxWidth: 600 }}
-      scrollToFirstError={{focus: true}}
+      scrollToFirstError={{ focus: true }}
     >
       <Form.Item
         label="Username"

@@ -1,10 +1,18 @@
-import api from "../../../api";
 import { useContext, useState } from "react";
-import { Button, Input, Space, Typography } from "antd";
-import { AuthContext } from "../../../contexts/AuthContext";
-const { Title } = Typography;
+import { Button, Input, Space } from "antd";
 
-export default function EncounterOptions(props) {
+import api from "../../../api";
+import { AuthContext } from "../../../contexts/AuthContext";
+
+/**
+ * A component to display options for saving/clearing encounters
+ *
+ * @param {object} props
+ * @param {object} props.enemies The currently selected enemies in the encounter
+ * @param {function} props.clearEncounter The function to clear all enemies from the encounter
+ * @returns {JSX.Element}
+ */
+export default function EncounterOptions({ enemies, clearEncounter }) {
   const [encounterName, setEncounterName] = useState("");
 
   const handleChange = (event) => {
@@ -13,12 +21,17 @@ export default function EncounterOptions(props) {
 
   const { user, token } = useContext(AuthContext);
 
+  /**
+   * Saves the given encounter to the database
+   *
+   * @returns {void}
+   */
   async function save() {
-    if (props.enemies.length === 0) {
+    if (enemies.length === 0) {
       alert("Encounter is empty, please add enemies.");
       return;
     }
-    const enemy_array = props.enemies.map((enemy) => ({
+    const enemy_array = enemies.map((enemy) => ({
       id: enemy.id,
       name: enemy.name,
       quantity: enemy.quantity,
@@ -31,16 +44,15 @@ export default function EncounterOptions(props) {
     };
     try {
       await api.post("/encounters", encounter, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setEncounterName("");
-    alert("Encounter saved!");
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setEncounterName("");
+      alert("Encounter saved!");
     } catch (error) {
-      alert(error)
+      alert(error);
     }
-    
   }
 
   return (
@@ -64,7 +76,7 @@ export default function EncounterOptions(props) {
         />
       </Space.Compact>
       <br />
-      <Button danger onClick={props.clearEncounter}>
+      <Button danger onClick={clearEncounter}>
         Clear Encounter
       </Button>
     </div>
