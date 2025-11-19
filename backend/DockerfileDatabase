@@ -1,0 +1,10 @@
+FROM postgres:15
+
+# The POSTGRES_PASSWORD environment variable cannot be set in the .env
+# because it needs to exist when the database is first initialized.
+# All other environment variables can be set in the .env file.
+ENV POSTGRES_PASSWORD=12345
+
+# Health check
+HEALTHCHECK --interval=5s --timeout=5s \
+    CMD pg_isready -U postgres -h localhost -p 5432 || exit 1 

@@ -1,0 +1,52 @@
+services:
+  server:
+    env_file:
+      - ./backend/.env
+    build:
+      context: ./backend
+      dockerfile: DockerfileServer
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - ENVIRONMENT=development
+    depends_on:
+      db_setup:
+        condition: service_completed_successfully
+    entrypoint: > 
+      bash -c "poetry install && poetry run uvicorn server:app --host 0.0.0.0 --reload"
+
+  ui:
+    build:
+      context: ./frontend
+      dockerfile: DockerfileUI
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - server
+
+  db:
+    build:
+      context: ./backend
+      dockerfile: DockerfileDatabase
+    volumes:
+      - ./backend:/script
+    working_dir: /script
+
+  db_setup:
+    image: postgres:15
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/script
+    depends_on:
+      db:
+        condition: service_healthy
+    working_dir: /script
+    entrypoint: "bash ./db_setup.sh"
