@@ -1,3 +1,10 @@
+"""Functions for API calls related to enemies
+
+Defines functions that are called when a request is made to the /enemies
+route of the API, including creating and reading enemies.
+
+"""
+
 import os
 from pathlib import Path
 
@@ -14,7 +21,15 @@ router = APIRouter()
 
 
 @router.get("/enemies", response_model=Enemies, status_code=status.HTTP_200_OK)
-def get_enemies(db: db_dependency):
+def get_enemies(db: db_dependency) -> Enemies:
+    """Fetches all enemies from the database.
+
+    Args:
+        db (db_dependency): A SQLAlchemy database session
+
+    Returns:
+        Enemies: A list of enemy objects
+    """
     first_row = db.query(models.Enemy).first()
     if not first_row:
         post_enemies()
@@ -28,7 +43,17 @@ def get_enemies(db: db_dependency):
 @router.get(
     "/enemies/{enemy_id}", response_model=Enemy, status_code=status.HTTP_200_OK
 )
-def get_enemy(enemy_id, db: db_dependency):
+def get_enemy(enemy_id: int, db: db_dependency) -> Enemy:
+    """Fetches a specific enemy from the database
+
+    Args:
+        enemy_id (int): The ID of the enemy to be fetched
+        db (db_dependency): A SQLAlchemy database session
+
+    Returns:
+        Enemy: A dictionary representing an enemy
+    """
+
     query = db.query(models.Enemy).where(models.Enemy.id == enemy_id)
 
     result = db.execute(query)
@@ -37,10 +62,26 @@ def get_enemy(enemy_id, db: db_dependency):
     return enemy
 
 
+# TODO Replace methods below by having initialize_data directly add enemies
+# to the databse
 @router.post(
     "/enemies", response_model=Enemy, status_code=status.HTTP_201_CREATED
 )
-async def add_enemy(enemy: EnemyCreate, db: db_dependency):
+async def add_enemy(enemy: EnemyCreate, db: db_dependency) -> Enemy:
+    """Adds a given enemy to the database
+
+    Args:
+        enemy (EnemyCreate): The enemy to be added to the database
+        db (db_dependency): A SQLAlchemy database session
+
+    Raises:
+        http_err: A caught HTTP error
+        HTTPException: A non-HTTP exception caught and raised as an HTTP 500
+            exception
+
+    Returns:
+        Enemy: The enemy that was just created.
+    """
     try:
         db_enemy = convert_to_db_enemy(enemy)
 
@@ -57,9 +98,17 @@ async def add_enemy(enemy: EnemyCreate, db: db_dependency):
     return db_enemy
 
 
-def convert_to_db_enemy(enemy):
-    # Some parts of the dict need to be manually built since Pydantic models
-    # don't covert well to dictionaries when they have models inside models
+def convert_to_db_enemy(enemy: EnemyCreate) -> models.Enemy:
+    """Reformats a given enemy to match the model used by the database
+
+    Args:
+        enemy (EnemyCreate): The enemy being converted
+        user (models.User): The user the enemy should belong to.
+
+    Returns:
+        models.Enemy: A representation of the enemy ready to be added to
+            the database.
+    """
     defense_dict = {
         "armor_class": enemy.defenses.armor_class,
         "saves": {

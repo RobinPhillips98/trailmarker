@@ -1,11 +1,19 @@
+"""Functions for API calls related to encounters
+
+Defines functions that are called when a request is made to the /encounters
+route of the API, including creating, reading, and deleting encounters.
+
+"""
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.future import select
 
 import models
 from schemas import Encounter, Encounters
 
-from ..auth_helpers import get_current_active_user
+from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency
+from ..exceptions import NotAuthorizedException, NotFoundException
 
 router = APIRouter()
 
@@ -15,8 +23,18 @@ router = APIRouter()
 )
 def get_encounters(
     db: db_dependency,
-    current_user: models.User = Depends(get_current_active_user),
-):
+    current_user: models.User = Depends(get_current_user),
+) -> Encounters:
+    """Fetches all encounters owned by the current user
+
+    Args:
+        db (db_dependency): A SQLAlchemy database session
+        current_user (models.User, optional): The currently logged in user.
+             Defaults to Depends(get_current_user).
+
+    Returns:
+        Encounters: A list of encounter objects
+    """
     query = select(models.Encounter)
     query = query.where(models.Encounter.user_id == current_user.id)
     result = db.execute(query)
@@ -30,7 +48,27 @@ def get_encounters(
     response_model=Encounter,
     status_code=status.HTTP_200_OK,
 )
-def get_encounter(encounter_id, db: db_dependency):
+def get_encounter(
+    encounter_id: int,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_user),
+) -> Encounter:
+    """Fetches a specific encounter from the database
+
+    Args:
+        encounter_id (int): The ID of the encounter to be fetched
+        db (db_dependency): A SQLAlchemy database session
+        current_user (models.User, optional): The currently logged in user.
+             Defaults to Depends(get_current_user).
+
+    Raises:
+        NotFoundException: A 404 exception if the encounter is not found.
+        NotAuthorizedException: A 403 exception if the encounter does not
+            belong to the current user
+
+    Returns:
+        Encounter: An dictionary representing the encounter fetched.
+    """
     query = db.query(models.Encounter).where(
         models.Encounter.id == encounter_id
     )
@@ -39,7 +77,10 @@ def get_encounter(encounter_id, db: db_dependency):
     encounter = result.scalars().first()
 
     if not encounter:
-        raise HTTPException(status_code=404, detail="Encounter not found")
+        raise NotFoundException(route="encounter")
+
+    if encounter.user_id != current_user.id:
+        raise NotAuthorizedException(action="get", route="encounter")
 
     return encounter
 
@@ -52,8 +93,24 @@ def get_encounter(encounter_id, db: db_dependency):
 def add_encounter(
     encounter: Encounter,
     db: db_dependency,
-    current_user: models.User = Depends(get_current_active_user),
-):
+    current_user: models.User = Depends(get_current_user),
+) -> Encounter:
+    """Adds the given encounter to the database
+
+    Args:
+        encounter (EncounterCreate): The encounter to be added to the database
+        db (db_dependency): A SQLAlchemy database session
+        current_user (models.User, optional): The currently logged in user.
+             Defaults to Depends(get_current_user).
+
+    Raises:
+        http_err: A caught HTTP error
+        HTTPException: A non-HTTP exception caught and raised as an HTTP 500
+            exception
+
+    Returns:
+        Encounter: The encounter added to the database
+    """
     try:
         db_encounter = models.Encounter(
             name=encounter.name, enemies=encounter.enemies, user=current_user
@@ -79,8 +136,24 @@ def add_encounter(
 def delete_encounter(
     encounter_id,
     db: db_dependency,
-    current_user: models.User = Depends(get_current_active_user),
-):
+    current_user: models.User = Depends(get_current_user),
+) -> object:
+    """Fetches an encounter by ID and deletes it from the database
+
+    Args:
+        encounter_id (int): The ID of the encounter to be deleted
+        db (db_dependency): A SQLAlchemy database session
+        current_user (models.User, optional): The currently logged in user.
+             Defaults to Depends(get_current_user).
+
+    Raises:
+        NotFoundException: A 404 exception if the encounter is not found.
+        NotAuthorizedException: A 403 exception if the encounter does not
+            belong to the current user
+
+    Returns:
+        object: A response object confirming the encounter was deleted.
+    """
     query = db.query(models.Encounter).where(
         models.Encounter.id == encounter_id
     )
@@ -89,15 +162,10 @@ def delete_encounter(
     encounter = result.scalars().first()
 
     if not encounter:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Encounter not found"
-        )
+        raise NotFoundException(route="encounter")
 
     if encounter.user_id != current_user.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to delete this encounter",
-        )
+        raise NotAuthorizedException(action="delete", route="encounter")
 
     db.delete(encounter)
     db.commit()

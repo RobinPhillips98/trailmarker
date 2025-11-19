@@ -1,3 +1,10 @@
+"""Functions for API calls related to authentication.
+
+Defines functions for when requests are made to either the /register or /token
+route in the API, including registering and logging in useres.
+
+"""
+
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -19,7 +26,24 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=UserResponse)
-def register_user(user: UserCreate, db: db_dependency):
+def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
+    """Adds a given user to the database.
+
+    Takes in a user andchecks that its username doesn't already exist in the
+    datebase. If not, it hashes the given password and saves the username and
+    password in the database
+
+    Args:
+        user (UserCreate): An object containing information about a new user,
+            including their username and password.
+        db (db_dependency): A SQLAlchemy database session
+
+    Raises:
+        HTTPException: The given username already exists in the database.
+
+    Returns:
+        UserResponse: A dictionary containing information about the new user
+    """
     db_user = get_user(db, user.username)
     if db_user:
         raise HTTPException(
@@ -38,6 +62,19 @@ async def login_for_access_token(
     db: db_dependency,
     form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> Token:
+    """Validates a username and password and returns a JWT on success.
+
+    Args:
+        db (db_dependency): A SQLAlchemy database session
+        form_data (OAuth2PasswordRequestForm, optional): An OAuth form holding
+            a user's username and password. Defaults to Depends().
+
+    Raises:
+        HTTPException: There is no match for the given username and password
+
+    Returns:
+        Token: A JSON Web Token used to authenticate the user
+    """
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
