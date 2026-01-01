@@ -6,6 +6,7 @@ class Enemy(Creature):
         super().__init__(enemy)
         self.traits: list[str] = enemy["traits"]
         self.immunities: list[str] = enemy["immunities"]
+        self.team = 2
 
         # Any skill not specified in enemy data is set to none
         # None skills need to be set to correct base amount: the base attribute

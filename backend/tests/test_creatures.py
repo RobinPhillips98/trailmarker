@@ -19,6 +19,7 @@ class TestCreature:
         assert self.creature.initiative == 0
         assert not self.creature.is_dead
         assert self.creature.attacks is None
+        assert self.creature.team is None
 
     def test_attribute_modifiers(self):
         assert self.creature.strength == 5
@@ -67,6 +68,7 @@ class TestPlayer:
         assert self.player.actions == 3
         assert self.player.initiative == 0
         assert not self.player.is_dead
+        assert self.player.team == 1
 
     def test_attribute_modifiers(self):
         assert self.player.strength == 4
@@ -134,6 +136,7 @@ class TestEnemy:
         assert self.enemy.actions == 3
         assert self.enemy.initiative == 0
         assert not self.enemy.is_dead
+        assert self.enemy.team == 2
 
     def test_attribute_modifiers(self):
         assert self.enemy.strength == 0

@@ -1,4 +1,6 @@
+import random
 import re
+from typing import Self
 
 
 class Creature:
@@ -56,6 +58,7 @@ class Creature:
         # Encounter Data
         self.actions: int = 3
         self.initiative: int = 0
+        self.team: int = None
         self.is_dead: bool = False
 
     def __repr__(self):
@@ -63,6 +66,17 @@ class Creature:
 
     def roll_initiative(self):
         self.initiative = 10 + self.perception
+
+    def take_turn(self, players, enemies):
+        if self.team == 1:
+            target = self.pick_target(enemies)
+        if self.team == 2:
+            target = self.pick_target(players)
+
+        self.attack(self.attacks[0], target)
+
+    def pick_target(self, targets: list[Self]) -> Self:
+        return random.choice(targets)
 
     def attack(self, weapon: dict[str, str | int], target):
         attack_bonus = weapon["attackBonus"]
