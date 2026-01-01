@@ -1,11 +1,11 @@
 from ..simulation.creatures.creature import Creature
 from ..simulation.creatures.enemy import Enemy
 from ..simulation.creatures.player import Player
-from .sample_data import get_test_creature, get_test_enemy, get_test_player
+from .sample_data import test_creature, test_enemy, test_player
 
 
 class TestCreature:
-    creature = Creature(get_test_creature())
+    creature = Creature(test_creature)
 
     def test_basic_stats(self):
         assert self.creature.name == "Test Creature"
@@ -20,6 +20,7 @@ class TestCreature:
         assert not self.creature.is_dead
         assert self.creature.attacks is None
         assert self.creature.team is None
+        assert self.creature.encounter is None
 
     def test_attribute_modifiers(self):
         assert self.creature.strength == 5
@@ -55,7 +56,7 @@ class TestCreature:
 
 
 class TestPlayer:
-    player = Player(get_test_player())
+    player = Player(test_player)
 
     def test_basic_stats(self):
         assert self.player.name == "Valeros"
@@ -69,6 +70,9 @@ class TestPlayer:
         assert self.player.initiative == 0
         assert not self.player.is_dead
         assert self.player.team == 1
+        assert self.player.ancestry == "human"
+        assert self.player.class_ == "fighter"
+        assert self.player.encounter is None
 
     def test_attribute_modifiers(self):
         assert self.player.strength == 4
@@ -123,7 +127,7 @@ class TestPlayer:
 
 
 class TestEnemy:
-    enemy = Enemy(get_test_enemy())
+    enemy = Enemy(test_enemy)
 
     def test_basic_stats(self):
         assert self.enemy.name == "Goblin Warrior"
@@ -137,6 +141,7 @@ class TestEnemy:
         assert self.enemy.initiative == 0
         assert not self.enemy.is_dead
         assert self.enemy.team == 2
+        assert self.enemy.encounter is None
 
     def test_attribute_modifiers(self):
         assert self.enemy.strength == 0
@@ -189,8 +194,8 @@ class TestEnemy:
 
 
 class TestCreatureMethods:
-    player = Player(get_test_player())
-    enemy = Enemy(get_test_enemy())
+    player = Player(test_player)
+    enemy = Enemy(test_enemy)
 
     def test_initiative(self):
         assert self.player.initiative == 0
