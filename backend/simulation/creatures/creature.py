@@ -25,6 +25,7 @@ class Creature:
 
         # Skills
         skills = creature["skills"]
+        # If a skill is not specified, use the base attribute for that skill
         self.acrobatics: int = skills.get("acrobatics", self.dexterity)
         self.arcana: int = skills.get("arcana", self.intelligence)
         self.athletics: int = skills.get("athletics", self.strength)
@@ -56,29 +57,43 @@ class Creature:
             self.attacks = None
 
         # Encounter Data
+        self.encounter = None
         self.actions: int = 3
         self.initiative: int = 0
         self.team: int = None
         self.is_dead: bool = False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.name
 
-    def roll_initiative(self):
+    def join_encounter(self, encounter) -> None:
+        self.encounter = encounter
+        self.roll_initiative()
+
+    def roll_initiative(self) -> None:
         self.initiative = 10 + self.perception
 
-    def take_turn(self, players, enemies):
-        if self.team == 1:
-            target = self.pick_target(enemies)
-        if self.team == 2:
-            target = self.pick_target(players)
+    def take_turn(self) -> None:
+        if not self.encounter:
+            print("Error: Turns cannot be taken outside of an encounter")
+            return
 
-        self.attack(self.attacks[0], target)
+        if self.team == 1:
+            target = self.pick_target(self.encounter.enemies)
+        if self.team == 2:
+            target = self.pick_target(self.encounter.players)
+
+        attack = self.pick_attack()
+
+        self.attack(attack, target)
 
     def pick_target(self, targets: list[Self]) -> Self:
         return random.choice(targets)
 
-    def attack(self, weapon: dict[str, str | int], target):
+    def pick_attack(self) -> dict[any]:
+        return self.attacks[0]
+
+    def attack(self, weapon: dict[str, str | int], target) -> None:
         attack_bonus = weapon["attackBonus"]
 
         damage_roll = weapon["damage"]
@@ -99,15 +114,17 @@ class Creature:
         print(f"{self} attacked {target} for {damage} damage!")
         target.take_damage(damage)
 
-    def take_damage(self, damage: int):
+    def take_damage(self, damage: int) -> None:
         self.hit_points -= damage
-        print(f"{self} took {damage} damage!")
+        # print(f"{self} took {damage} damage!")
 
         if self.hit_points <= 0:
             self.die()
         else:
             print(f"{self} has {self.hit_points} HP remaining!")
 
-    def die(self):
+    def die(self) -> None:
         print(f"{self} has died!")
         self.is_dead = True
+        if self.encounter:
+            self.encounter.remove_creature(self)

@@ -42,3 +42,6 @@ class Enemy(Creature):
             self.survival = self.wisdom
         if self.thievery is None:
             self.thievery = self.dexterity
+
+    def long_description(self) -> str:
+        return f"{self}: Level {self.level}"

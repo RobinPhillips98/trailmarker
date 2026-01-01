@@ -1,157 +1,407 @@
-def get_test_creature():
-    return {
-        "name": "Test Creature",
-        "level": 3,
-        "perception": 5,
-        "skills": {
-            "athletics": 4,
+test_creature = {
+    "name": "Test Creature",
+    "level": 3,
+    "perception": 5,
+    "skills": {
+        "athletics": 4,
+    },
+    "attribute_modifiers": {
+        "strength": 5,
+        "constitution": 3,
+        "dexterity": 2,
+        "intelligence": 1,
+        "wisdom": -1,
+        "charisma": 0,
+    },
+    "defenses": {
+        "armor_class": 12,
+        "saves": {
+            "fortitude": 4,
+            "reflex": 3,
+            "will": 2,
         },
-        "attribute_modifiers": {
-            "strength": 5,
-            "constitution": 3,
-            "dexterity": 2,
-            "intelligence": 1,
-            "wisdom": -1,
-            "charisma": 0,
-        },
-        "defenses": {
-            "armor_class": 12,
-            "saves": {
-                "fortitude": 4,
-                "reflex": 3,
-                "will": 2,
+    },
+    "max_hit_points": 10,
+    "speed": 25,
+}
+
+
+test_player = {
+    "id": 1,
+    "name": "Valeros",
+    "level": 1,
+    "perception": 5,
+    "skills": {
+        "acrobatics": 5,
+        "arcana": 1,
+        "athletics": 7,
+        "crafting": 4,
+        "deception": 0,
+        "diplomacy": 3,
+        "intimidation": 3,
+        "lore": 4,
+        "medicine": 0,
+        "nature": 0,
+        "occultism": 1,
+        "performance": 0,
+        "religion": 0,
+        "society": 1,
+        "stealth": 2,
+        "survival": 3,
+        "thievery": 2,
+    },
+    "attribute_modifiers": {
+        "strength": 4,
+        "constitution": 2,
+        "dexterity": 2,
+        "intelligence": 1,
+        "wisdom": 0,
+        "charisma": 0,
+    },
+    "defenses": {
+        "armor_class": 18,
+        "saves": {"fortitude": 7, "reflex": 7, "will": 3},
+    },
+    "max_hit_points": 24,
+    "speed": 25,
+    "actions": {
+        "attacks": [
+            {
+                "name": "Longsword",
+                "attackBonus": 9,
+                "damage": "1d8+4",
+                "damageType": "slashing",
             },
-        },
-        "max_hit_points": 10,
-        "speed": 25,
-    }
+            {
+                "name": "Dagger",
+                "attackBonus": 9,
+                "damage": "1d4+4",
+                "damageType": "piercing",
+            },
+            {
+                "name": "Shortbow",
+                "attackBonus": 7,
+                "damage": "1d6",
+                "damageType": "piercing",
+            },
+        ]
+    },
+    "user_id": 1,
+    "player": "Robin",
+    "xp": 0,
+    "ancestry": "human",
+    "background": "farmhand",
+    "class": "fighter",
+}
 
 
-def get_test_player():
-    return {
-        "id": 1,
-        "name": "Valeros",
-        "level": 1,
-        "perception": 5,
-        "skills": {
-            "acrobatics": 5,
-            "arcana": 1,
-            "athletics": 7,
-            "crafting": 4,
-            "deception": 0,
-            "diplomacy": 3,
-            "intimidation": 3,
-            "lore": 4,
-            "medicine": 0,
-            "nature": 0,
-            "occultism": 1,
-            "performance": 0,
-            "religion": 0,
-            "society": 1,
-            "stealth": 2,
-            "survival": 3,
-            "thievery": 2,
-        },
-        "attribute_modifiers": {
-            "strength": 4,
-            "constitution": 2,
-            "dexterity": 2,
-            "intelligence": 1,
-            "wisdom": 0,
-            "charisma": 0,
-        },
-        "defenses": {
-            "armor_class": 18,
-            "saves": {"fortitude": 7, "reflex": 7, "will": 3},
-        },
-        "max_hit_points": 24,
-        "speed": 25,
-        "actions": {
-            "attacks": [
-                {
-                    "name": "Longsword",
-                    "attackBonus": 9,
-                    "damage": "1d8+4",
-                    "damageType": "slashing",
-                },
-                {
-                    "name": "Dagger",
-                    "attackBonus": 9,
-                    "damage": "1d4+4",
-                    "damageType": "piercing",
-                },
-                {
-                    "name": "Shortbow",
-                    "attackBonus": 7,
-                    "damage": "1d6",
-                    "damageType": "piercing",
-                },
-            ]
-        },
-        "user_id": 1,
-        "player": "Robin",
-        "xp": 0,
-        "ancestry": "human",
-        "background": "farmhand",
-        "class": "fighter",
-    }
+test_enemy = {
+    "id": 25,
+    "name": "Goblin Warrior",
+    "level": -1,
+    "perception": 2,
+    "skills": {
+        "acrobatics": 5,
+        "arcana": None,
+        "athletics": 2,
+        "crafting": None,
+        "deception": None,
+        "diplomacy": None,
+        "intimidation": None,
+        "lore": None,
+        "medicine": None,
+        "nature": 1,
+        "occultism": None,
+        "performance": None,
+        "religion": None,
+        "society": None,
+        "stealth": 5,
+        "survival": None,
+        "thievery": None,
+    },
+    "attribute_modifiers": {
+        "strength": 0,
+        "constitution": 1,
+        "dexterity": 3,
+        "intelligence": 0,
+        "wisdom": -1,
+        "charisma": 1,
+    },
+    "defenses": {
+        "armor_class": 16,
+        "saves": {"fortitude": 5, "reflex": 7, "will": 3},
+    },
+    "max_hit_points": 6,
+    "speed": 25,
+    "actions": {
+        "attacks": [
+            {
+                "name": "Shortsword",
+                "attackBonus": 7,
+                "damage": "1d6",
+                "damageType": "slashing",
+            },
+            {
+                "name": "Shortbow",
+                "attackBonus": 7,
+                "damage": "1d6",
+                "damageType": "piercing",
+            },
+        ]
+    },
+    "traits": ["common", "sm", "goblin", "humanoid"],
+    "immunities": [],
+}
 
+test_player_2 = {
+    "id": 4,
+    "name": "Kyra",
+    "level": 1,
+    "perception": 7,
+    "skills": {
+        "acrobatics": 1,
+        "arcana": 0,
+        "athletics": 1,
+        "crafting": 0,
+        "deception": 2,
+        "diplomacy": 5,
+        "intimidation": 2,
+        "lore": 3,
+        "medicine": 7,
+        "nature": 4,
+        "occultism": 0,
+        "performance": 2,
+        "religion": 7,
+        "society": 0,
+        "stealth": 1,
+        "survival": 7,
+        "thievery": 1,
+    },
+    "attribute_modifiers": {
+        "strength": 1,
+        "constitution": 1,
+        "dexterity": 1,
+        "intelligence": 0,
+        "wisdom": 4,
+        "charisma": 2,
+    },
+    "defenses": {
+        "armor_class": 16,
+        "saves": {"fortitude": 6, "reflex": 4, "will": 9},
+    },
+    "max_hit_points": 21,
+    "speed": 25,
+    "actions": {
+        "attacks": [
+            {
+                "name": "Scimitar",
+                "attackBonus": 4,
+                "damage": "1d6+1",
+                "damageType": "slashing",
+            }
+        ]
+    },
+    "user_id": 1,
+    "player": "",
+    "xp": 0,
+    "ancestry": "human",
+    "background": "acolyte",
+    "class": "cleric",
+}
 
-def get_test_enemy():
-    return {
-        "id": 25,
-        "name": "Goblin Warrior",
-        "level": -1,
-        "perception": 2,
-        "skills": {
-            "acrobatics": 5,
-            "arcana": None,
-            "athletics": 2,
-            "crafting": None,
-            "deception": None,
-            "diplomacy": None,
-            "intimidation": None,
-            "lore": None,
-            "medicine": None,
-            "nature": 1,
-            "occultism": None,
-            "performance": None,
-            "religion": None,
-            "society": None,
-            "stealth": 5,
-            "survival": None,
-            "thievery": None,
-        },
-        "attribute_modifiers": {
-            "strength": 0,
-            "constitution": 1,
-            "dexterity": 3,
-            "intelligence": 0,
-            "wisdom": -1,
-            "charisma": 1,
-        },
-        "defenses": {
-            "armor_class": 16,
-            "saves": {"fortitude": 5, "reflex": 7, "will": 3},
-        },
-        "max_hit_points": 6,
-        "speed": 25,
-        "actions": {
-            "attacks": [
-                {
-                    "name": "Shortsword",
-                    "attackBonus": 7,
-                    "damage": "1d6",
-                    "damageType": "slashing",
-                },
-                {
-                    "name": "Shortbow",
-                    "attackBonus": 7,
-                    "damage": "1d6",
-                    "damageType": "piercing",
-                },
-            ]
-        },
-        "traits": ["common", "sm", "goblin", "humanoid"],
-        "immunities": [],
-    }
+test_player_3 = {
+    "id": 5,
+    "name": "Merisiel",
+    "level": 1,
+    "perception": 7,
+    "skills": {
+        "acrobatics": 7,
+        "arcana": 1,
+        "athletics": 4,
+        "crafting": 4,
+        "deception": 3,
+        "diplomacy": 3,
+        "intimidation": 3,
+        "lore": 4,
+        "medicine": 5,
+        "nature": 2,
+        "occultism": 1,
+        "performance": 0,
+        "religion": 2,
+        "society": 4,
+        "stealth": 7,
+        "survival": 5,
+        "thievery": 7,
+    },
+    "attribute_modifiers": {
+        "strength": 1,
+        "constitution": 1,
+        "dexterity": 4,
+        "intelligence": 1,
+        "wisdom": 2,
+        "charisma": 0,
+    },
+    "defenses": {
+        "armor_class": 18,
+        "saves": {"fortitude": 4, "reflex": 9, "will": 7},
+    },
+    "max_hit_points": 15,
+    "speed": 30,
+    "actions": {
+        "attacks": [
+            {
+                "name": "Rapier",
+                "attackBonus": 7,
+                "damage": "1d6+4",
+                "damageType": "piercing",
+            },
+            {
+                "name": "Shortsword",
+                "attackBonus": 7,
+                "damage": "1d6+4",
+                "damageType": "piercing",
+            },
+            {
+                "name": "Dagger",
+                "attackBonus": 7,
+                "damage": "1d4+1",
+                "damageType": "piercing",
+            },
+        ]
+    },
+    "user_id": 1,
+    "player": "",
+    "xp": 0,
+    "ancestry": "elf",
+    "background": "criminal",
+    "class": "rogue",
+}
+
+test_player_4 = {
+    "id": 6,
+    "name": "Ezren",
+    "level": 1,
+    "perception": 4,
+    "skills": {
+        "acrobatics": 5,
+        "arcana": 7,
+        "athletics": 0,
+        "crafting": 7,
+        "deception": 0,
+        "diplomacy": 3,
+        "intimidation": 0,
+        "lore": 7,
+        "medicine": 4,
+        "nature": 4,
+        "occultism": 7,
+        "performance": 0,
+        "religion": 4,
+        "society": 7,
+        "stealth": 2,
+        "survival": 4,
+        "thievery": 5,
+    },
+    "attribute_modifiers": {
+        "strength": 0,
+        "constitution": 2,
+        "dexterity": 2,
+        "intelligence": 4,
+        "wisdom": 1,
+        "charisma": 0,
+    },
+    "defenses": {
+        "armor_class": 15,
+        "saves": {"fortitude": 5, "reflex": 5, "will": 6},
+    },
+    "max_hit_points": 16,
+    "speed": 25,
+    "actions": {
+        "attacks": [
+            {
+                "name": "Dagger",
+                "attackBonus": 5,
+                "damage": "1d4",
+                "damageType": "piercing",
+            },
+            {
+                "name": "Staff",
+                "attackBonus": 3,
+                "damage": "1d8",
+                "damageType": "bludgeoning",
+            },
+            {
+                "name": "Crossbow",
+                "attackBonus": 5,
+                "damage": "1d8",
+                "damageType": "piercing",
+            },
+        ]
+    },
+    "user_id": 1,
+    "player": "",
+    "xp": 0,
+    "ancestry": "human",
+    "background": "scholar",
+    "class": "wizard",
+}
+
+test_enemy_2 = {
+    "id": 23,
+    "name": "Goblin Commando",
+    "level": 1,
+    "perception": 5,
+    "skills": {
+        "acrobatics": 6,
+        "arcana": None,
+        "athletics": 6,
+        "crafting": None,
+        "deception": None,
+        "diplomacy": None,
+        "intimidation": 5,
+        "lore": None,
+        "medicine": None,
+        "nature": 5,
+        "occultism": None,
+        "performance": None,
+        "religion": None,
+        "society": None,
+        "stealth": 6,
+        "survival": None,
+        "thievery": None,
+    },
+    "attribute_modifiers": {
+        "strength": 3,
+        "constitution": 2,
+        "dexterity": 3,
+        "intelligence": -1,
+        "wisdom": 0,
+        "charisma": 2,
+    },
+    "defenses": {
+        "armor_class": 17,
+        "saves": {"fortitude": 7, "reflex": 8, "will": 5},
+    },
+    "max_hit_points": 18,
+    "speed": 25,
+    "actions": {
+        "attacks": [
+            {
+                "name": "Greatsword",
+                "attackBonus": 8,
+                "damage": "1d12+3",
+                "damageType": "slashing",
+            },
+            {
+                "name": "Shortbow",
+                "attackBonus": 8,
+                "damage": "1d6",
+                "damageType": "piercing",
+            },
+        ]
+    },
+    "traits": ["common", "sm", "goblin", "humanoid"],
+    "immunities": [],
+}
+
+test_party = [test_player, test_player_2, test_player_3, test_player_4]
+test_enemies = [test_enemy, test_enemy, test_enemy_2]
