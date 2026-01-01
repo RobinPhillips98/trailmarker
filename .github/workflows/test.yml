@@ -1,0 +1,50 @@
+name: Pull Request Check
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  pull-request-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+            python-version: '3.13' 
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install poetry
+        run: |
+          cd backend
+          pip install poetry
+
+      - name: Install python dependencies (in pyproject.toml)
+        run: |
+            cd backend
+            poetry install
+
+      - name: Check code quality using black, isort, and flake8
+        run: |
+            # bash scripts/check.sh
+            cd backend
+            echo 'Running flake8...'
+            poetry run flake8
+
+            echo 'Running isort...'
+            poetry run isort . --check-only
+
+            echo 'Running black...'
+            poetry run black --line-length=79 . --check
+
+            echo 'Completed checks'
+
+      - name: Run automated tests
+        run: |
+          cd backend
+          poetry run pytest -v 
