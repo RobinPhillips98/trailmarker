@@ -154,6 +154,20 @@ class Characters(BaseModel):
     characters: list[Character]
 
 
+# Simulation
+class SimEnemyInfo(BaseModel):
+    id: int
+    quantity: int
+
+
+class SimRequest(BaseModel):
+    enemies: list[SimEnemyInfo]
+
+
+class SimData(BaseModel):
+    winner: str
+
+
 # Authentication
 class Token(BaseModel):
     access_token: str
