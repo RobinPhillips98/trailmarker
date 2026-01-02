@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 import models
-from api.routes import auth, characters, encounters, enemies, user
+from api.routes import auth, characters, encounters, enemies, simulation, user
 from db import engine
 
 app = FastAPI(debug=True)
@@ -23,6 +23,7 @@ app.add_middleware(
 app.include_router(characters.router)
 app.include_router(enemies.router)
 app.include_router(encounters.router)
+app.include_router(simulation.router)
 app.include_router(user.router)
 app.include_router(auth.router, prefix="/auth")
 

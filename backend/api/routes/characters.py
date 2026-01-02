@@ -6,7 +6,6 @@ route of the API including creating, reading, updating, and deleting characters
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.future import select
 
 import models
 from schemas import Character, CharacterCreate, Characters, CharacterUpdate
@@ -14,6 +13,7 @@ from schemas import Character, CharacterCreate, Characters, CharacterUpdate
 from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency
 from ..exceptions import NotAuthorizedException, NotFoundException
+from ..helpers import fetch_characters_from_db
 
 router = APIRouter()
 
@@ -35,12 +35,7 @@ def get_characters(
     Returns:
         Characters: A list of Character objects
     """
-    query = select(models.Character)
-    query = query.where(models.Character.user_id == current_user.id)
-    result = db.execute(query)
-    characters = result.scalars().all()
-    character_list = [e.__dict__ for e in characters]
-    return Characters(characters=character_list)
+    return fetch_characters_from_db(current_user, db)
 
 
 @router.get(
