@@ -166,6 +166,7 @@ class SimRequest(BaseModel):
 
 class SimData(BaseModel):
     winner: str
+    log: list[str]
 
 
 # Authentication

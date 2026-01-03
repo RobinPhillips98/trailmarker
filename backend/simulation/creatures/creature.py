@@ -4,7 +4,7 @@ from typing import Self
 
 
 class Creature:
-    def __init__(self, creature: dict[any]):
+    def __init__(self, creature: dict[any], simulation=None):
         # Basic Stats
         self.name: str = creature["name"]
         self.level: int = creature["level"]
@@ -63,6 +63,9 @@ class Creature:
         self.team: int = None
         self.is_dead: bool = False
 
+        # Simulation Data
+        self.simulation = simulation
+
     def __repr__(self) -> str:
         return self.name
 
@@ -111,20 +114,25 @@ class Creature:
         hit_chance = 1 - miss_chance
 
         damage = int(average_damage * hit_chance)
-        print(f"{self} attacked {target} for {damage} damage!")
+        self.log(f"{self} attacked {target} for {damage} damage!")
         target.take_damage(damage)
 
     def take_damage(self, damage: int) -> None:
         self.hit_points -= damage
-        # print(f"{self} took {damage} damage!")
 
         if self.hit_points <= 0:
             self.die()
         else:
-            print(f"{self} has {self.hit_points} HP remaining!")
+            self.log(f"{self} has {self.hit_points} HP remaining!")
 
     def die(self) -> None:
-        print(f"{self} has died!")
+        self.log(f"{self} has died!")
         self.is_dead = True
         if self.encounter:
             self.encounter.remove_creature(self)
+
+    def log(self, message: str = ""):
+        if self.simulation:
+            self.simulation.log(message)
+        else:
+            print(message)

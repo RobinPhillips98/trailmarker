@@ -2,8 +2,8 @@ from .creature import Creature
 
 
 class Enemy(Creature):
-    def __init__(self, enemy: dict[any]):
-        super().__init__(enemy)
+    def __init__(self, enemy: dict[any], simulation=None):
+        super().__init__(enemy, simulation)
         self.traits: list[str] = enemy["traits"]
         self.immunities: list[str] = enemy["immunities"]
         self.team = 2

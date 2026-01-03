@@ -2,8 +2,8 @@ from .creature import Creature
 
 
 class Player(Creature):
-    def __init__(self, player: dict[any]):
-        super().__init__(player)
+    def __init__(self, player: dict[any], simulation=None):
+        super().__init__(player, simulation)
         self.team = 1
         self.ancestry: str = player["ancestry"]
         self.class_: str = player["class"]
