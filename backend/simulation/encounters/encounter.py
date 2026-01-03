@@ -4,10 +4,13 @@ from ..creatures.player import Player
 
 
 class Encounter:
-    def __init__(self, players: list[Player], enemies: list[Enemy]):
+    def __init__(
+        self, players: list[Player], enemies: list[Enemy], simulation=None
+    ):
         self.players: list[Player] = players
         self.enemies: list[Enemy] = enemies
         self.creatures: list[Creature] = self.players + self.enemies
+        self.simulation = simulation
         self.winner = None
 
         for creature in self.creatures:
@@ -27,29 +30,29 @@ class Encounter:
         return False
 
     def run_encounter(self) -> str:
-        print("Party: ")
-        for player in self.players:
-            print(f"* {player.long_description()}")
+        self.log("Party:")
+        for i in range(len(self.players)):
+            self.log(f"{i + 1}. {self.players[i]}")
 
-        print("Enemies:")
-        for enemy in self.enemies:
-            print(f"* {enemy.long_description()}")
-        print()
+        self.log("Enemies:")
+        for i in range(len(self.enemies)):
+            self.log(f"{i + 1}. {self.enemies[i]}")
+        self.log()
 
-        print("Initiative order: ")
+        self.log("Initiative order: ")
         for i in range(len(self.creatures)):
-            print(f"{i + 1}. {self.creatures[i]}")
-        print()
+            self.log(f"{i + 1}. {self.creatures[i]}")
+        self.log()
 
         print("Running encounter...")
         rounds = 0
         while not self.check_winner():
             rounds += 1
-            print(f"Round {rounds}:")
+            self.log(f"Round {rounds}:")
             self.run_round()
-            print()
+            self.log()
 
-        print(f"{self.winner.capitalize()} won in {rounds} rounds!")
+        self.log(f"{self.winner.capitalize()} won in {rounds} rounds!")
         return self.winner
 
     def run_round(self):
@@ -60,10 +63,15 @@ class Encounter:
             creature.take_turn()
 
     def remove_creature(self, creature: Creature):
-        # print(f"Removing {creature} from encounter")
         if creature.team == 1:
             self.players.remove(creature)
         elif creature.team == 2:
             self.enemies.remove(creature)
 
         self.creatures.remove(creature)
+
+    def log(self, message: str = ""):
+        if self.simulation:
+            self.simulation.log(message)
+        else:
+            print(message)

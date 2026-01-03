@@ -31,9 +31,7 @@ def initialize_simulation(
         for i in range(enemy.quantity):
             enemies.append(enemy_dict)
 
-    winner = run_simulation(players, enemies)
-
-    response = {"winner": winner}
+    response = run_simulation(players, enemies)
 
     return response
 

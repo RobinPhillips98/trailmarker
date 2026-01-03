@@ -7,7 +7,13 @@ def test_sim_players_win():
     players = test_party
 
     print()  # for neatness in viewing output
-    winner = run_simulation(players, enemies)
+    sim_results = run_simulation(players, enemies)
+    winner = sim_results["winner"]
+    log = sim_results["log"]
+    assert log
+    print("Log:")
+    for message in log:
+        print(message)
     assert winner == "players"
 
 
@@ -16,5 +22,11 @@ def test_sim_enemies_win():
     players = test_party
 
     print()
-    winner = run_simulation(players, enemies)
+    sim_results = run_simulation(players, enemies)
+    winner = sim_results["winner"]
+    log = sim_results["log"]
+    assert log
+    print("Log:")
+    for message in log:
+        print(message)
     assert winner == "enemies"
