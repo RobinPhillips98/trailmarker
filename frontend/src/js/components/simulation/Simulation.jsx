@@ -3,23 +3,26 @@ import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { AuthContext } from "../../contexts/AuthContext";
 import { toTitleCase } from "../../services/helpers";
-import { Collapse, Typography } from "antd";
+import { Button, Collapse, Typography } from "antd";
 
 export default function Simulation() {
-  const { token, user } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
   const navigate = useNavigate();
   const { state } = useLocation();
   const { enemies } = state;
   const [simData, setSimData] = useState([{}]);
+  const [wins, setWins] = useState();
+  const [totalSims, setTotalSims] = useState();
   const [loaded, setLoaded] = useState(false);
+  const [run, setRun] = useState(false);
   const { Paragraph, Title } = Typography;
 
   useEffect(() => {
-    if (!token || !user) {
+    if (!token) {
       alert("Sorry: You must be logged in to access this page");
       navigate("/login");
     }
-  }, [navigate, token, user]);
+  }, [navigate, token]);
 
   useEffect(() => {
     const request = {
@@ -36,11 +39,18 @@ export default function Simulation() {
           Authorization: `Bearer ${token}`,
         },
       });
-      setSimData([response.data]);
+      setSimData(response.data.sim_data);
+      setWins(response.data.wins);
+      setTotalSims(response.data.total_sims);
       setLoaded(true);
     }
     callSimulation();
-  }, [enemies, token]);
+  }, [enemies, run, token]);
+
+  function handleClick() {
+    setLoaded(false);
+    setRun(!run);
+  }
 
   if (loaded) {
     const collapseItems = simData.map((sim, i) => {
@@ -48,7 +58,7 @@ export default function Simulation() {
         key: i + 1,
         label: `Simulation ${i + 1} - Winner: ${toTitleCase(sim.winner)}!`,
         children: (
-          <>
+          <div style={{height: 500, overflow: "scroll"}}>
             <Title level={2}>Overview</Title>
             <Paragraph>
               Players killed: {sim.players_killed}/{sim.total_players}
@@ -67,12 +77,30 @@ export default function Simulation() {
                 return <Title level={3}>{message}</Title>;
               } else return <Paragraph>{message}</Paragraph>;
             })}
-          </>
+          </div>
         ),
       };
     });
 
-    return <Collapse items={collapseItems} />;
+    return (
+      <div>
+        <Title>Simulation Results</Title>
+        <Button type="primary" onClick={handleClick}>
+          Run Again
+        </Button>
+        <Title level={2}>
+          Players won {wins}/{totalSims} simulations ({(wins / totalSims) * 100}
+          %)
+        </Title>
+        <Title level={2}>Individual Simulation Data:</Title>
+        <Collapse
+          accordion
+          items={collapseItems}
+          style={{ height: 800, overflow: "scroll" }}
+          size="large"
+        />
+      </div>
+    );
   } else {
     return <Title>Loading, please wait...</Title>;
   }

@@ -44,7 +44,7 @@ class Encounter:
             self.log(f"{i + 1}. {self.creatures[i]}")
         self.log()
 
-        print("Running encounter...")
+        # print("Running encounter...")
         rounds = 0
         while not self.check_winner():
             rounds += 1

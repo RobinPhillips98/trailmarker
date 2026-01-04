@@ -32,10 +32,10 @@ class _Simulation:
 
 
 def run_simulation(player_dicts: list[any], enemy_dicts: list[any]) -> str:
-    print("Preparing simulation...")
+    # print("Preparing simulation...")
     simulation = _Simulation(player_dicts, enemy_dicts)
     simulation.run()
-    print("Simulation complete!")
+    # print("Simulation complete!")
     return {
         "winner": simulation.winner,
         "rounds": simulation.rounds,

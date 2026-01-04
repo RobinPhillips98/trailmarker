@@ -172,6 +172,12 @@ class SimData(BaseModel):
     log: list[str]
 
 
+class SimResponse(BaseModel):
+    wins: int
+    total_sims: int
+    sim_data: list[SimData]
+
+
 # Authentication
 class Token(BaseModel):
     access_token: str
