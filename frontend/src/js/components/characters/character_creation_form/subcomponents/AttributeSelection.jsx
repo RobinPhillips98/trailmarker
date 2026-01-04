@@ -1,6 +1,7 @@
 import { Card, Form, InputNumber } from "antd";
 
-import { attributes, toTitleCase } from "../../characterHelpers";
+import { attributes } from "../../characterHelpers";
+import { toTitleCase } from "../../../../services/helpers";
 
 /**
  * A component to allow a user to set a player character's attribute modifiers
