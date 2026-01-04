@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { AuthContext } from "../../contexts/AuthContext";
-import { isEmpty, toTitleCase } from "../../services/helpers";
+import { toTitleCase } from "../../services/helpers";
 import { Collapse, Typography } from "antd";
 
 export default function Simulation() {
@@ -10,7 +10,8 @@ export default function Simulation() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { enemies } = state;
-  const [simData, setSimData] = useState({});
+  const [simData, setSimData] = useState([{}]);
+  const [loaded, setLoaded] = useState(false);
   const { Paragraph, Title } = Typography;
 
   useEffect(() => {
@@ -35,34 +36,41 @@ export default function Simulation() {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data);
-      setSimData(response.data);
+      setSimData([response.data]);
+      setLoaded(true);
     }
     callSimulation();
   }, [enemies, token]);
 
-  if (!isEmpty(simData)) {
-    const collapseItems = [
-      {
-        key: "1",
-        label: `Winner: ${toTitleCase(simData.winner)}!`,
-        // label: (<Title>Winner: {toTitleCase(simData.winner)}!</Title>),
-        children: simData.log.map((message) => {
-          if (
-            message.includes("Party") ||
-            message.includes("Enemies") ||
-            message.includes("Initiative") ||
-            message.includes("Round")
-          ) {
-            return (
-              <Title level={2} style={{ marginTop: 5 }}>
-                {message}
-              </Title>
-            );
-          } else return <Paragraph>{message}</Paragraph>;
-        }),
-      },
-    ];
+  if (loaded) {
+    const collapseItems = simData.map((sim, i) => {
+      return {
+        key: i + 1,
+        label: `Simulation ${i + 1} - Winner: ${toTitleCase(sim.winner)}!`,
+        children: (
+          <>
+            <Title level={2}>Overview</Title>
+            <Paragraph>
+              Players killed: {sim.players_killed}/{sim.total_players}
+            </Paragraph>
+            <Paragraph>Rounds taken: {sim.rounds}</Paragraph>
+            <Title level={2}>Combat Log:</Title>
+            {sim.log.map((message) => {
+              if (message.includes("won")) {
+                return <Title level={2}>{message}</Title>;
+              } else if (
+                message.includes("Party") ||
+                message.includes("Enemies") ||
+                message.includes("Initiative") ||
+                message.includes("Round")
+              ) {
+                return <Title level={3}>{message}</Title>;
+              } else return <Paragraph>{message}</Paragraph>;
+            })}
+          </>
+        ),
+      };
+    });
 
     return <Collapse items={collapseItems} />;
   } else {

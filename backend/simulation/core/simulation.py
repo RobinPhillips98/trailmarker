@@ -8,16 +8,20 @@ class _Simulation:
         self, player_dicts: list[dict[any]], enemy_dicts: list[dict[any]]
     ):
         self.winner: str = ""
+        self.players_killed: int = 0
+        self.rounds: int = 0
         self.sim_log: list[str] = []
+
         self.players: list[Player] = []
         self.enemies: list[Enemy] = []
-
         for player_dict in player_dicts:
             player = Player(player_dict, self)
             self.players.append(player)
         for enemy_dict in enemy_dicts:
             enemy = Enemy(enemy_dict, self)
             self.enemies.append(enemy)
+
+        self.total_players: int = len(self.players)
 
     def run(self):
         encounter = Encounter(self.players, self.enemies, self)
@@ -32,4 +36,10 @@ def run_simulation(player_dicts: list[any], enemy_dicts: list[any]) -> str:
     simulation = _Simulation(player_dicts, enemy_dicts)
     simulation.run()
     print("Simulation complete!")
-    return {"winner": simulation.winner, "log": simulation.sim_log}
+    return {
+        "winner": simulation.winner,
+        "rounds": simulation.rounds,
+        "players_killed": simulation.players_killed,
+        "total_players": simulation.total_players,
+        "log": simulation.sim_log,
+    }
