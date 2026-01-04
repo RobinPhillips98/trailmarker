@@ -8,5 +8,10 @@ class Player(Creature):
         self.ancestry: str = player["ancestry"]
         self.class_: str = player["class"]
 
+    def die(self) -> None:
+        super().die()
+        if self.simulation:
+            self.simulation.players_killed += 1
+
     def long_description(self) -> str:
         return f"{self}: Level {self.level} {self.ancestry.capitalize()} {self.class_.capitalize()}"  # noqa

@@ -166,6 +166,9 @@ class SimRequest(BaseModel):
 
 class SimData(BaseModel):
     winner: str
+    rounds: int
+    players_killed: int
+    total_players: int
     log: list[str]
 
 

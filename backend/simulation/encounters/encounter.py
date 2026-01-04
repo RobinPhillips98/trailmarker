@@ -53,6 +53,8 @@ class Encounter:
             self.log()
 
         self.log(f"{self.winner.capitalize()} won in {rounds} rounds!")
+        if self.simulation:
+            self.simulation.rounds = rounds
         return self.winner
 
     def run_round(self):
