@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 
 import models
-from schemas import Character, Enemy, SimData, SimRequest
+from schemas import Character, Enemy, SimRequest, SimResponse
 
 from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency, run_simulation
@@ -12,13 +12,15 @@ router = APIRouter()
 
 
 @router.post(
-    "/simulation", response_model=SimData, status_code=status.HTTP_200_OK
+    "/simulation", response_model=SimResponse, status_code=status.HTTP_200_OK
 )
 def initialize_simulation(
     request: SimRequest,
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
 ):
+    total_sims = 100
+    response = {"wins": 0, "total_sims": total_sims, "sim_data": []}
     players = []
     characters = fetch_characters_from_db(current_user, db).characters
     for character in characters:
@@ -31,7 +33,14 @@ def initialize_simulation(
         for i in range(enemy.quantity):
             enemies.append(enemy_dict)
 
-    response = run_simulation(players, enemies)
+    # print("Running simulations...")
+    for i in range(total_sims):
+        # print(f"Running simulation {i + 1}...")
+        sim_data = run_simulation(players, enemies)
+        if sim_data["winner"] == "players":
+            response["wins"] += 1
+        response["sim_data"].append(sim_data)
+    # print("Simulations complete. Sending response...")
 
     return response
 
