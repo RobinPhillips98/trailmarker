@@ -1,6 +1,7 @@
 import { Card, Form, InputNumber } from "antd";
 
-import { skills, toTitleCase } from "../../characterHelpers";
+import { skills } from "../../characterHelpers";
+import { toTitleCase } from "../../../../services/helpers";
 
 /**
  * A component to allow a user to set a player character's skills

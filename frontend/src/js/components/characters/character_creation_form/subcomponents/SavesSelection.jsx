@@ -1,6 +1,7 @@
 import { Card, Form, InputNumber } from "antd";
 
-import { saves, toTitleCase } from "../../characterHelpers";
+import { saves } from "../../characterHelpers";
+import { toTitleCase } from "../../../../services/helpers";
 
 /**
  * A component to allow a user to set a player character's saving throws

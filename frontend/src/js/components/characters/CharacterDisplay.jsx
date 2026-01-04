@@ -1,7 +1,8 @@
 import { Button, Card, Descriptions, Divider, List } from "antd";
 
-import { splitCamelCase, toTitleCase } from "./characterHelpers";
+
 import CharacterEditModal from "./CharacterEditModal";
+import { splitCamelCase, toTitleCase } from "../../services/helpers";
 
 /**
  * A component to display information about a given character
