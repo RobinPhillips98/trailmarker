@@ -8,6 +8,7 @@ import Homepage from "./components/homepage/Homepage.jsx";
 import NavBar from "./components/NavBar.jsx";
 import Characters from "./components/characters/Characters.jsx";
 import CharacterCreationForm from "./components/characters/character_creation_form/CharacterCreationForm.jsx";
+import Simulation from "./components/simulation/Simulation.jsx";
 
 export default function App() {
   const { Header, Content } = Layout;
@@ -38,6 +39,7 @@ export default function App() {
                   />
                   <Route path="/register" element={<Register />} />
                   <Route path="/login" element={<Login />} />
+                  <Route path="/simulation" element={<Simulation />} />
                 </Routes>
               </Content>
             </Layout>

@@ -8,9 +8,9 @@ import SavedEncounters from "./saved_encounters/SavedEncounters";
 import PartyInfoForm from "./PartyInfoForm";
 import CurrentDifficultyDisplay from "./CurrentDifficultyDisplay";
 import XPBudget from "./XPBudget";
-
-
-
+import { useNavigate } from "react-router-dom";
+import { Button } from "antd";
+import { isEmpty } from "../../../services/helpers";
 
 /**
  * An overview with information and options for the current encounter
@@ -27,7 +27,7 @@ export default function Overview(props) {
   const { selectedEnemies, handleLoad, clearEncounter } = props;
   const [switched, setSwitched] = useState(false);
 
-  const { token } = useContext(AuthContext);
+  const { token, user } = useContext(AuthContext);
 
   useEffect(() => {
     /**
@@ -146,9 +146,23 @@ export default function Overview(props) {
     else setDifficulty("extreme");
   }, [xp, budget]);
 
+  const navigate = useNavigate();
+
+  function handleClick() {
+    navigate("/simulation/", { state: { enemies: selectedEnemies } });
+  }
+
   return (
     <div style={{ display: "flex", gap: 10, justifyContent: "space-around" }}>
       <div style={{ alignContent: "space-around" }}>
+        <Button
+          type="primary"
+          style={{ marginBottom: 10 }}
+          onClick={handleClick}
+          disabled={!user || isEmpty(selectedEnemies)}
+        >
+          Run Simulation
+        </Button>
         <SavedEncounters handleLoad={handleLoad} />
         <EncounterOptions
           enemies={selectedEnemies}
