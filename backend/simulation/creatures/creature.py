@@ -4,7 +4,33 @@ from typing import Self
 
 
 class Creature:
+    """A creature, such as a player or enemy, ready for use in an encounter.
+
+    A representation of a creature from Pathfinder 2E with support for basic
+    stats, attribute modifiers, skills, saving throws as well as methods
+    for taking turns, attacking, and taking damage. For sake of brevity,
+    only non-obvious attributes will be explained.
+
+    Attributes:
+        attacks: A list of dictionaries containing information on each of the
+            creature's available weapon attacks.
+        encounter: The encounter the creature is in, if any, primarily used
+            for removing the creature from the encounter on death.
+        team: 1 if the creature is a player, 2 if the creature is an enemy.
+        simulation: The simulation the creature is in, if any, primarily used
+            for adding to the simulation's combat log.
+    """
+
+    # Built-in Methods
+
     def __init__(self, creature: dict[any], simulation=None):
+        """Initializes the creature based on the given dictioanry
+
+        Args:
+            creature (dict[any]): Data used to build the Creature.
+            simulation (Simulation, optional): The simulation the creature is
+                in. Defaults to None.
+        """
         # Basic Stats
         self.name: str = creature["name"]
         self.level: int = creature["level"]
@@ -52,13 +78,12 @@ class Creature:
 
         # Actions
         try:
-            self.attacks: dict[any] = creature["actions"]["attacks"]
+            self.attacks: list[dict[any]] = creature["actions"]["attacks"]
         except KeyError:
             self.attacks = None
 
         # Encounter Data
         self.encounter = None
-        self.actions: int = 3
         self.initiative: int = 0
         self.team: int = None
         self.is_dead: bool = False
@@ -69,34 +94,78 @@ class Creature:
     def __repr__(self) -> str:
         return self.name
 
-    def join_encounter(self, encounter) -> None:
-        self.encounter = encounter
-        self.roll_initiative()
+    # Public Methods
 
-    def roll_initiative(self) -> None:
-        self.initiative = 10 + self.perception
+    def join_encounter(self, encounter) -> None:
+        """Sets the creature's encounter and rolls initiative.
+
+        Args:
+            encounter (Encounter): The encounter for the creature to join
+        """
+        self.encounter = encounter
+        self._roll_initiative()
 
     def take_turn(self) -> None:
+        """The creature picks a target at random and attacks that target."""
         if not self.encounter:
             print("Error: Turns cannot be taken outside of an encounter")
             return
 
         if self.team == 1:
-            target = self.pick_target(self.encounter.enemies)
+            target = self._pick_target(self.encounter.enemies)
         if self.team == 2:
-            target = self.pick_target(self.encounter.players)
+            target = self._pick_target(self.encounter.players)
 
-        attack = self.pick_attack()
+        attack = self._pick_attack()
 
-        self.attack(attack, target)
+        self._attack(attack, target)
 
-    def pick_target(self, targets: list[Self]) -> Self:
+    def take_damage(self, damage: int) -> None:
+        """Subtracts the given damage from the creature's HP.
+
+        The given damage is subtracted from the creature's current hit points,
+        and if their hit points fall below 0, the creature dies.
+
+        Args:
+            damage (int): The damage the creature is to take.
+        """
+        self.hit_points -= damage
+
+        if self.hit_points <= 0:
+            self._die()
+        else:
+            self._log(f"{self} has {self.hit_points} HP remaining!")
+
+    # Private Methods
+
+    def _roll_initiative(self) -> None:
+        self.initiative = 10 + self.perception
+
+    def _pick_target(self, targets: list[Self]) -> Self:
         return random.choice(targets)
 
-    def pick_attack(self) -> dict[any]:
+    def _pick_attack(self) -> dict[any]:
         return self.attacks[0]
 
-    def attack(self, weapon: dict[str, str | int], target) -> None:
+    def _attack(self, weapon: dict[str, str | int], target) -> None:
+        """The creature attacks the given target with the given weapon.
+
+        The given weapon's attack bonus and damage roll are extracted. The
+        damage roll is split into the number of dice, the die size, and the
+        damage bonus. These three numbers are then used to calculate the
+        average damage per attack. Next, the chance to hit is calculated
+        and these are used to calculate the average expected damage of the
+        attack, which is dealt to the target.
+
+        This calculation is to be replaced by proper attack and damage rolls
+        in the next iteration of the simulation.
+
+        Args:
+            weapon (dict[str, str  |  int]): The weapon the creature is
+                attacking with.
+            target (Creature): The target of the attack
+        """
+
         attack_bonus = weapon["attackBonus"]
 
         damage_roll = weapon["damage"]
@@ -114,24 +183,16 @@ class Creature:
         hit_chance = 1 - miss_chance
 
         damage = int(average_damage * hit_chance)
-        self.log(f"{self} attacked {target} for {damage} damage!")
+        self._log(f"{self} attacked {target} for {damage} damage!")
         target.take_damage(damage)
 
-    def take_damage(self, damage: int) -> None:
-        self.hit_points -= damage
-
-        if self.hit_points <= 0:
-            self.die()
-        else:
-            self.log(f"{self} has {self.hit_points} HP remaining!")
-
-    def die(self) -> None:
-        self.log(f"{self} has died!")
+    def _die(self) -> None:
+        self._log(f"{self} has died!")
         self.is_dead = True
         if self.encounter:
             self.encounter.remove_creature(self)
 
-    def log(self, message: str = ""):
+    def _log(self, message: str = ""):
         if self.simulation:
             self.simulation.log(message)
         else:
