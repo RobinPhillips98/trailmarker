@@ -15,7 +15,6 @@ class TestCreature:
         assert self.creature.hit_points == self.creature.max_hit_points
         assert self.creature.armor_class == 12
         assert self.creature.speed == 25
-        assert self.creature.actions == 3
         assert self.creature.initiative == 0
         assert not self.creature.is_dead
         assert self.creature.attacks is None
@@ -66,7 +65,6 @@ class TestPlayer:
         assert self.player.hit_points == self.player.max_hit_points
         assert self.player.armor_class == 18
         assert self.player.speed == 25
-        assert self.player.actions == 3
         assert self.player.initiative == 0
         assert not self.player.is_dead
         assert self.player.team == 1
@@ -137,7 +135,6 @@ class TestEnemy:
         assert self.enemy.hit_points == self.enemy.max_hit_points
         assert self.enemy.armor_class == 16
         assert self.enemy.speed == 25
-        assert self.enemy.actions == 3
         assert self.enemy.initiative == 0
         assert not self.enemy.is_dead
         assert self.enemy.team == 2
@@ -201,10 +198,10 @@ class TestCreatureMethods:
         assert self.player.initiative == 0
         assert self.enemy.initiative == 0
 
-        self.player.roll_initiative()
+        self.player._roll_initiative()
         assert self.player.initiative == 10 + self.player.perception
 
-        self.enemy.roll_initiative()
+        self.enemy._roll_initiative()
         assert self.enemy.initiative == 10 + self.enemy.perception
 
     def test_attack_and_damage(self):
@@ -213,9 +210,9 @@ class TestCreatureMethods:
 
         assert not self.player.is_dead
         assert not self.enemy.is_dead
-        self.player.attack(player_weapon, self.enemy)
+        self.player._attack(player_weapon, self.enemy)
         assert self.enemy.hit_points < self.enemy.max_hit_points
-        self.enemy.attack(enemy_weapon, self.player)
+        self.enemy._attack(enemy_weapon, self.player)
         assert self.player.hit_points < self.player.max_hit_points
-        self.player.attack(player_weapon, self.enemy)
+        self.player._attack(player_weapon, self.enemy)
         assert self.enemy.is_dead

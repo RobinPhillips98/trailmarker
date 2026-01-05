@@ -2,7 +2,23 @@ from .creature import Creature
 
 
 class Enemy(Creature):
+    """An enemy the players will fight in the simulated encounter.
+
+    Attributes:
+        traits: The traits the enemy has, such as rarity and size
+        immunities: The enemy's immunities to damage types and conditions
+    """
+
+    # Built-in Methods
+
     def __init__(self, enemy: dict[any], simulation=None):
+        """Initializes the enemy based on the passed in dictionary.
+
+        Args:
+            enemy (dict[any]): The data used to build the enemy
+            simulation (Simulation, optional): The simulation the creature is
+                in. Defaults to None.
+        """
         super().__init__(enemy, simulation)
         self.traits: list[str] = enemy["traits"]
         self.immunities: list[str] = enemy["immunities"]
@@ -43,5 +59,12 @@ class Enemy(Creature):
         if self.thievery is None:
             self.thievery = self.dexterity
 
+    # Public Methods
+
     def long_description(self) -> str:
+        """Gives a well-formatted description of the enemy.
+
+        Returns:
+            str: The long description of the enemy.
+        """
         return f"{self}: Level {self.level}"

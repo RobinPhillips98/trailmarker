@@ -5,6 +5,17 @@ import { AuthContext } from "../../contexts/AuthContext";
 import { toTitleCase } from "../../services/helpers";
 import { Button, Collapse, Typography } from "antd";
 
+/**
+ * A page to display the results of a simulation.
+ * 
+ * Loaded by the run simulation button on the homepage, which navigates to
+ * "/simulation" while also passing the enemies object with useNavigate.
+ * 
+ * 
+ * @property {object} enemies The enemies to be included in the encounter
+ * 
+ * @returns {JSX.Element}
+ */
 export default function Simulation() {
   const { token } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -33,6 +44,11 @@ export default function Simulation() {
         };
       }),
     };
+    /**
+     * Uses the passed in enemies object to make a POST request to the
+     * simulation API endpoint, then sets simData, wins, and totalSims to
+     * the data returned by the simulation in order to display the results.
+     */
     async function callSimulation() {
       const response = await api.post("/simulation", request, {
         headers: {
@@ -47,6 +63,11 @@ export default function Simulation() {
     callSimulation();
   }, [enemies, run, token]);
 
+  /**
+   * Changes the run variable to the opposite of itself, since useEffect
+   * depends on run this causes useEffect to run again, running the
+   * simulation again.
+   */
   function handleClick() {
     setLoaded(false);
     setRun(!run);

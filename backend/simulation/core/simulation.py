@@ -3,6 +3,38 @@ from ..creatures.player import Player
 from ..encounters.encounter import Encounter
 
 
+def run_simulation(
+    player_dicts: list[dict[any]], enemy_dicts: list[dict[any]]
+) -> dict[str, str | int | list[str]]:
+    """Runs one simulation and returns a dictionary with the data from it.
+
+    Uses the private _Simulation class to keep track of data while the
+    simulation runs, then returns a dictionary containing the simulation's
+    winner, the number of rounds played, number of players killed, total
+    number of players, and a combat log of actions taken during the simulation.
+
+
+    Args:
+        player_dicts (list[dict[any]]): Dictionaries to initialize Players.
+        enemy_dicts (list[dict[any]]): Dictionaries to initialize Enemies.
+
+    Returns:
+        dict[str, str | int | list[str]]: Dict with data from the simulation.
+    """
+
+    # print("Preparing simulation...")
+    simulation = _Simulation(player_dicts, enemy_dicts)
+    simulation.run()
+    # print("Simulation complete!")
+    return {
+        "winner": simulation.winner,
+        "rounds": simulation.rounds,
+        "players_killed": simulation.players_killed,
+        "total_players": simulation.total_players,
+        "log": simulation.sim_log,
+    }
+
+
 class _Simulation:
     def __init__(
         self, player_dicts: list[dict[any]], enemy_dicts: list[dict[any]]
@@ -29,17 +61,3 @@ class _Simulation:
 
     def log(self, message: str):
         self.sim_log.append(message)
-
-
-def run_simulation(player_dicts: list[any], enemy_dicts: list[any]) -> str:
-    # print("Preparing simulation...")
-    simulation = _Simulation(player_dicts, enemy_dicts)
-    simulation.run()
-    # print("Simulation complete!")
-    return {
-        "winner": simulation.winner,
-        "rounds": simulation.rounds,
-        "players_killed": simulation.players_killed,
-        "total_players": simulation.total_players,
-        "log": simulation.sim_log,
-    }

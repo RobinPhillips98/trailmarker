@@ -14,11 +14,27 @@ router = APIRouter()
 @router.post(
     "/simulation", response_model=SimResponse, status_code=status.HTTP_200_OK
 )
-def initialize_simulation(
+def run_simulations(
     request: SimRequest,
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
-):
+) -> SimResponse:
+    """Runs simulations using current user's party and requested enemies.
+
+    Takes in a list of enemy IDs and quantities, then fetches all player
+    characters associated with the current user as well as the enemies whose
+    IDs were passed in and creates a list of each, then runs a number of
+    simulations and returns a response with data from those simulations.
+
+    Args:
+        request (SimRequest): List of enemy IDs and the quantity of each enemy.
+        db (db_dependency): A SQLAlchemy database session
+        current_user (models.User, optional): The currently logged in user.
+             Defaults to Depends(get_current_user).
+
+    Returns:
+        SimResponse: Number of simulations won and data from each simulation.
+    """
     total_sims = 100
     response = {"wins": 0, "total_sims": total_sims, "sim_data": []}
     players = []
@@ -45,7 +61,15 @@ def initialize_simulation(
     return response
 
 
-def convert_to_player_dict(character: Character):
+def convert_to_player_dict(character: Character) -> dict[any]:
+    """Returns a reformatted dictionary using the given character object.
+
+    Args:
+        character (Character): The Character object to be converted.
+
+    Returns:
+        dict[any]: Dictionary formatted for use by the simulation.
+    """
     defense_dict = {
         "armor_class": character.defenses.armor_class,
         "saves": {
@@ -82,7 +106,15 @@ def convert_to_player_dict(character: Character):
     return player_dict
 
 
-def convert_to_enemy_dict(enemy: Enemy):
+def convert_to_enemy_dict(enemy: Enemy) -> dict[any]:
+    """Returns a reformatted dictionary using the given enemy object.
+
+    Args:
+        enemy (Enemy): The Enemy object to be converted.
+
+    Returns:
+        dict[any]: Dictionary formatted for use by the simulation.
+    """
     enemy_dict = {
         "name": enemy.name,
         "level": enemy.level,

@@ -28,6 +28,12 @@ export function splitCamelCase(str) {
     .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2");
 }
 
+/**
+ * Checks if a given object is empty, returns true if so, false if not.
+ * 
+ * @param {object} obj The object being checked
+ * @returns {boolean}
+ */
 export function isEmpty(obj) {
   return Object.keys(obj).length === 0
 }
