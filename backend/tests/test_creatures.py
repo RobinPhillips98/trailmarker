@@ -199,10 +199,12 @@ class TestCreatureMethods:
         assert self.enemy.initiative == 0
 
         self.player._roll_initiative()
-        assert self.player.initiative == 10 + self.player.perception
+        assert self.player.initiative > 0
+        assert self.player.initiative <= 20 + self.player.perception
 
         self.enemy._roll_initiative()
-        assert self.enemy.initiative == 10 + self.enemy.perception
+        assert self.enemy.initiative > 0
+        assert self.enemy.initiative <= 20 + self.player.perception
 
     def test_attack_and_damage(self):
         player_weapon = self.player.attacks[0]
@@ -210,9 +212,20 @@ class TestCreatureMethods:
 
         assert not self.player.is_dead
         assert not self.enemy.is_dead
-        self.player._attack(player_weapon, self.enemy)
-        assert self.enemy.hit_points < self.enemy.max_hit_points
-        self.enemy._attack(enemy_weapon, self.player)
-        assert self.player.hit_points < self.player.max_hit_points
-        self.player._attack(player_weapon, self.enemy)
+
+        if self.player._attack(player_weapon, self.enemy):
+            assert self.enemy.hit_points < self.enemy.max_hit_points
+        else:
+            assert self.enemy.hit_points == self.enemy.max_hit_points
+
+        if self.enemy._attack(enemy_weapon, self.player):
+            assert self.player.hit_points < self.player.max_hit_points
+        else:
+            assert self.player.hit_points == self.player.max_hit_points
+
+        while not self.enemy.is_dead:
+            prev_hp = self.enemy.hit_points
+            if self.player._attack(player_weapon, self.enemy):
+                assert self.enemy.hit_points < prev_hp
+
         assert self.enemy.is_dead

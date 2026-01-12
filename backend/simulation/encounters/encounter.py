@@ -44,6 +44,7 @@ class Encounter:
         for creature in self.creatures:
             creature.join_encounter(self)
 
+        # TODO: Handle ties
         self.creatures.sort(
             key=lambda creature: creature.initiative, reverse=True
         )
@@ -67,8 +68,8 @@ class Encounter:
 
         self._log("Initiative order: ")
         for i in range(len(self.creatures)):
-            self._log(f"{i + 1}. {self.creatures[i]}")
-        self._log()
+            creature = self.creatures[i]
+            self._log(f"{i + 1}. {creature}: {creature.initiative}")
 
         # print("Running encounter...")
         rounds = 0
@@ -76,7 +77,6 @@ class Encounter:
             rounds += 1
             self._log(f"Round {rounds}:")
             self._run_round()
-            self._log()
 
         self._log(f"{self.winner.capitalize()} won in {rounds} rounds!")
         if self.simulation:
