@@ -26,11 +26,16 @@ def test_encounter_initialization():
     assert enemy.encounter == encounter
 
     # Testing that initiative rolling and sorting was successful
-    assert player.initiative == 10 + player.perception
-    assert enemy.initiative == 10 + enemy.perception
+    assert player.initiative > 0
+    assert enemy.initiative > 0
 
-    assert encounter.creatures[0] == player
-    assert encounter.creatures[1] == enemy
+    if player.initiative > enemy.initiative:
+        assert encounter.creatures[0] == player
+        assert encounter.creatures[1] == enemy
+    elif enemy.initiative > player.initiative:
+        assert encounter.creatures[0] == enemy
+        assert encounter.creatures[1] == player
+    # TODO: Handle ties
 
 
 def test_run_encounter():

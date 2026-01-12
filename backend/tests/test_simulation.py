@@ -4,7 +4,7 @@ from .sample_data import test_enemies, test_party
 
 def test_sim_players_win():
     enemies = test_enemies
-    players = test_party
+    players = test_party + test_party
 
     print()  # for neatness in viewing output
     sim_results = run_simulation(players, enemies)

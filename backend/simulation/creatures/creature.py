@@ -2,6 +2,8 @@ import random
 import re
 from typing import Self
 
+from ..mechanics.dice import Die, d20
+
 
 class Creature:
     """A creature, such as a player or enemy, ready for use in an encounter.
@@ -111,9 +113,11 @@ class Creature:
             print("Error: Turns cannot be taken outside of an encounter")
             return
 
+        self._log(f"{self}'s turn:")
+
         if self.team == 1:
             target = self._pick_target(self.encounter.enemies)
-        if self.team == 2:
+        elif self.team == 2:
             target = self._pick_target(self.encounter.players)
 
         attack = self._pick_attack()
@@ -139,7 +143,7 @@ class Creature:
     # Private Methods
 
     def _roll_initiative(self) -> None:
-        self.initiative = 10 + self.perception
+        self.initiative = d20.roll() + self.perception
 
     def _pick_target(self, targets: list[Self]) -> Self:
         return random.choice(targets)
@@ -147,7 +151,7 @@ class Creature:
     def _pick_attack(self) -> dict[any]:
         return self.attacks[0]
 
-    def _attack(self, weapon: dict[str, str | int], target) -> None:
+    def _attack(self, weapon: dict[str, str | int], target: Self) -> bool:
         """The creature attacks the given target with the given weapon.
 
         The given weapon's attack bonus and damage roll are extracted. The
@@ -166,25 +170,34 @@ class Creature:
             target (Creature): The target of the attack
         """
 
+        # Calculate attack roll and check for hit before calculating damage
         attack_bonus = weapon["attackBonus"]
+        attack_roll = d20.roll() + attack_bonus
+        self._log(f"{self} rolled {attack_roll} to attack {target}!")
 
-        damage_roll = weapon["damage"]
-        split_string = re.split(r"d|\+", damage_roll)
+        if attack_roll < target.armor_class:
+            self._log("Miss!")
+            return False
+
+        damage_type = weapon["damageType"]
+
+        # Due to regex verification on frontend, damage will always be listed
+        # in the form "XdY" or "XdY±Z", so split on d, +, and - in order to
+        # isolate the individual numbers needed
+        damage_roll_string = weapon["damage"]
+        split_string = re.split(r"d|\+|-", damage_roll_string)
         num_dice = int(split_string[0])
         die_size = int(split_string[1])
         damage_bonus = int(split_string[2]) if len(split_string) == 3 else 0
 
-        average_roll = (die_size + 1) / 2
-        average_damage = (num_dice * average_roll) + damage_bonus
+        damage_roll = Die(die_size).roll()
 
-        # This could be one line, but this is more readable and intuitive
-        min_roll_to_hit = target.armor_class - attack_bonus
-        miss_chance = min_roll_to_hit / 20
-        hit_chance = 1 - miss_chance
-
-        damage = int(average_damage * hit_chance)
-        self._log(f"{self} attacked {target} for {damage} damage!")
+        damage = (num_dice * damage_roll) + damage_bonus
+        self._log("Hit!")
+        self._log(f"{self} dealt {damage} {damage_type} damage to {target}!")
         target.take_damage(damage)
+
+        return True
 
     def _die(self) -> None:
         self._log(f"{self} has died!")
