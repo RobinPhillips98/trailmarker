@@ -1,7 +1,6 @@
 import { Button, Card, Descriptions, Divider, List } from "antd";
+import { useNavigate } from "react-router-dom";
 
-
-import CharacterEditModal from "./CharacterEditModal";
 import { splitCamelCase, toTitleCase } from "../../services/helpers";
 
 /**
@@ -13,8 +12,16 @@ import { splitCamelCase, toTitleCase } from "../../services/helpers";
  * @returns {JSX.element}
  */
 export default function CharacterDisplay({ character, deleteCharacter }) {
-  function handleClick() {
+  const navigate = useNavigate();
+
+  function handleDelete() {
     deleteCharacter(character);
+  }
+
+  function handleEdit() {
+    navigate("/characters/create", {
+      state: { editing: true, savedCharacter: character },
+    });
   }
 
   const items = [
@@ -164,9 +171,11 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
         size="small"
         style={{ marginBottom: 10 }}
       />
-      <CharacterEditModal character={character} />
+      <Button type="primary" onClick={handleEdit}>
+        Edit Character
+      </Button>
       <Divider type="vertical" />
-      <Button danger onClick={handleClick}>
+      <Button danger onClick={handleDelete}>
         Delete Character
       </Button>
     </>

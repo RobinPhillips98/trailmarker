@@ -26,7 +26,7 @@ export default function App() {
         <ConfigProvider theme={themeConfig}>
           <Flex>
             <Layout>
-              <Header style={{ backgroundColor: "#141414" }}>
+              <Header style={{ backgroundColor: "#141414", marginBottom: 10 }}>
                 <NavBar />
               </Header>
               <Content>

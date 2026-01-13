@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button, Form } from "antd";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Button, Col, Form, Row } from "antd";
 
 import api from "../../../api";
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -15,13 +15,11 @@ import GeneralStatsSelection from "./subcomponents/GeneralStatsSelection";
 /**
  * A component to allow a user to create or edit a player character
  *
- * @param {object} props
- * @param {boolean} [props.editing] True if this is a saved character being edited, false if this is a new character
- * @param {object} [props.savedCharacter] The character being edited
  * @returns {JSX.element}
  */
-export default function CharacterCreationForm(props) {
-  const { editing = false, savedCharacter = null } = props;
+export default function CharacterCreationForm() {
+  const { state } = useLocation();
+  const { editing, savedCharacter } = state;
   const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -74,7 +72,7 @@ export default function CharacterCreationForm(props) {
   /**
    * Attempts to save the current character to the database, either patching an
    * existing character or posting a new character
-   * 
+   *
    * @param {object} character The character to be saved
    */
   async function onFinish(character) {
@@ -86,26 +84,29 @@ export default function CharacterCreationForm(props) {
             Authorization: `Bearer ${token}`,
           },
         });
-        window.location.reload();
       } else {
         await api.post("/characters", character, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        navigate("/characters");
       }
+      navigate("/characters");
     } catch (error) {
       alert(error.response.data.detail);
     }
   }
 
+  function handleCancel() {
+    navigate("/characters");
+  }
+
   return (
     <Form
       name="character"
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 16 }}
-      style={{ maxWidth: 600 }}
+      labelCol={{ span: 12 }}
+      wrapperCol={{ span: 24 }}
+      style={{ maxWidth: 600, margin: "0 auto" }}
       initialValues={initialValues}
       onFinish={onFinish}
       autoComplete="off"
@@ -113,13 +114,29 @@ export default function CharacterCreationForm(props) {
       requiredMark="optional"
       scrollToFirstError={{ focus: true }}
     >
-      <GeneralInfoSelection />
-      <GeneralStatsSelection />
-      <AttributeSelection editing={editing} savedCharacter={savedCharacter} />
+      <Row gutter={16}>
+        <Col span={12}>
+          <GeneralInfoSelection />
+        </Col>
+        <Col span={12}>
+          <GeneralStatsSelection />
+        </Col>
+      </Row>
+      <br />
+      <Row gutter={16}>
+        <Col span={12}>
+          <AttributeSelection
+            editing={editing}
+            savedCharacter={savedCharacter}
+          />
+        </Col>
+        <Col span={12}>
+          <SavesSelection />
+        </Col>
+      </Row>
+      {/* <AttributeSelection editing={editing} savedCharacter={savedCharacter} /> */}
       <br />
       <SkillSelection editing={editing} savedCharacter={savedCharacter} />
-      <br />
-      <SavesSelection />
       <br />
       <AttacksSelection editing={editing} savedCharacter={savedCharacter} />
       <br />
@@ -128,6 +145,7 @@ export default function CharacterCreationForm(props) {
           Save Character
         </Button>
       </Form.Item>
+      <Button onClick={handleCancel}>Cancel</Button>
     </Form>
   );
 }

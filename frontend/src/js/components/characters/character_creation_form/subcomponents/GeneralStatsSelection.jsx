@@ -1,4 +1,4 @@
-import { Form, InputNumber, Select } from "antd";
+import { Card, Form, InputNumber, Select } from "antd";
 
 /**
  * A component to allow a user to set general numerical stats for a player
@@ -8,11 +8,12 @@ import { Form, InputNumber, Select } from "antd";
  */
 export default function GeneralStatsSelection() {
   return (
-    <>
+    <Card style={{ height: 350, width: 300, marginLeft: 100 }}>
       <Form.Item
         label="Level"
         name="level"
         rules={[{ required: true, message: "Please input a level" }]}
+        style={{ marginTop: 50 }}
       >
         <Select
           style={{ width: 100 }}
@@ -64,6 +65,6 @@ export default function GeneralStatsSelection() {
       >
         <InputNumber min={-10} max={20} />
       </Form.Item>
-    </>
+    </Card>
   );
 }

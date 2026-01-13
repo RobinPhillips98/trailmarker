@@ -12,13 +12,13 @@ export default function SavesSelection() {
   return (
     <Card
       title="Saving Throws"
-      size="small"
-      style={{ marginLeft: 100, width: 300 }}
-      variant="borderless"
+      style={{ marginLeft: 100, width: 300, height: 300 }}
     >
       {saves.map((save) => (
         <Form.Item
           label={toTitleCase(save)}
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
           name={["defenses", "saves", save]}
           rules={[
             {

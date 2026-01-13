@@ -1,4 +1,4 @@
-import { Card, Form, InputNumber } from "antd";
+import { Card, Col, Form, InputNumber, Row } from "antd";
 
 import { skills } from "../../characterHelpers";
 import { toTitleCase } from "../../../../services/helpers";
@@ -13,29 +13,69 @@ import { toTitleCase } from "../../../../services/helpers";
  */
 export default function SkillSelection({ editing, savedCharacter }) {
   return (
-    <Card
-      key="skills"
-      title="Skills"
-      size="small"
-      style={{ marginLeft: 100, width: 300 }}
-      variant="borderless"
-    >
-      {skills.map((skill) => (
-        <Form.Item
-          key={skill}
-          label={toTitleCase(skill)}
-          name={["skills", skill]}
-          initialValue={editing ? savedCharacter.skills[skill] : 0}
-          rules={[
-            {
-              required: true,
-              message: `Please input a ${skill} value`,
-            },
-          ]}
-        >
-          <InputNumber min={-10} max={30} />
-        </Form.Item>
-      ))}
+    <Card key="skills" title="Skills" style={{ marginLeft: 100, width: 600 }}>
+      <Row>
+        <Col span={8}>
+          {skills.slice(0, 6).map((skill) => (
+            <Form.Item
+              key={skill}
+              label={toTitleCase(skill)}
+              labelCol={{ span: 12 }}
+              wrapperCol={{ span: 24 }}
+              name={["skills", skill]}
+              initialValue={editing ? savedCharacter.skills[skill] : 0}
+              rules={[
+                {
+                  required: true,
+                  message: `Please input a ${skill} value`,
+                },
+              ]}
+            >
+              <InputNumber min={-10} max={30} />
+            </Form.Item>
+          ))}
+        </Col>
+        <Col span={8}>
+          {skills.slice(6, 12).map((skill) => (
+            <Form.Item
+              key={skill}
+              label={toTitleCase(skill)}
+              labelCol={{ span: 12 }}
+              wrapperCol={{ span: 24 }}
+              name={["skills", skill]}
+              initialValue={editing ? savedCharacter.skills[skill] : 0}
+              rules={[
+                {
+                  required: true,
+                  message: `Please input a ${skill} value`,
+                },
+              ]}
+            >
+              <InputNumber min={-10} max={30} />
+            </Form.Item>
+          ))}
+        </Col>
+        <Col span={8}>
+          {skills.slice(12, 17).map((skill) => (
+            <Form.Item
+              key={skill}
+              label={toTitleCase(skill)}
+              labelCol={{ span: 12 }}
+              wrapperCol={{ span: 24 }}
+              name={["skills", skill]}
+              initialValue={editing ? savedCharacter.skills[skill] : 0}
+              rules={[
+                {
+                  required: true,
+                  message: `Please input a ${skill} value`,
+                },
+              ]}
+            >
+              <InputNumber min={-10} max={30} />
+            </Form.Item>
+          ))}
+        </Col>
+      </Row>
     </Card>
   );
 }
