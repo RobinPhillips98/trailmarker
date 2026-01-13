@@ -22,12 +22,7 @@ export default function AttacksSelection({ editing, savedCharacter }) {
     : [{}];
 
   return (
-    <Card
-      title="Attacks"
-      size="small"
-      style={{ marginLeft: 100, width: 300 }}
-      variant="borderless"
-    >
+    <Card title="Attacks" style={{ marginLeft: 100, width: 300 }}>
       {/* Allow user to add as many attacks as they want, with each attack
       having the same style of input */}
       <Form.List name={["actions", "attacks"]} initialValue={initialAttacks}>
@@ -39,14 +34,16 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                   {...restField}
                   name={[name, "name"]}
                   label="Name"
+                  labelCol={{ span: 24 }}
                   rules={[{ required: true, message: "Please input a name" }]}
                 >
-                  <Input />
+                  <Input style={{ width: 200 }} />
                 </Form.Item>
                 <Form.Item
                   {...restField}
                   name={[name, "attackBonus"]}
                   label="Attack Bonus"
+                  labelCol={{ span: 24 }}
                   rules={[
                     {
                       required: true,
@@ -54,12 +51,13 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                     },
                   ]}
                 >
-                  <InputNumber min={-5} max={30} />
+                  <InputNumber min={-5} max={30} style={{ width: 100 }} />
                 </Form.Item>
                 <Form.Item
                   {...restField}
                   name={[name, "damage"]}
                   label="Damage"
+                  labelCol={{ span: 24 }}
                   rules={[
                     { required: true, message: "Please input a damage" },
                     {
@@ -69,17 +67,18 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                     },
                   ]}
                 >
-                  <Input placeholder="1d8+4" />
+                  <Input style={{ width: 100 }} placeholder="1d8+4" />
                 </Form.Item>
                 <Form.Item
                   {...restField}
                   name={[name, "damageType"]}
                   label="Damage Type"
+                  labelCol={{ span: 24 }}
                   rules={[
                     { required: true, message: "Please input a damage type" },
                   ]}
                 >
-                  <Select options={damageTypes} />
+                  <Select options={damageTypes} style={{ width: 125 }} />
                 </Form.Item>
                 <Button
                   type="dashed"

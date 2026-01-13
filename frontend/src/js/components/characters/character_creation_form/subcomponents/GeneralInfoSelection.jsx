@@ -1,4 +1,4 @@
-import { Form, Input, InputNumber, Select } from "antd";
+import { Card, Form, Input, InputNumber, Select } from "antd";
 
 import { ancestries, backgrounds, classes } from "../../characterHelpers";
 
@@ -10,15 +10,22 @@ import { ancestries, backgrounds, classes } from "../../characterHelpers";
  */
 export default function GeneralInfoSelection() {
   return (
-    <>
+    <Card style={{ height: 350, width: 300, marginLeft: 100 }}>
       <Form.Item
         label="Name"
         name="name"
+        labelCol={{ span: 24 }}
+        wrapperCol={{ span: 24 }}
         rules={[{ required: true, message: "Please input a character name" }]}
       >
         <Input />
       </Form.Item>
-      <Form.Item label="Player Name" name="player">
+      <Form.Item
+        label="Player Name"
+        name="player"
+        labelCol={{ span: 24 }}
+        wrapperCol={{ span: 24 }}
+      >
         <Input />
       </Form.Item>
       <Form.Item label="XP" name="xp">
@@ -45,6 +52,6 @@ export default function GeneralInfoSelection() {
       >
         <Select options={classes} />
       </Form.Item>
-    </>
+    </Card>
   );
 }

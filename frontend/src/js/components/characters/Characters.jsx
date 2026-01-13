@@ -54,7 +54,9 @@ export default function Characters() {
   }, [token, navigate]);
 
   function handleClick() {
-    navigate("/characters/create");
+    navigate("/characters/create", {
+      state: { editing: false, savedCharacter: null },
+    });
   }
 
   const characterTabs = characters.map((character) => ({
