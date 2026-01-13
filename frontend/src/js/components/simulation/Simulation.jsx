@@ -7,13 +7,13 @@ import { Button, Collapse, Typography } from "antd";
 
 /**
  * A page to display the results of a simulation.
- * 
+ *
  * Loaded by the run simulation button on the homepage, which navigates to
  * "/simulation" while also passing the enemies object with useNavigate.
- * 
- * 
+ *
+ *
  * @property {object} enemies The enemies to be included in the encounter
- * 
+ *
  * @returns {JSX.Element}
  */
 export default function Simulation() {
@@ -23,6 +23,7 @@ export default function Simulation() {
   const { enemies } = state;
   const [simData, setSimData] = useState([{}]);
   const [wins, setWins] = useState();
+  const [winsRatio, setWinsRatio] = useState();
   const [totalSims, setTotalSims] = useState();
   const [loaded, setLoaded] = useState(false);
   const [run, setRun] = useState(false);
@@ -50,6 +51,7 @@ export default function Simulation() {
      * the data returned by the simulation in order to display the results.
      */
     async function callSimulation() {
+      try {
       const response = await api.post("/simulation", request, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -58,8 +60,12 @@ export default function Simulation() {
       setSimData(response.data.sim_data);
       setWins(response.data.wins);
       setTotalSims(response.data.total_sims);
+      setWinsRatio((response.data.wins / response.data.total_sims) * 100);
       setLoaded(true);
-    }
+    } catch (error) {
+      console.error("Error running simulation", error);
+      alert(error.response.statusText);
+    }}
     callSimulation();
   }, [enemies, run, token]);
 
@@ -79,7 +85,7 @@ export default function Simulation() {
         key: i + 1,
         label: `Simulation ${i + 1} - Winner: ${toTitleCase(sim.winner)}!`,
         children: (
-          <div style={{height: 500, overflow: "scroll"}}>
+          <div style={{ height: 500, overflow: "scroll" }}>
             <Title level={2}>Overview</Title>
             <Paragraph>
               Players killed: {sim.players_killed}/{sim.total_players}
@@ -96,6 +102,12 @@ export default function Simulation() {
                 message.includes("Round")
               ) {
                 return <Title level={3}>{message}</Title>;
+              } else if (message.includes("turn")) {
+                return <Title level={4}>{message}</Title>;
+              } else if (message.includes("Hit") || message.includes("Miss")) {
+                return <Paragraph italic>{message}</Paragraph>;
+              } else if (message.includes("died")) {
+                return <Paragraph strong>{message}</Paragraph>;
               } else return <Paragraph>{message}</Paragraph>;
             })}
           </div>
@@ -110,8 +122,7 @@ export default function Simulation() {
           Run Again
         </Button>
         <Title level={2}>
-          Players won {wins}/{totalSims} simulations ({(wins / totalSims) * 100}
-          %)
+          Players won {wins}/{totalSims} simulations ({winsRatio.toFixed(0)}%)
         </Title>
         <Title level={2}>Individual Simulation Data:</Title>
         <Collapse

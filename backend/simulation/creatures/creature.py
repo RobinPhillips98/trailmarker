@@ -87,6 +87,8 @@ class Creature:
         # Encounter Data
         self.encounter = None
         self.initiative: int = 0
+        self.actions: int = 0
+        self.map: int = 0  # Multi-attack Penalty
         self.team: int = None
         self.is_dead: bool = False
 
@@ -114,15 +116,17 @@ class Creature:
             return
 
         self._log(f"{self}'s turn:")
+        self.actions = 3
+        self.map = 0
 
-        if self.team == 1:
-            target = self._pick_target(self.encounter.enemies)
-        elif self.team == 2:
-            target = self._pick_target(self.encounter.players)
+        # TODO: Proper movement
+        self.actions -= 1  # Simulating at least one action spent on movement
 
-        attack = self._pick_attack()
-
-        self._attack(attack, target)
+        while self.actions > 0:
+            if self.encounter.players and self.encounter.enemies:
+                self._perform_action()
+            else:
+                break
 
     def take_damage(self, damage: int) -> None:
         """Subtracts the given damage from the creature's HP.
@@ -144,6 +148,18 @@ class Creature:
 
     def _roll_initiative(self) -> None:
         self.initiative = d20.roll() + self.perception
+
+    def _perform_action(self):
+        if self.team == 1:
+            target = self._pick_target(self.encounter.enemies)
+        elif self.team == 2:
+            target = self._pick_target(self.encounter.players)
+
+        attack = self._pick_attack()
+
+        self._attack(attack, target)
+
+        self.actions -= 1
 
     def _pick_target(self, targets: list[Self]) -> Self:
         return random.choice(targets)
@@ -170,12 +186,17 @@ class Creature:
             target (Creature): The target of the attack
         """
 
+        weapon_name = weapon["name"].lower()
+        self._log(f"{self} is attacking {target} with their {weapon_name}.")
+
         # Calculate attack roll and check for hit before calculating damage
         attack_bonus = weapon["attackBonus"]
-        attack_roll = d20.roll() + attack_bonus
-        self._log(f"{self} rolled {attack_roll} to attack {target}!")
+        attack_roll = d20.roll()
+        attack_total = attack_roll + attack_bonus - self.map
+        self._log(f"{self} rolled {attack_total} to attack.")
+        self.map += 5
 
-        if attack_roll < target.armor_class:
+        if attack_total < target.armor_class:
             self._log("Miss!")
             return False
 
