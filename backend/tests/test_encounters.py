@@ -1,3 +1,5 @@
+import pytest
+
 from ..simulation.creatures.enemy import Enemy
 from ..simulation.creatures.player import Player
 from ..simulation.encounters.encounter import Encounter
@@ -38,6 +40,7 @@ def test_encounter_initialization():
     # TODO: Handle ties
 
 
+@pytest.mark.repeat(10)
 def test_run_encounter():
     player = Player(test_player)
     enemy = Enemy(test_enemy)
