@@ -1,7 +1,7 @@
 import random
 from typing import Self
 
-from ..mechanics.actions import Attack
+from ..mechanics.actions import Action, Attack
 from ..mechanics.dice import Die, d20
 
 
@@ -14,10 +14,18 @@ class Creature:
     only non-obvious attributes will be explained.
 
     Attributes:
-        attacks: A list of dictionaries containing information on each of the
-            creature's available weapon attacks.
+        attacks: A list of Attack objects representing the creature's weapon
+            attacks.
+        actions: A list of the creature's actions, including attacks.
         encounter: The encounter the creature is in, if any, primarily used
             for removing the creature from the encounter on death.
+        initiative: The creature's initiative, calculated at the beginning of
+            an encounter, used to decide the order that creatures take turns.
+        num_actions: The number of actions the creature has, set to 3 at the
+            beginning of the creature's turn. Turn ends at 0 actions.
+        map: The creature's current multiple attack penalty, increases each
+            time the creature attacks in a turn to make multiple attacks in
+            one turn less likely to hit
         team: 1 if the creature is a player, 2 if the creature is an enemy.
         simulation: The simulation the creature is in, if any, primarily used
             for adding to the simulation's combat log.
@@ -87,11 +95,14 @@ class Creature:
         except KeyError:
             self.attacks = None
 
+        # TODO: Implement other kinds of actions, ex. spells
+        self.actions: list[Action] = self.attacks
+
         # Encounter Data
         self.encounter = None
         self.initiative: int = 0
-        self.actions: int = 0
-        self.map: int = 0  # Multi-attack Penalty
+        self.num_actions: int = 0
+        self.map: int = 0
         self.team: int = None
         self.is_dead: bool = False
 
@@ -119,13 +130,14 @@ class Creature:
             return
 
         self._log(f"{self}'s turn:")
-        self.actions = 3
+        self.num_actions = 3
         self.map = 0
 
-        # TODO: Proper movement
-        self.actions -= 1  # Simulating at least one action spent on movement
+        # Simulating one action spent on movement
+        self.num_actions -= 1
+        # TODO: Proper movement (stretch goal)
 
-        while self.actions > 0:
+        while self.num_actions > 0:
             if self.encounter.players and self.encounter.enemies:
                 self._perform_action()
             else:
@@ -153,22 +165,33 @@ class Creature:
         self.initiative = d20.roll() + self.perception
 
     def _perform_action(self):
-        if self.team == 1:
-            target = self._pick_target(self.encounter.enemies)
-        elif self.team == 2:
-            target = self._pick_target(self.encounter.players)
+        best_action = self.actions[0]
 
-        attack = self._pick_attack()
+        # Just a simple linear search because number of actions should never
+        # get too high (typically 3-5, 10-20 at most w/ spells)
+        for action in self.actions[:1]:
+            effective_weight = action.weight
+            if isinstance(best_action, Attack):
+                effective_weight -= self.map
+                # Third attacks are almost always a bad option
+                if self.map >= 8:
+                    effective_weight *= 0.5
 
-        self._attack(attack, target)
+            if effective_weight > best_action.weight:
+                best_action = action
 
-        self.actions -= attack.cost
+        if isinstance(best_action, Attack):
+            if self.team == 1:
+                target = self._pick_target(self.encounter.enemies)
+            elif self.team == 2:
+                target = self._pick_target(self.encounter.players)
+            self._attack(best_action, target)
+        # TODO: Implement other actions such as spells
+
+        self.num_actions -= best_action.cost
 
     def _pick_target(self, targets: list[Self]) -> Self:
         return random.choice(targets)
-
-    def _pick_attack(self) -> dict[any]:
-        return self.attacks[0]
 
     def _attack(self, attack: Attack, target: Self) -> bool:
         self._log(f"{self} is attacking {target} with their {attack}.")
