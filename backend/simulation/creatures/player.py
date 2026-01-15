@@ -38,5 +38,6 @@ class Player(Creature):
 
     def _die(self) -> None:
         super()._die()
+        # TODO: Implement proper dying for players
         if self.simulation:
             self.simulation.players_killed += 1

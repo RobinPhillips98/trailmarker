@@ -1,4 +1,3 @@
-import random
 from typing import Self
 
 from ..mechanics.actions import Action, Attack
@@ -124,7 +123,11 @@ class Creature:
         self._roll_initiative()
 
     def take_turn(self) -> None:
-        """The creature picks a target at random and attacks that target."""
+        """The creature picks an action and performs that action.
+
+        The creature selects its action with the highest weight. If that action
+        is an attack, the creature selects a target and attacks that target.
+        """
         if not self.encounter:
             print("Error: Turns cannot be taken outside of an encounter")
             return
@@ -143,11 +146,25 @@ class Creature:
             else:
                 break
 
+    def calculate_weight(self) -> int:
+        """Calculates how valuable a target the creature is.
+
+        Returns:
+            int: A number representing how valuable the target is.
+        """
+        weight = ((self.max_hit_points - self.hit_points)) * self.level
+
+        if self.is_dead:
+            weight = -1
+
+        return weight
+
     def take_damage(self, damage: int) -> None:
         """Subtracts the given damage from the creature's HP.
 
         The given damage is subtracted from the creature's current hit points,
-        and if their hit points fall below 0, the creature dies.
+        and if their hit points fall below 0, the creature dies and is removed
+        from the encounter.
 
         Args:
             damage (int): The damage the creature is to take.
@@ -191,7 +208,15 @@ class Creature:
         self.num_actions -= best_action.cost
 
     def _pick_target(self, targets: list[Self]) -> Self:
-        return random.choice(targets)
+        best_target = targets[0]
+        best_target_weight = best_target.calculate_weight()
+
+        for target in targets[:1]:
+            if target.calculate_weight() > best_target_weight:
+                best_target = target
+                best_target_weight = best_target.calculate_weight()
+
+        return best_target
 
     def _attack(self, attack: Attack, target: Self) -> bool:
         self._log(f"{self} is attacking {target} with their {attack}.")
