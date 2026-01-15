@@ -106,22 +106,27 @@ class TestPlayer:
 
     def test_attacks(self):
         longsword = self.player.attacks[0]
-        assert longsword["name"] == "Longsword"
-        assert longsword["attackBonus"] == 9
-        assert longsword["damage"] == "1d8+4"
-        assert longsword["damageType"] == "slashing"
+        assert longsword.name == "Longsword"
+        assert longsword.attack_bonus == 9
+        assert longsword.num_dice == 1
+        assert longsword.die_size == 8
+        assert longsword.damage_bonus == 4
+        assert longsword.damage_type == "slashing"
 
         dagger = self.player.attacks[1]
-        assert dagger["name"] == "Dagger"
-        assert dagger["attackBonus"] == 9
-        assert dagger["damage"] == "1d4+4"
-        assert dagger["damageType"] == "piercing"
+        assert dagger.name == "Dagger"
+        assert dagger.attack_bonus == 9
+        assert dagger.num_dice == 1
+        assert dagger.die_size == 4
+        assert dagger.damage_bonus == 4
+        assert dagger.damage_type == "piercing"
 
         shortbow = self.player.attacks[2]
-        assert shortbow["name"] == "Shortbow"
-        assert shortbow["attackBonus"] == 7
-        assert shortbow["damage"] == "1d6"
-        assert shortbow["damageType"] == "piercing"
+        assert shortbow.name == "Shortbow"
+        assert shortbow.attack_bonus == 7
+        assert shortbow.num_dice == 1
+        assert shortbow.die_size == 6
+        assert shortbow.damage_type == "piercing"
 
 
 class TestEnemy:
@@ -177,17 +182,19 @@ class TestEnemy:
         assert self.enemy.immunities == []
 
     def test_attacks(self):
-        greatsword = self.enemy.attacks[0]
-        assert greatsword["name"] == "Shortsword"
-        assert greatsword["attackBonus"] == 7
-        assert greatsword["damage"] == "1d6"
-        assert greatsword["damageType"] == "slashing"
+        shortsword = self.enemy.attacks[0]
+        assert shortsword.name == "Shortsword"
+        assert shortsword.attack_bonus == 7
+        assert shortsword.num_dice == 1
+        assert shortsword.die_size == 6
+        assert shortsword.damage_type == "slashing"
 
         shortbow = self.enemy.attacks[1]
-        assert shortbow["name"] == "Shortbow"
-        assert shortbow["attackBonus"] == 7
-        assert shortbow["damage"] == "1d6"
-        assert shortbow["damageType"] == "piercing"
+        assert shortbow.name == "Shortbow"
+        assert shortbow.attack_bonus == 7
+        assert shortbow.num_dice == 1
+        assert shortbow.die_size == 6
+        assert shortbow.damage_type == "piercing"
 
 
 class TestCreatureMethods:

@@ -1,7 +1,7 @@
 import random
-import re
 from typing import Self
 
+from ..mechanics.actions import Attack
 from ..mechanics.dice import Die, d20
 
 
@@ -79,8 +79,11 @@ class Creature:
         self.will: int = saves["will"]
 
         # Actions
+        self.attacks: list[Attack] = []
         try:
-            self.attacks: list[dict[any]] = creature["actions"]["attacks"]
+            for attack_dict in creature["actions"]["attacks"]:
+                attack = Attack(attack_dict)
+                self.attacks.append(attack)
         except KeyError:
             self.attacks = None
 
@@ -159,7 +162,7 @@ class Creature:
 
         self._attack(attack, target)
 
-        self.actions -= 1
+        self.actions -= attack.cost
 
     def _pick_target(self, targets: list[Self]) -> Self:
         return random.choice(targets)
@@ -167,53 +170,24 @@ class Creature:
     def _pick_attack(self) -> dict[any]:
         return self.attacks[0]
 
-    def _attack(self, weapon: dict[str, str | int], target: Self) -> bool:
-        """The creature attacks the given target with the given weapon.
-
-        The given weapon's attack bonus and damage roll are extracted. The
-        damage roll is split into the number of dice, the die size, and the
-        damage bonus. These three numbers are then used to calculate the
-        average damage per attack. Next, the chance to hit is calculated
-        and these are used to calculate the average expected damage of the
-        attack, which is dealt to the target.
-
-        This calculation is to be replaced by proper attack and damage rolls
-        in the next iteration of the simulation.
-
-        Args:
-            weapon (dict[str, str  |  int]): The weapon the creature is
-                attacking with.
-            target (Creature): The target of the attack
-        """
-
-        weapon_name = weapon["name"].lower()
-        self._log(f"{self} is attacking {target} with their {weapon_name}.")
+    def _attack(self, attack: Attack, target: Self) -> bool:
+        self._log(f"{self} is attacking {target} with their {attack}.")
 
         # Calculate attack roll and check for hit before calculating damage
-        attack_bonus = weapon["attackBonus"]
         attack_roll = d20.roll()
-        attack_total = attack_roll + attack_bonus - self.map
+        attack_total = attack_roll + attack.attack_bonus - self.map
         self._log(f"{self} rolled {attack_total} to attack.")
-        self.map += 5
+        if self.encounter:
+            self.map += 5
 
         if attack_total < target.armor_class:
             self._log("Miss!")
             return False
 
-        damage_type = weapon["damageType"]
+        damage_type = attack.damage_type
+        damage_roll = Die(attack.die_size).roll()
+        damage = (attack.num_dice * damage_roll) + attack.damage_bonus
 
-        # Due to regex verification on frontend, damage will always be listed
-        # in the form "XdY" or "XdY±Z", so split on d, +, and - in order to
-        # isolate the individual numbers needed
-        damage_roll_string = weapon["damage"]
-        split_string = re.split(r"d|\+|-", damage_roll_string)
-        num_dice = int(split_string[0])
-        die_size = int(split_string[1])
-        damage_bonus = int(split_string[2]) if len(split_string) == 3 else 0
-
-        damage_roll = Die(die_size).roll()
-
-        damage = (num_dice * damage_roll) + damage_bonus
         self._log("Hit!")
         self._log(f"{self} dealt {damage} {damage_type} damage to {target}!")
         target.take_damage(damage)
