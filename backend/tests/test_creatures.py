@@ -207,11 +207,17 @@ class TestCreatureMethods:
 
         self.player._roll_initiative()
         assert self.player.initiative > 0
-        assert self.player.initiative <= 20 + self.player.perception
+        if self.player.stealth > self.player.perception:
+            assert self.player.initiative <= 20 + self.player.stealth
+        else:
+            assert self.player.initiative <= 20 + self.player.perception
 
         self.enemy._roll_initiative()
         assert self.enemy.initiative > 0
-        assert self.enemy.initiative <= 20 + self.player.perception
+        if self.enemy.stealth > self.enemy.perception:
+            assert self.enemy.initiative <= 20 + self.enemy.stealth
+        else:
+            assert self.enemy.initiative <= 20 + self.enemy.perception
 
     def test_attack_and_damage(self):
         player_weapon = self.player.attacks[0]
