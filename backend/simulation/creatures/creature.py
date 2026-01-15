@@ -179,7 +179,10 @@ class Creature:
     # Private Methods
 
     def _roll_initiative(self) -> None:
-        self.initiative = d20.roll() + self.perception
+        if self.stealth > self.perception:
+            self.initiative = d20.roll() + self.stealth
+        else:
+            self.initiative = d20.roll() + self.perception
 
     def _perform_action(self):
         best_action = self.actions[0]
@@ -228,13 +231,25 @@ class Creature:
         if self.encounter:
             self.map += 5
 
+        if attack_roll == 20 or attack_total >= target.armor_class + 10:
+            critical_hit = True
+        else:
+            critical_hit = False
+
         if attack_total < target.armor_class:
-            self._log("Miss!")
-            return False
+            # Nat 20 upgrades a miss into a non-critical hit
+            if critical_hit:
+                critical_hit = False
+            else:
+                self._log("Miss!")
+                return False
 
         damage_type = attack.damage_type
         damage_roll = Die(attack.die_size).roll()
         damage = (attack.num_dice * damage_roll) + attack.damage_bonus
+        if critical_hit:
+            self._log(f"{self} dealt a critical hit to {target}!")
+            damage *= 2
 
         self._log("Hit!")
         self._log(f"{self} dealt {damage} {damage_type} damage to {target}!")
