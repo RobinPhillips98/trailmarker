@@ -18,7 +18,14 @@ def test_sim_players_win():
 
 
 def test_sim_enemies_win():
-    enemies = test_enemies + test_enemies + test_enemies
+    # Ensuring there are far too many enemies for the players to ever win
+    enemies = (
+        test_enemies
+        + test_enemies
+        + test_enemies
+        + test_enemies
+        + test_enemies
+    )
     players = test_party
 
     print()
