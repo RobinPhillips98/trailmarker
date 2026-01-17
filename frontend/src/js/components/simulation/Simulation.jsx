@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import api from "../../api";
 import { AuthContext } from "../../contexts/AuthContext";
 import { toTitleCase } from "../../services/helpers";
-import { Button, Collapse, Typography } from "antd";
+import { Button, Collapse, List, Spin, Typography } from "antd";
 
 /**
  * A page to display the results of a simulation.
@@ -25,6 +25,9 @@ export default function Simulation() {
   const [wins, setWins] = useState();
   const [winsRatio, setWinsRatio] = useState();
   const [totalSims, setTotalSims] = useState();
+  const [totalPlayers, setTotalPlayers] = useState();
+  const [avgDeaths, setAvgDeaths] = useState();
+  const [avgRounds, setAvgRounds] = useState();
   const [loaded, setLoaded] = useState(false);
   const [run, setRun] = useState(false);
   const { Paragraph, Title } = Typography;
@@ -52,20 +55,34 @@ export default function Simulation() {
      */
     async function callSimulation() {
       try {
-      const response = await api.post("/simulation", request, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setSimData(response.data.sim_data);
-      setWins(response.data.wins);
-      setTotalSims(response.data.total_sims);
-      setWinsRatio((response.data.wins / response.data.total_sims) * 100);
-      setLoaded(true);
-    } catch (error) {
-      console.error("Error running simulation", error);
-      alert(error.response.statusText);
-    }}
+        const response = await api.post("/simulation", request, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setSimData(response.data.sim_data);
+        setWins(response.data.wins);
+        setTotalSims(response.data.total_sims);
+        setWinsRatio((response.data.wins / response.data.total_sims) * 100);
+        setAvgDeaths(
+          response.data.sim_data.reduce(
+            (acc, current) => acc + current.players_killed,
+            0
+          ) / response.data.total_sims
+        );
+        setAvgRounds(
+          response.data.sim_data.reduce(
+            (acc, current) => acc + current.rounds,
+            0
+          ) / response.data.total_sims
+        );
+        setTotalPlayers(response.data.sim_data[0].total_players);
+        setLoaded(true);
+      } catch (error) {
+        console.error("Error running simulation", error);
+        alert(error.response.statusText);
+      }
+    }
     callSimulation();
   }, [enemies, run, token]);
 
@@ -80,7 +97,7 @@ export default function Simulation() {
   }
 
   if (loaded) {
-    const collapseItems = simData.map((sim, i) => {
+    const simDataDisplay = simData.map((sim, i) => {
       return {
         key: i + 1,
         label: `Simulation ${i + 1} - Winner: ${toTitleCase(sim.winner)}!`,
@@ -88,7 +105,7 @@ export default function Simulation() {
           <div style={{ height: 500, overflow: "scroll" }}>
             <Title level={2}>Overview</Title>
             <Paragraph>
-              Players killed: {sim.players_killed}/{sim.total_players}
+              Players killed: {sim.players_killed}/{totalPlayers}
             </Paragraph>
             <Paragraph>Rounds taken: {sim.rounds}</Paragraph>
             <Title level={2}>Combat Log:</Title>
@@ -106,7 +123,10 @@ export default function Simulation() {
                 return <Title level={4}>{message}</Title>;
               } else if (message.includes("Hit") || message.includes("Miss")) {
                 return <Paragraph italic>{message}</Paragraph>;
-              } else if (message.includes("died")) {
+              } else if (
+                message.includes("died") ||
+                message.includes("critical")
+              ) {
                 return <Paragraph strong>{message}</Paragraph>;
               } else return <Paragraph>{message}</Paragraph>;
             })}
@@ -124,16 +144,22 @@ export default function Simulation() {
         <Title level={2}>
           Players won {wins}/{totalSims} simulations ({winsRatio.toFixed(0)}%)
         </Title>
+        <List bordered style={{ width: 350 }}>
+          <List.Item>
+            Average Number of Players Killed: {avgDeaths}/{totalPlayers}
+          </List.Item>
+          <List.Item>Average Number of Rounds: {avgRounds}</List.Item>
+        </List>
         <Title level={2}>Individual Simulation Data:</Title>
         <Collapse
           accordion
-          items={collapseItems}
+          items={simDataDisplay}
           style={{ height: 800, overflow: "scroll" }}
           size="large"
         />
       </div>
     );
   } else {
-    return <Title>Loading, please wait...</Title>;
+    return <Spin tip="Loading..." size="large" />;
   }
 }

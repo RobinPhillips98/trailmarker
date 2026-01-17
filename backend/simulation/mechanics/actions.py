@@ -40,9 +40,10 @@ class Attack(Action):
         split_string = re.split(r"d|\+|-", damage_roll_string)
         self.num_dice: int = int(split_string[0])
         self.die_size: int = int(split_string[1])
-        self.damage_bonus: int = (
-            int(split_string[2]) if len(split_string) == 3 else 0
-        )
+        if len(split_string) == 3:
+            self.damage_bonus: int = int(split_string[2])
+        else:
+            self.damage_bonus: int = 0
 
         self.cost: int = 1
         self.weight: int = (

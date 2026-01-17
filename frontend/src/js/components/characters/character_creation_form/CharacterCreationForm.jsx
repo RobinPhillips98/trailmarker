@@ -134,7 +134,6 @@ export default function CharacterCreationForm() {
           <SavesSelection />
         </Col>
       </Row>
-      {/* <AttributeSelection editing={editing} savedCharacter={savedCharacter} /> */}
       <br />
       <SkillSelection editing={editing} savedCharacter={savedCharacter} />
       <br />

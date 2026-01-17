@@ -45,7 +45,7 @@ class Creature:
         self.level: int = creature["level"]
         self.perception: int = creature["perception"]
         self.max_hit_points: int = creature["max_hit_points"]
-        self.hit_points: int = self.max_hit_points
+        self.current_hit_points: int = self.max_hit_points
         self.speed: int = creature["speed"]
         self.armor_class: int = creature["defenses"]["armor_class"]
 
@@ -102,7 +102,7 @@ class Creature:
         self.initiative: int = 0
         self.num_actions: int = 0
         self.map: int = 0
-        self.team: int = None
+        self.team: int = 0
         self.is_dead: bool = False
 
         # Simulation Data
@@ -129,8 +129,7 @@ class Creature:
         is an attack, the creature selects a target and attacks that target.
         """
         if not self.encounter:
-            print("Error: Turns cannot be taken outside of an encounter")
-            return
+            raise Exception("Turns cannot be taken outside of an encounter")
 
         self._log(f"{self}'s turn:")
         self.num_actions = 3
@@ -152,10 +151,7 @@ class Creature:
         Returns:
             int: A number representing how valuable the target is.
         """
-        weight = ((self.max_hit_points - self.hit_points)) * self.level
-
-        if self.is_dead:
-            weight = -1
+        weight = ((self.max_hit_points - self.current_hit_points)) * self.level
 
         return weight
 
@@ -169,22 +165,25 @@ class Creature:
         Args:
             damage (int): The damage the creature is to take.
         """
-        self.hit_points -= damage
+        self.current_hit_points -= damage
 
-        if self.hit_points <= 0:
+        if self.current_hit_points <= 0:
             self._die()
         else:
-            self._log(f"{self} has {self.hit_points} HP remaining!")
+            self._log(f"{self} has {self.current_hit_points} HP remaining!")
 
     # Private Methods
 
     def _roll_initiative(self) -> None:
+        # Don't know if a creature is sneaking at the start of the encounter,
+        # so assume creatures with higher stealth will typically sneak and
+        # roll stealth for initiative
         if self.stealth > self.perception:
             self.initiative = d20.roll() + self.stealth
         else:
             self.initiative = d20.roll() + self.perception
 
-    def _perform_action(self):
+    def _perform_action(self) -> None:
         best_action = self.actions[0]
 
         # Just a simple linear search because number of actions should never
@@ -237,21 +236,27 @@ class Creature:
             critical_hit = False
 
         if attack_total < target.armor_class:
-            # Nat 20 upgrades a miss into a non-critical hit
-            if critical_hit:
+            # Rolling a 20 upgrades a miss into a non-critical hit, so set
+            # critical_hit back to false and proceed with damage
+            if attack_roll == 20:
                 critical_hit = False
+            # If we didn't hit the target AC and we didn't roll a 20,
+            # we don't do damage, so return
             else:
                 self._log("Miss!")
                 return False
 
+        self._log("Hit!")
+
         damage_type = attack.damage_type
-        damage_roll = Die(attack.die_size).roll()
+        damage_die = Die(attack.die_size)
+
+        damage_roll = damage_die.roll()
         damage = (attack.num_dice * damage_roll) + attack.damage_bonus
         if critical_hit:
             self._log(f"{self} dealt a critical hit to {target}!")
             damage *= 2
 
-        self._log("Hit!")
         self._log(f"{self} dealt {damage} {damage_type} damage to {target}!")
         target.take_damage(damage)
 
@@ -263,7 +268,7 @@ class Creature:
         if self.encounter:
             self.encounter.remove_creature(self)
 
-    def _log(self, message: str = ""):
+    def _log(self, message: str) -> None:
         if self.simulation:
             self.simulation.log(message)
         else:

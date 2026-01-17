@@ -6,6 +6,7 @@ from ..simulation.encounters.encounter import Encounter
 from .sample_data import test_enemy, test_player
 
 
+@pytest.mark.repeat(25)
 def test_encounter_initialization():
     player = Player(test_player)
     enemy = Enemy(test_enemy)
@@ -32,15 +33,23 @@ def test_encounter_initialization():
     assert enemy.initiative > 0
 
     if player.initiative > enemy.initiative:
-        assert encounter.creatures[0] == player
-        assert encounter.creatures[1] == enemy
+        assert (
+            encounter.creatures[0] == player
+            and encounter.creatures[1] == enemy
+        ), "Player wins initiative failed"
     elif enemy.initiative > player.initiative:
-        assert encounter.creatures[0] == enemy
-        assert encounter.creatures[1] == player
-    # TODO: Handle ties
+        assert (
+            encounter.creatures[0] == enemy
+            and encounter.creatures[1] == player
+        ), "Enemy wins initiative failed"
+    elif player.initiative == enemy.initiative:
+        assert (
+            encounter.creatures[0] == enemy
+            and encounter.creatures[1] == player
+        ), "Initiative tie breaker failed"
 
 
-@pytest.mark.repeat(10)
+@pytest.mark.repeat(25)
 def test_run_encounter():
     player = Player(test_player)
     enemy = Enemy(test_enemy)

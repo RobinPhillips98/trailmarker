@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 from ..creatures.creature import Creature
 from ..creatures.enemy import Enemy
 from ..creatures.player import Player
@@ -44,9 +46,11 @@ class Encounter:
         for creature in self.creatures:
             creature.join_encounter(self)
 
-        # TODO: Handle ties
-        self.creatures.sort(
-            key=lambda creature: creature.initiative, reverse=True
+        # Sort by initiative before starting encounter
+        self.creatures = sorted(
+            self.creatures,
+            key=attrgetter("initiative", "team"),  # Enemies win ties
+            reverse=True,
         )
 
     # Public Methods
@@ -71,12 +75,13 @@ class Encounter:
             creature = self.creatures[i]
             self._log(f"{i + 1}. {creature}: {creature.initiative}")
 
-        # print("Running encounter...")
         rounds = 0
         while not self._check_winner():
             rounds += 1
             self._log(f"Round {rounds}:")
-            self._run_round()
+            for creature in self.creatures:
+                if not self._check_winner():
+                    creature.take_turn()
 
         self._log(f"{self.winner.capitalize()} won in {rounds} rounds!")
         if self.simulation:
@@ -84,7 +89,7 @@ class Encounter:
 
         return self.winner
 
-    def remove_creature(self, creature: Creature):
+    def remove_creature(self, creature: Creature) -> None:
         """Removes a creature from the encounter.
 
         Determines if the creature is a player or enemy, removes it from the
@@ -102,23 +107,17 @@ class Encounter:
 
     # Private Methods
 
-    def _check_winner(self):
+    def _check_winner(self) -> bool:
         if not self.players:
             self.winner = "enemies"
             return True
-        if not self.enemies:
+        elif not self.enemies:
             self.winner = "players"
             return True
-        return False
+        else:
+            return False
 
-    def _run_round(self):
-        # Already sorted by initiative in constructor
-        for creature in self.creatures:
-            if self._check_winner():
-                return
-            creature.take_turn()
-
-    def _log(self, message: str = ""):
+    def _log(self, message: str = "") -> None:
         if self.simulation:
             self.simulation.log(message)
         else:
