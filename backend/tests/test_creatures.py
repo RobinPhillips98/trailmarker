@@ -12,13 +12,13 @@ class TestCreature:
         assert self.creature.level == 3
         assert self.creature.perception == 5
         assert self.creature.max_hit_points == 10
-        assert self.creature.hit_points == self.creature.max_hit_points
+        assert self.creature.current_hit_points == self.creature.max_hit_points
         assert self.creature.armor_class == 12
         assert self.creature.speed == 25
         assert self.creature.initiative == 0
         assert not self.creature.is_dead
         assert self.creature.attacks is None
-        assert self.creature.team is None
+        assert self.creature.team == 0
         assert self.creature.encounter is None
 
     def test_attribute_modifiers(self):
@@ -62,7 +62,7 @@ class TestPlayer:
         assert self.player.level == 1
         assert self.player.perception == 5
         assert self.player.max_hit_points == 24
-        assert self.player.hit_points == self.player.max_hit_points
+        assert self.player.current_hit_points == self.player.max_hit_points
         assert self.player.armor_class == 18
         assert self.player.speed == 25
         assert self.player.initiative == 0
@@ -137,7 +137,7 @@ class TestEnemy:
         assert self.enemy.level == -1
         assert self.enemy.perception == 2
         assert self.enemy.max_hit_points == 6
-        assert self.enemy.hit_points == self.enemy.max_hit_points
+        assert self.enemy.current_hit_points == self.enemy.max_hit_points
         assert self.enemy.armor_class == 16
         assert self.enemy.speed == 25
         assert self.enemy.initiative == 0
@@ -227,18 +227,18 @@ class TestCreatureMethods:
         assert not self.enemy.is_dead
 
         if self.player._attack(player_weapon, self.enemy):
-            assert self.enemy.hit_points < self.enemy.max_hit_points
+            assert self.enemy.current_hit_points < self.enemy.max_hit_points
         else:
-            assert self.enemy.hit_points == self.enemy.max_hit_points
+            assert self.enemy.current_hit_points == self.enemy.max_hit_points
 
         if self.enemy._attack(enemy_weapon, self.player):
-            assert self.player.hit_points < self.player.max_hit_points
+            assert self.player.current_hit_points < self.player.max_hit_points
         else:
-            assert self.player.hit_points == self.player.max_hit_points
+            assert self.player.current_hit_points == self.player.max_hit_points
 
         while not self.enemy.is_dead:
-            prev_hp = self.enemy.hit_points
+            prev_hp = self.enemy.current_hit_points
             if self.player._attack(player_weapon, self.enemy):
-                assert self.enemy.hit_points < prev_hp
+                assert self.enemy.current_hit_points < prev_hp
 
         assert self.enemy.is_dead
