@@ -235,7 +235,10 @@ def add_actions(raw_dict, enemy):
     for item in items:
         if "attack" in item["system"]:
             add_attack(item, enemy)
-        elif item["type"] == "spellcastingEntry" and "spell_dc" not in enemy.keys():
+        elif (
+            item["type"] == "spellcastingEntry"
+            and "spell_dc" not in enemy.keys()
+        ):
             enemy["spell_dc"] = item["system"]["spelldc"]["dc"]
             enemy["spell_attack_bonus"] = item["system"]["spelldc"]["value"]
         elif item["type"] == "spell" and item["system"]["damage"]:
@@ -263,7 +266,7 @@ def add_spell(item, enemy):
     spell_dict = {}
     raw_spell_dict = item["system"]
     spell_dict["name"] = item["name"]
-    
+
     for spell in enemy["actions"]["spells"]:
         if spell["name"] == spell_dict["name"]:
             spell["slots"] += 1
@@ -310,7 +313,7 @@ def convert_to_db_enemy(enemy: dict[any]) -> Enemy:
             "will": enemy["defenses"]["saves"]["will"],
         },
     }
-    actions_dict = {"attacks": []}
+    actions_dict = {"attacks": [], "spells": []}
     for attack in enemy["actions"]["attacks"]:
         attack_dict = {
             "name": attack["name"],
@@ -322,6 +325,9 @@ def convert_to_db_enemy(enemy: dict[any]) -> Enemy:
         except KeyError:
             pass
         actions_dict["attacks"].append(attack_dict)
+
+    for spell in enemy["actions"]["spells"]:
+        actions_dict["spells"].append(spell)
 
     db_enemy = Enemy(
         name=enemy["name"],

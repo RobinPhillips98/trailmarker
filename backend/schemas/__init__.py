@@ -15,15 +15,30 @@ class Encounters(BaseModel):
 
 
 # Stats
-class Attacks(BaseModel):
+class Attack(BaseModel):
     name: str
     attackBonus: int
     damage: Optional[str] = None
     damageType: Optional[str] = None
 
 
+class Spell(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+    name: str
+    slots: int
+    level: int
+    damage_roll: str
+    damage_type: str
+    range_: str = Field(..., alias="range")
+    area: Optional[dict[str, str | int]] = None
+    target: str
+    actions: str
+
+
 class Actions(BaseModel):
-    attacks: Optional[list[Attacks]] = None
+    attacks: Optional[list[Attack]] = None
+    spells: Optional[list[Spell]] = None
 
 
 class Skills(BaseModel):
