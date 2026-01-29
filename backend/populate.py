@@ -26,8 +26,7 @@ def initialize_enemies(db: Session):
     Args:
         db (Session): A SQLAlchemy database session
     """
-    parent_directory = str(Path(__file__).parent.parent)
-    raw_path = f"{parent_directory}/raw_data/"
+    raw_path = "raw_data/"
 
     fetch_enemies(raw_path)
     add_enemies(raw_path, db)
@@ -48,7 +47,7 @@ def fetch_enemies(raw_path: str) -> None:
     if not (Path(raw_path).exists()):
         Path(raw_path).mkdir()
 
-    base_url = "https://raw.githubusercontent.com/foundryvtt/pf2e/refs/heads/v13-dev/packs/menace-under-otari-bestiary/"  # noqa
+    base_url = "https://raw.githubusercontent.com/foundryvtt/pf2e/refs/heads/v13-dev/packs/pf2e/menace-under-otari-bestiary/"  # noqa
     # Getting the files with PyGithub directly takes too long and results in
     # being rate-limited, so just get the filenames with it
     filenames = get_filenames()
@@ -69,7 +68,7 @@ def fetch_enemies(raw_path: str) -> None:
 
 def get_filenames() -> list[str]:
     repo = Github().get_repo("foundryvtt/pf2e")
-    files = repo.get_contents("packs/menace-under-otari-bestiary")
+    files = repo.get_contents("packs/pf2e/menace-under-otari-bestiary")
     exclusions = [
         "central-spears-bb.json",
         "envenomed-lock-bb.json",
@@ -165,7 +164,7 @@ def build_enemy_dict(raw_dict: dict[any]) -> dict[any]:
         "max_hit_points": 0,
         "immunities": [],
         "speed": 0,
-        "actions": {"attacks": []},
+        "actions": {"attacks": [], "spells": []},
     }
 
     enemy["name"] = raw_dict["prototypeToken"]["name"]
@@ -189,7 +188,7 @@ def build_enemy_dict(raw_dict: dict[any]) -> dict[any]:
 
     enemy["speed"] = system_attributes["speed"]["value"]
 
-    add_attacks(raw_dict, enemy)
+    add_actions(raw_dict, enemy)
 
     return enemy
 
@@ -231,24 +230,66 @@ def add_immunities(system_attributes: dict[any], enemy: dict[any]):
         enemy["immunities"].append(immunity["type"])
 
 
-def add_attacks(raw_dict, enemy):
+def add_actions(raw_dict, enemy):
     items = raw_dict["items"]
     for item in items:
         if "attack" in item["system"]:
-            attack_dict = {}
-            attack_dict["name"] = item["name"]
-            attack_dict["attackBonus"] = item["system"]["bonus"]["value"]
-            # for some reason in the JSON files from foundryVTT there is a
-            # key with a random value between damageRolls and the values
-            # inside it that I need, thus the damage_roll_key variable
-            try:
-                damage_rolls = item["system"]["damageRolls"]
-                key = list(damage_rolls.keys())[0]
-                attack_dict["damage"] = damage_rolls[key]["damage"]
-                attack_dict["damageType"] = damage_rolls[key]["damageType"]
-            except IndexError:
-                pass  # Some attacks don't do damage, so don't add them
-            enemy["actions"]["attacks"].append(attack_dict)
+            add_attack(item, enemy)
+        elif item["type"] == "spellcastingEntry" and "spell_dc" not in enemy.keys():
+            enemy["spell_dc"] = item["system"]["spelldc"]["dc"]
+            enemy["spell_attack_bonus"] = item["system"]["spelldc"]["value"]
+        elif item["type"] == "spell" and item["system"]["damage"]:
+            add_spell(item, enemy)
+
+
+def add_attack(item, enemy):
+    attack_dict = {}
+    attack_dict["name"] = item["name"]
+    attack_dict["attackBonus"] = item["system"]["bonus"]["value"]
+    # for some reason in the JSON files from foundryVTT there is a
+    # key with a random value between damageRolls and the values
+    # inside it that I need, thus the key variable
+    try:
+        damage_rolls = item["system"]["damageRolls"]
+        key = list(damage_rolls.keys())[0]
+        attack_dict["damage"] = damage_rolls[key]["damage"]
+        attack_dict["damageType"] = damage_rolls[key]["damageType"]
+    except IndexError:
+        pass  # Some attacks don't do damage, so don't add them
+    enemy["actions"]["attacks"].append(attack_dict)
+
+
+def add_spell(item, enemy):
+    spell_dict = {}
+    raw_spell_dict = item["system"]
+    spell_dict["name"] = item["name"]
+    
+    for spell in enemy["actions"]["spells"]:
+        if spell["name"] == spell_dict["name"]:
+            spell["slots"] += 1
+            return
+
+    spell_dict["slots"] = 1
+    spell_dict["level"] = raw_spell_dict["level"]["value"]
+    if "cantrip" in raw_spell_dict["traits"]["value"]:
+        spell_dict["level"] = 0
+
+    spell_dict["damage_roll"] = raw_spell_dict["damage"]["0"]["formula"]
+    spell_dict["damage_type"] = raw_spell_dict["damage"]["0"]["type"]
+    spell_dict["range"] = raw_spell_dict["range"]["value"]
+    spell_dict["area"] = raw_spell_dict["area"]
+    spell_dict["target"] = raw_spell_dict["target"]["value"]
+
+    try:
+        if "save" in raw_spell_dict["defense"]:
+            spell_dict["save"] = raw_spell_dict["defense"]["save"]["statistic"]
+            spell_dict["basic"] = raw_spell_dict["defense"]["save"]["basic"]
+    except TypeError:
+        pass  # No save, don't need to add it if it doesn't exist
+
+    spell_dict["actions"] = raw_spell_dict["time"]["value"]
+
+    enemy["actions"]["spells"].append(spell_dict)
 
 
 def convert_to_db_enemy(enemy: dict[any]) -> Enemy:
