@@ -1,12 +1,12 @@
 import { Button, Card, Col, Form, Input, InputNumber, Row, Select } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { damageTypes } from "../../characterHelpers";
+import { damageTypes, saveOptions } from "../../characterHelpers";
 
 /**
  * A component to allow a user to add spells to a player character
  *
  * @param {object} props
- * @param {boolean} props.editing True if this is a saved character being 
+ * @param {boolean} props.editing True if this is a saved character being
  *  edited, false if this is a new character
  * @param {object} props.savedCharacter The character being edited
  * @returns {JSX.element}
@@ -25,6 +25,7 @@ export default function SpellsSelection({ editing, savedCharacter }) {
         actions: spell.actions,
       }))
     : [{}];
+
   return (
     <Card title="Spells" style={{ marginLeft: 100, width: 300 }}>
       {/* Allow user to add as many spells as they want, with each spell
@@ -163,22 +164,42 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                     </Form.Item>
                   </Col>
                 </Row>
-                <Form.Item
-                  {...restField}
-                  name={[name, "actions"]}
-                  label="Action Cost"
-                  labelCol={{ span: 24 }}
-                  rules={[
-                    { required: true, message: "Please input a damage" },
-                    {
-                      pattern: /^[012]( to [23])?$/i,
-                      message:
-                        "Input must be a valid number of actions (ex. '1' or '1 to 3')",
-                    },
-                  ]}
-                >
-                  <Input style={{ width: 100 }} placeholder="1 to 3" />
-                </Form.Item>
+                <Row>
+                  <Col span={12}>
+                    <Form.Item
+                      {...restField}
+                      name={[name, "save"]}
+                      label="Saving Throw"
+                      labelCol={{ span: 24 }}
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please input a saving throw",
+                        },
+                      ]}
+                    >
+                      <Select options={saveOptions} style={{ width: 100 }} />
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item
+                      {...restField}
+                      name={[name, "actions"]}
+                      label="Action Cost"
+                      labelCol={{ span: 24 }}
+                      rules={[
+                        { required: true, message: "Please input a damage" },
+                        {
+                          pattern: /^[012]( to [23])?$/i,
+                          message:
+                            "Input must be a valid number of actions (ex. '1' or '1 to 3')",
+                        },
+                      ]}
+                    >
+                      <Input style={{ width: 100 }} placeholder="1 to 3" />
+                    </Form.Item>
+                  </Col>
+                </Row>
 
                 <Button
                   type="dashed"
