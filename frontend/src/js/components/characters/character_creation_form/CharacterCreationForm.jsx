@@ -11,6 +11,7 @@ import SavesSelection from "./subcomponents/SavesSelection";
 import AttacksSelection from "./subcomponents/AttacksSelection";
 import GeneralInfoSelection from "./subcomponents/GeneralInfoSelection";
 import GeneralStatsSelection from "./subcomponents/GeneralStatsSelection";
+import SpellsSelection from "./subcomponents/SpellsSelection";
 
 /**
  * A component to allow a user to create or edit a player character
@@ -137,7 +138,14 @@ export default function CharacterCreationForm() {
       <br />
       <SkillSelection editing={editing} savedCharacter={savedCharacter} />
       <br />
-      <AttacksSelection editing={editing} savedCharacter={savedCharacter} />
+      <Row gutter={16}>
+        <Col span={12}>
+          <AttacksSelection editing={editing} savedCharacter={savedCharacter} />
+        </Col>
+        <Col span={12}>
+          <SpellsSelection editing={editing} savedCharacter={savedCharacter} />
+        </Col>
+      </Row>
       <br />
       <Form.Item label={null}>
         <Button type="primary" htmlType="submit">

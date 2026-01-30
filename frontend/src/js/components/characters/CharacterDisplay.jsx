@@ -137,23 +137,65 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
       children: (
         <List
           size="small"
-          grid={{ gutter: 16, column: 5 }}
-          dataSource={character.actions.attacks}
+          grid={{ gutter: 16, column: 3 }}
+          dataSource={character.actions?.attacks || []}
           renderItem={(attack) => (
-            <List.Item>
+            <List.Item key={attack.name}>
               <Card title={attack.name} style={{ maxWidth: 300 }}>
                 <List
                   size="small"
-                  dataSource={Object.keys(attack).slice(1)}
-                  renderItem={(item) => (
-                    <List.Item>
-                      {toTitleCase(splitCamelCase(item))}:{" "}
-                      {typeof attack[item] === "string"
-                        ? toTitleCase(attack[item])
-                        : attack[item]}
+                  dataSource={[
+                    ["Attack Bonus", attack.attackBonus],
+                    ["Damage", attack.damage],
+                    ["Damage Type", toTitleCase(attack.damageType)],
+                  ]}
+                  renderItem={([label, value]) => (
+                    <List.Item key={label}>
+                      <strong>{label}</strong>: {value}
                     </List.Item>
                   )}
-                ></List>
+                />
+              </Card>
+            </List.Item>
+          )}
+        />
+      ),
+      span: 3,
+    },
+    {
+      key: "spells",
+      label: "Spells",
+      children: (
+        <List
+          size="small"
+          grid={{ gutter: 16, column: 3 }}
+          dataSource={character.actions?.spells || []}
+          renderItem={(spell) => (
+            <List.Item key={spell.name}>
+              <Card title={toTitleCase(spell.name)} style={{ maxWidth: 360 }}>
+                <List
+                  size="small"
+                  dataSource={[
+                    ["Slots", spell.slots],
+                    ["Level", spell.level > 0 ? spell.level : "Cantrip"],
+                    ["Damage Roll", spell.damage_roll],
+                    ["Damage Type", toTitleCase(spell.damage_type)],
+                    ["Range", spell.range],
+                    ["Target", spell.target],
+                    ["Actions", spell.actions],
+                    ...(spell.area && typeof spell.area === "object"
+                      ? Object.keys(spell.area).map((key) => [
+                          toTitleCase(splitCamelCase(key)),
+                          spell.area[key],
+                        ])
+                      : []),
+                  ]}
+                  renderItem={([label, value]) => (
+                    <List.Item key={label}>
+                      <strong>{label}:</strong> {value}
+                    </List.Item>
+                  )}
+                />
               </Card>
             </List.Item>
           )}

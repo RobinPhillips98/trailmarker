@@ -7,7 +7,8 @@ import { damageTypes } from "../../characterHelpers";
  * A component to allow a user to add attacks to a player character
  *
  * @param {object} props
- * @param {boolean} props.editing True if this is a saved character being edited, false if this is a new character
+ * @param {boolean} props.editing True if this is a saved character being 
+ *  edited, false if this is a new character
  * @param {object} props.savedCharacter The character being edited
  * @returns {JSX.element}
  */
@@ -78,7 +79,10 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                     { required: true, message: "Please input a damage type" },
                   ]}
                 >
-                  <Select options={damageTypes} style={{ width: 125 }} />
+                  <Select
+                    options={damageTypes.slice(0, 3)}
+                    style={{ width: 125 }}
+                  />
                 </Form.Item>
                 <Button
                   type="dashed"
@@ -97,7 +101,7 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                 block
                 icon={<PlusOutlined />}
               >
-                Add attack
+                Add Attack
               </Button>
             </Form.Item>
           </>
