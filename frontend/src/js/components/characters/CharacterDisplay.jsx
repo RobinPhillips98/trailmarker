@@ -218,7 +218,7 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
         Edit Character
       </Button>
       <Divider type="vertical" />
-      <Button danger onClick={handleDelete}>
+      <Button type="primary" danger onClick={handleDelete}>
         Delete Character
       </Button>
     </>

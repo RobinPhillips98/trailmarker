@@ -14,10 +14,26 @@ export default function App() {
   const { Header, Content } = Layout;
   const themeConfig = {
     token: {
-      colorPrimary: "#722ed1",
-      colorInfo: "#722ed1",
+      colorPrimary: "#5B2D86",
+
+      colorBgLayout: "#0f1418",
+      colorBgContainer: "#15181c",
+      colorBgBase: "#0b0f12",
+
+      colorText: "#E9E7E2",
+      colorTextSecondary: "#B9B7B2",
+
+      colorBorder: "#26292d",
+      colorSplit: "#1d2124",
+
+      colorInfo: "#5B2D86",
+      colorWarning: "#D17E1A",
+      colorError: "#E65353",
+      colorSuccess: "#2F9D7E",
+
+      borderRadius: 6
     },
-    algorithm: theme.darkAlgorithm,
+    algorithm: theme.darkAlgorithm
   };
 
   return (
@@ -26,7 +42,7 @@ export default function App() {
         <ConfigProvider theme={themeConfig}>
           <Flex>
             <Layout>
-              <Header style={{ backgroundColor: "#141414", marginBottom: 10 }}>
+              <Header style={{ background: themeConfig.token.colorBgContainer, marginBottom: 10 }}>
                 <NavBar />
               </Header>
               <Content>

@@ -44,6 +44,7 @@ export default function SelectedEnemy(props) {
       </li>
       <Button
         style={{ marginLeft: 10 }}
+        type="primary"
         danger
         variant="filled"
         onClick={handleClickRemove}
