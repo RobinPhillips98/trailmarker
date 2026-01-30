@@ -127,6 +127,54 @@ export const damageTypes = [
     value: "slashing",
     label: "Slashing",
   },
+  {
+    value: "acid",
+    label: "Acid",
+  },
+  {
+    value: "cold",
+    label: "Cold",
+  },
+  {
+    value: "electricity",
+    label: "Electricity",
+  },
+  {
+    value: "fire",
+    label: "Fire",
+  },
+  {
+    value: "sonic",
+    label: "Sonic",
+  },
+  {
+    value: "vitality",
+    label: "Vitality",
+  },
+  {
+    value: "void",
+    label: "Void",
+  },
+  {
+    value: "force",
+    label: "Force",
+  },
+  {
+    value: "spirit",
+    label: "Spirit",
+  },
+  {
+    value: "mental",
+    label: "Mental",
+  },
+  {
+    value: "poison",
+    label: "Poison",
+  },
+  {
+    value: "bleed",
+    label: "Bleed",
+  },
 ];
 
 /**
