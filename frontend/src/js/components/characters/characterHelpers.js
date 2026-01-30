@@ -1,3 +1,5 @@
+import { toTitleCase } from "../../services/helpers";
+
 /**
  * A list with the available ancestry options, formatted to be the options of a
  * select component
@@ -181,3 +183,17 @@ export const damageTypes = [
  * A list of the saving throws in Pathfinder
  */
 export const saves = ["fortitude", "reflex", "will"];
+
+const saveValues = saves.map((save) => {
+  return {
+    value: save,
+    label: toTitleCase(save),
+  };
+});
+
+export const saveOptions = [
+  {
+    value: "none",
+    label: "None",
+  },
+].concat(saveValues);

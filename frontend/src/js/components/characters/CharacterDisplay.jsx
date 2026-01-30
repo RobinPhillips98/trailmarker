@@ -183,9 +183,10 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
                     ["Range", spell.range],
                     ["Target", spell.target],
                     ["Actions", spell.actions],
+                    ["Saving Throw", toTitleCase(spell.save)],
                     ...(spell.area && typeof spell.area === "object"
                       ? Object.keys(spell.area).map((key) => [
-                          toTitleCase(splitCamelCase(key)),
+                          `Area ${toTitleCase(splitCamelCase(key))}`,
                           spell.area[key],
                         ])
                       : []),

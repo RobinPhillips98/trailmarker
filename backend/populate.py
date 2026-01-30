@@ -286,7 +286,6 @@ def add_spell(item, enemy):
     try:
         if "save" in raw_spell_dict["defense"]:
             spell_dict["save"] = raw_spell_dict["defense"]["save"]["statistic"]
-            spell_dict["basic"] = raw_spell_dict["defense"]["save"]["basic"]
     except TypeError:
         pass  # No save, don't need to add it if it doesn't exist
 
