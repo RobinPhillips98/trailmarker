@@ -76,7 +76,12 @@ export default function EncounterOptions({ enemies, clearEncounter }) {
         />
       </Space.Compact>
       <br />
-      <Button danger onClick={clearEncounter}>
+      <Button
+        type="primary"
+        danger
+        onClick={clearEncounter}
+        style={{ marginTop: 10 }}
+      >
         Clear Encounter
       </Button>
     </div>
