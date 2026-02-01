@@ -184,16 +184,28 @@ export const damageTypes = [
  */
 export const saves = ["fortitude", "reflex", "will"];
 
-const saveValues = saves.map((save) => {
+export const saveOptions = saves.map((save) => {
   return {
     value: save,
     label: toTitleCase(save),
   };
 });
 
-export const saveOptions = [
+export const areaTypes = [
   {
-    value: "none",
-    label: "None",
+    value: "burst",
+    label: "Burst",
   },
-].concat(saveValues);
+  {
+    value: "cone",
+    label: "Cone",
+  },
+  {
+    value: "emanation",
+    label: "Emanation",
+  },
+  {
+    value: "line",
+    label: "Line",
+  },
+];

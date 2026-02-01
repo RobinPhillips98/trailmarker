@@ -46,6 +46,7 @@ export default function App() {
                 <NavBar />
               </Header>
               <Content>
+                
                 <Routes>
                   <Route path="/" element={<Homepage />} />
                   <Route path="/characters" element={<Characters />} />

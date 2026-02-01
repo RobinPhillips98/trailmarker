@@ -70,17 +70,17 @@ export default function PartyInfoForm(props) {
 
   return (
     <div id="#partyInfoForm">
-      <Title level={4}>Use saved characters?</Title>
+      <Title level={2}>Use saved characters?</Title>
       <Switch checked={switched} onChange={handleChange} disabled={!user} />
-      <Title level={4}>Number of Players</Title>
+      <Title level={2}>Number of Players</Title>
       <Select
-        defaultValue="4"
+        defaultValue="2"
         value={partySize}
         options={sizeOptions}
         onChange={handlePartySize}
         disabled={switched}
       />
-      <Title level={4}>Party Level</Title>
+      <Title level={2}>Party Level</Title>
       <Select
         defaultValue="1"
         value={partyLevel}

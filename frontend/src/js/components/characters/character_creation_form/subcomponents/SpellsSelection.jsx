@@ -1,6 +1,6 @@
 import { Button, Card, Col, Form, Input, InputNumber, Row, Select } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { damageTypes, saveOptions } from "../../characterHelpers";
+import { areaTypes, damageTypes, saveOptions } from "../../characterHelpers";
 
 /**
  * A component to allow a user to add spells to a player character
@@ -23,6 +23,7 @@ export default function SpellsSelection({ editing, savedCharacter }) {
         area: spell.area,
         target: spell.target,
         actions: spell.actions,
+        save: spell.save,
       }))
     : [{}];
 
@@ -105,7 +106,11 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                         },
                       ]}
                     >
-                      <Select options={damageTypes} style={{ width: "100%" }} />
+                      <Select
+                        showSearch={{ optionFilterProp: "label" }}
+                        options={damageTypes}
+                        style={{ width: "100%" }}
+                      />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -127,9 +132,6 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       {...restField}
                       name={[name, "target"]}
                       label="Target"
-                      rules={[
-                        { required: true, message: "Please input a target" },
-                      ]}
                     >
                       <Input placeholder="1 creature" />
                     </Form.Item>
@@ -141,8 +143,9 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       {...restField}
                       name={[name, "area", "type"]}
                       label="Area type"
-                      >
-                      <Input placeholder="emanation" />
+                    >
+                      {/* <Input placeholder="emanation" /> */}
+                      <Select options={areaTypes} allowClear />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -150,7 +153,7 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       {...restField}
                       name={[name, "area", "value"]}
                       label="Area value"
-                      >
+                    >
                       <Input placeholder="15 feet" />
                     </Form.Item>
                   </Col>
@@ -161,14 +164,12 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       {...restField}
                       name={[name, "save"]}
                       label="Saving Throw"
-                      rules={[
-                        {
-                          required: true,
-                          message: "Please input a saving throw",
-                        },
-                      ]}
                     >
-                      <Select options={saveOptions} style={{ width: "100%" }} />
+                      <Select
+                        allowClear
+                        options={saveOptions}
+                        style={{ width: "100%" }}
+                      />
                     </Form.Item>
                   </Col>
                   <Col span={12}>

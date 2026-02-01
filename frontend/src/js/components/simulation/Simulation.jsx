@@ -136,7 +136,7 @@ export default function Simulation() {
     });
 
     return (
-      <div>
+      <>
         <Title>Simulation Results</Title>
         <Button type="primary" onClick={handleClick}>
           Run Again
@@ -157,7 +157,7 @@ export default function Simulation() {
           style={{ height: 800, overflow: "scroll" }}
           size="large"
         />
-      </div>
+      </>
     );
   } else {
     return <Spin tip="Loading..." size="large" />;
