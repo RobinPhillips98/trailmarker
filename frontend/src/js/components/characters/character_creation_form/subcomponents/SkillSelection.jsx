@@ -13,7 +13,7 @@ import { toTitleCase } from "../../../../services/helpers";
  */
 export default function SkillSelection({ editing, savedCharacter }) {
   return (
-    <Card key="skills" title="Skills" style={{ marginLeft: 100, width: 600 }}>
+    <Card key="skills" title="Skills" style={{ width: "100%" }}>
       <Row>
         <Col span={8}>
           {skills.slice(0, 6).map((skill) => (
@@ -21,7 +21,6 @@ export default function SkillSelection({ editing, savedCharacter }) {
               key={skill}
               label={toTitleCase(skill)}
               labelCol={{ span: 12 }}
-              wrapperCol={{ span: 24 }}
               name={["skills", skill]}
               initialValue={editing ? savedCharacter.skills[skill] : 0}
               rules={[
@@ -41,7 +40,6 @@ export default function SkillSelection({ editing, savedCharacter }) {
               key={skill}
               label={toTitleCase(skill)}
               labelCol={{ span: 12 }}
-              wrapperCol={{ span: 24 }}
               name={["skills", skill]}
               initialValue={editing ? savedCharacter.skills[skill] : 0}
               rules={[
@@ -61,7 +59,6 @@ export default function SkillSelection({ editing, savedCharacter }) {
               key={skill}
               label={toTitleCase(skill)}
               labelCol={{ span: 12 }}
-              wrapperCol={{ span: 24 }}
               name={["skills", skill]}
               initialValue={editing ? savedCharacter.skills[skill] : 0}
               rules={[

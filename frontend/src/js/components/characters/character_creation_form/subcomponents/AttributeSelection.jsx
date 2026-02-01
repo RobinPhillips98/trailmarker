@@ -13,15 +13,13 @@ import { toTitleCase } from "../../../../services/helpers";
  */
 export default function AttributeSelection({ editing, savedCharacter }) {
   return (
-    <Card title="Attribute Modifiers" style={{ marginLeft: 100, width: 300 }}>
+    <Card title="Attribute Modifiers" style={{ width: "100%" }}>
       <Row>
-        <Col span={12}>
-          {attributes.slice(0, 3).map((attribute) => (
+        {attributes.slice(0, 3).map((attribute) => (
+          <Col span={8}>
             <Form.Item
               key={attribute}
               label={toTitleCase(attribute)}
-              labelCol={{ span: 24 }}
-              wrapperCol={{ span: 24 }}
               name={["attribute_modifiers", attribute]}
               initialValue={
                 editing ? savedCharacter.attribute_modifiers[attribute] : 0
@@ -35,15 +33,15 @@ export default function AttributeSelection({ editing, savedCharacter }) {
             >
               <InputNumber min={-2} max={5} />
             </Form.Item>
-          ))}
-        </Col>
-        <Col span={12}>
-          {attributes.slice(3, 6).map((attribute) => (
+          </Col>
+        ))}
+      </Row>
+      <Row>
+        {attributes.slice(3, 6).map((attribute) => (
+          <Col span={8}>
             <Form.Item
               key={attribute}
               label={toTitleCase(attribute)}
-              labelCol={{ span: 24 }}
-              wrapperCol={{ span: 24 }}
               name={["attribute_modifiers", attribute]}
               initialValue={
                 editing ? savedCharacter.attribute_modifiers[attribute] : 0
@@ -57,8 +55,8 @@ export default function AttributeSelection({ editing, savedCharacter }) {
             >
               <InputNumber min={-2} max={5} />
             </Form.Item>
-          ))}
-        </Col>
+          </Col>
+        ))}
       </Row>
     </Card>
   );

@@ -1,4 +1,4 @@
-import { Card, Form, InputNumber } from "antd";
+import { Card, Col, Form, InputNumber, Row } from "antd";
 
 import { saves } from "../../characterHelpers";
 import { toTitleCase } from "../../../../services/helpers";
@@ -10,26 +10,26 @@ import { toTitleCase } from "../../../../services/helpers";
  */
 export default function SavesSelection() {
   return (
-    <Card
-      title="Saving Throws"
-      style={{ marginLeft: 100, width: 300, height: 300 }}
-    >
-      {saves.map((save) => (
-        <Form.Item
-          label={toTitleCase(save)}
-          labelCol={{ span: 24 }}
-          wrapperCol={{ span: 24 }}
-          name={["defenses", "saves", save]}
-          rules={[
-            {
-              required: true,
-              message: `Please input a ${save} value`,
-            },
-          ]}
-        >
-          <InputNumber min={-5} max={30} />
-        </Form.Item>
-      ))}
+    <Card title="Saving Throws" style={{ width: "100%" }}>
+      <Row gutter={16}>
+        {saves.map((save) => (
+          <Col key={save} span={8}>
+            <Form.Item
+              label={toTitleCase(save)}
+              labelCol={{ span: 24 }}
+              name={["defenses", "saves", save]}
+              rules={[
+                {
+                  required: true,
+                  message: `Please input a ${save} value`,
+                },
+              ]}
+            >
+              <InputNumber min={-5} max={30} style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+        ))}
+      </Row>
     </Card>
   );
 }

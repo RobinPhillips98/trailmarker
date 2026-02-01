@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Col, Form, Row } from "antd";
+import { Button, Col, Form, Row, Grid } from "antd";
 
 import api from "../../../api";
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -22,6 +22,7 @@ export default function CharacterCreationForm() {
   const { state } = useLocation();
   const { editing, savedCharacter } = state;
   const { token } = useContext(AuthContext);
+  const { useBreakpoint } = Grid;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function CharacterCreationForm() {
         perception: savedCharacter.perception,
         actions: {
           attacks: savedCharacter.attacks,
+          spells: savedCharacter.spells,
         },
       }
     : {
@@ -102,47 +104,54 @@ export default function CharacterCreationForm() {
     navigate("/characters");
   }
 
+  const formSize = useBreakpoint().lg ? "large" : "middle";
+  
+
   return (
     <Form
       name="character"
-      labelCol={{ span: 12 }}
+      labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
-      style={{ maxWidth: 600, margin: "0 auto" }}
+      style={{ maxWidth: 1200, margin: "0 auto" }}
       initialValues={initialValues}
       onFinish={onFinish}
       autoComplete="off"
-      size="small"
+      size={formSize}
       requiredMark="optional"
       scrollToFirstError={{ focus: true }}
     >
-      <Row gutter={16}>
-        <Col span={12}>
+      <Row gutter={16} align="middle">
+        <Col xs={24} md={12}>
           <GeneralInfoSelection />
         </Col>
-        <Col span={12}>
+        <Col xs={24} md={12}>
           <GeneralStatsSelection />
         </Col>
       </Row>
       <br />
-      <Row gutter={16}>
-        <Col span={12}>
+      <Row gutter={16} align="middle">
+        <Col xs={24} md={12}>
           <AttributeSelection
             editing={editing}
             savedCharacter={savedCharacter}
           />
         </Col>
-        <Col span={12}>
+        <Col xs={24} md={12}>
           <SavesSelection />
         </Col>
       </Row>
       <br />
-      <SkillSelection editing={editing} savedCharacter={savedCharacter} />
+      <Row>
+        <Col span={24}>
+          <SkillSelection editing={editing} savedCharacter={savedCharacter} />
+        </Col>
+      </Row>
       <br />
       <Row gutter={16}>
-        <Col span={12}>
+        <Col xs={24} md={12}>
           <AttacksSelection editing={editing} savedCharacter={savedCharacter} />
         </Col>
-        <Col span={12}>
+        <Col xs={24} md={12}>
           <SpellsSelection editing={editing} savedCharacter={savedCharacter} />
         </Col>
       </Row>

@@ -23,28 +23,26 @@ export default function AttacksSelection({ editing, savedCharacter }) {
     : [{}];
 
   return (
-    <Card title="Attacks" style={{ marginLeft: 100, width: 300 }}>
+    <Card title="Attacks" style={{ width: "100%" }}>
       {/* Allow user to add as many attacks as they want, with each attack
       having the same style of input */}
       <Form.List name={["actions", "attacks"]} initialValue={initialAttacks}>
         {(fields, { add, remove }) => (
           <>
             {fields.map(({ name, ...restField }) => (
-              <Card>
+              <Card key={name} size="small" style={{ marginBottom: 12 }}>
                 <Form.Item
                   {...restField}
                   name={[name, "name"]}
                   label="Name"
-                  labelCol={{ span: 24 }}
                   rules={[{ required: true, message: "Please input a name" }]}
                 >
-                  <Input style={{ width: 200 }} />
+                  <Input />
                 </Form.Item>
                 <Form.Item
                   {...restField}
                   name={[name, "attackBonus"]}
                   label="Attack Bonus"
-                  labelCol={{ span: 24 }}
                   rules={[
                     {
                       required: true,
@@ -52,13 +50,12 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                     },
                   ]}
                 >
-                  <InputNumber min={-5} max={30} style={{ width: 100 }} />
+                  <InputNumber min={-5} max={30} />
                 </Form.Item>
                 <Form.Item
                   {...restField}
                   name={[name, "damage"]}
                   label="Damage"
-                  labelCol={{ span: 24 }}
                   rules={[
                     { required: true, message: "Please input a damage" },
                     {
@@ -68,21 +65,17 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                     },
                   ]}
                 >
-                  <Input style={{ width: 100 }} placeholder="1d8+4" />
+                  <Input placeholder="1d8+4" />
                 </Form.Item>
                 <Form.Item
                   {...restField}
                   name={[name, "damageType"]}
                   label="Damage Type"
-                  labelCol={{ span: 24 }}
                   rules={[
                     { required: true, message: "Please input a damage type" },
                   ]}
                 >
-                  <Select
-                    options={damageTypes.slice(0, 3)}
-                    style={{ width: 125 }}
-                  />
+                  <Select options={damageTypes.slice(0,3)} />
                 </Form.Item>
                 <Button
                   type="dashed"
@@ -93,7 +86,6 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                 </Button>
               </Card>
             ))}
-            <br />
             <Form.Item>
               <Button
                 type="dashed"

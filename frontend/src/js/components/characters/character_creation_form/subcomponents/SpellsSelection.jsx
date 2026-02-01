@@ -27,30 +27,28 @@ export default function SpellsSelection({ editing, savedCharacter }) {
     : [{}];
 
   return (
-    <Card title="Spells" style={{ marginLeft: 100, width: 300 }}>
+    <Card title="Spells" style={{ width: "100%" }}>
       {/* Allow user to add as many spells as they want, with each spell
       having the same style of input */}
       <Form.List name={["actions", "spells"]} initialValue={initialSpells}>
         {(fields, { add, remove }) => (
           <>
             {fields.map(({ name, ...restField }) => (
-              <Card>
+              <Card key={name} size="small" style={{ marginBottom: 12 }}>
                 <Form.Item
                   {...restField}
                   name={[name, "name"]}
                   label="Name"
-                  labelCol={{ span: 24 }}
                   rules={[{ required: true, message: "Please input a name" }]}
                 >
-                  <Input style={{ width: 200 }} />
+                  <Input />
                 </Form.Item>
-                <Row>
+                <Row gutter={12}>
                   <Col span={12}>
                     <Form.Item
                       {...restField}
                       name={[name, "slots"]}
                       label="Slots Prepared"
-                      labelCol={{ span: 24 }}
                       rules={[
                         {
                           required: true,
@@ -58,7 +56,7 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                         },
                       ]}
                     >
-                      <InputNumber style={{ width: 100 }} min={0} max={3} />
+                      <InputNumber style={{ width: "100%" }} min={0} max={3} />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -66,7 +64,6 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       {...restField}
                       name={[name, "level"]}
                       label="Level"
-                      labelCol={{ span: 24 }}
                       rules={[
                         {
                           required: true,
@@ -74,17 +71,16 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                         },
                       ]}
                     >
-                      <InputNumber style={{ width: 50 }} min={0} max={2} />
+                      <InputNumber style={{ width: "100%" }} min={0} max={2} />
                     </Form.Item>
                   </Col>
                 </Row>
-                <Row>
+                <Row gutter={12}>
                   <Col span={12}>
                     <Form.Item
                       {...restField}
                       name={[name, "damage_roll"]}
                       label="Damage"
-                      labelCol={{ span: 24 }}
                       rules={[
                         { required: true, message: "Please input a damage" },
                         {
@@ -94,7 +90,7 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                         },
                       ]}
                     >
-                      <Input style={{ width: 100 }} placeholder="1d8+4" />
+                      <Input placeholder="1d8+4" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -102,7 +98,6 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       {...restField}
                       name={[name, "damage_type"]}
                       label="Damage Type"
-                      labelCol={{ span: 24 }}
                       rules={[
                         {
                           required: true,
@@ -110,22 +105,21 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                         },
                       ]}
                     >
-                      <Select options={damageTypes} style={{ width: 125 }} />
+                      <Select options={damageTypes} style={{ width: "100%" }} />
                     </Form.Item>
                   </Col>
                 </Row>
-                <Row>
+                <Row gutter={12}>
                   <Col span={12}>
                     <Form.Item
                       {...restField}
                       name={[name, "range"]}
                       label="Range"
-                      labelCol={{ span: 24 }}
                       rules={[
                         { required: true, message: "Please input a range" },
                       ]}
                     >
-                      <Input style={{ width: 100 }} placeholder="120 feet" />
+                      <Input placeholder="120 feet" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -133,24 +127,22 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       {...restField}
                       name={[name, "target"]}
                       label="Target"
-                      labelCol={{ span: 24 }}
                       rules={[
                         { required: true, message: "Please input a target" },
                       ]}
                     >
-                      <Input style={{ width: 100 }} placeholder="1 creature" />
+                      <Input placeholder="1 creature" />
                     </Form.Item>
                   </Col>
                 </Row>
-                <Row>
+                <Row gutter={12}>
                   <Col span={12}>
                     <Form.Item
                       {...restField}
                       name={[name, "area", "type"]}
                       label="Area type"
-                      labelCol={{ span: 24 }}
-                    >
-                      <Input style={{ width: 100 }} placeholder="emanation" />
+                      >
+                      <Input placeholder="emanation" />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -158,19 +150,17 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       {...restField}
                       name={[name, "area", "value"]}
                       label="Area value"
-                      labelCol={{ span: 24 }}
-                    >
-                      <Input style={{ width: 100 }} placeholder="15 feet" />
+                      >
+                      <Input placeholder="15 feet" />
                     </Form.Item>
                   </Col>
                 </Row>
-                <Row>
+                <Row gutter={12}>
                   <Col span={12}>
                     <Form.Item
                       {...restField}
                       name={[name, "save"]}
                       label="Saving Throw"
-                      labelCol={{ span: 24 }}
                       rules={[
                         {
                           required: true,
@@ -178,7 +168,7 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                         },
                       ]}
                     >
-                      <Select options={saveOptions} style={{ width: 100 }} />
+                      <Select options={saveOptions} style={{ width: "100%" }} />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
@@ -186,7 +176,6 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       {...restField}
                       name={[name, "actions"]}
                       label="Action Cost"
-                      labelCol={{ span: 24 }}
                       rules={[
                         { required: true, message: "Please input a damage" },
                         {
@@ -196,7 +185,7 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                         },
                       ]}
                     >
-                      <Input style={{ width: 100 }} placeholder="1 to 3" />
+                      <Input placeholder="1 to 3" />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -210,7 +199,6 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                 </Button>
               </Card>
             ))}
-            <br />
             <Form.Item>
               <Button
                 type="dashed"
