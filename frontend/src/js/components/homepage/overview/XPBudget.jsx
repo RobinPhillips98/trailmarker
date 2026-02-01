@@ -19,7 +19,7 @@ export default function XPBudget({ budget }) {
   ];
   return (
     <List
-      header={<Title level={5}>XP Budget</Title>}
+      header={<Title level={2}>XP Budget</Title>}
       size="small"
       dataSource={budgetDisplay}
       renderItem={(item) => <List.Item>{item}</List.Item>}

@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Col, Form, Row, Grid } from "antd";
+import { Button, Col, Form, Row, Grid, Typography } from "antd";
 
 import api from "../../../api";
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -24,6 +24,7 @@ export default function CharacterCreationForm() {
   const { token } = useContext(AuthContext);
   const { useBreakpoint } = Grid;
   const navigate = useNavigate();
+  const { Title } = Typography;
 
   useEffect(() => {
     if (!token) {
@@ -104,64 +105,74 @@ export default function CharacterCreationForm() {
     navigate("/characters");
   }
 
+  const title = editing ? "Edit Character" : "Character Creation";
+
   const formSize = useBreakpoint().lg ? "large" : "middle";
-  
 
   return (
-    <Form
-      name="character"
-      labelCol={{ span: 24 }}
-      wrapperCol={{ span: 24 }}
-      style={{ maxWidth: 1200, margin: "0 auto" }}
-      initialValues={initialValues}
-      onFinish={onFinish}
-      autoComplete="off"
-      size={formSize}
-      requiredMark="optional"
-      scrollToFirstError={{ focus: true }}
-    >
-      <Row gutter={16} align="middle">
-        <Col xs={24} md={12}>
-          <GeneralInfoSelection />
-        </Col>
-        <Col xs={24} md={12}>
-          <GeneralStatsSelection />
-        </Col>
-      </Row>
-      <br />
-      <Row gutter={16} align="middle">
-        <Col xs={24} md={12}>
-          <AttributeSelection
-            editing={editing}
-            savedCharacter={savedCharacter}
-          />
-        </Col>
-        <Col xs={24} md={12}>
-          <SavesSelection />
-        </Col>
-      </Row>
-      <br />
-      <Row>
-        <Col span={24}>
-          <SkillSelection editing={editing} savedCharacter={savedCharacter} />
-        </Col>
-      </Row>
-      <br />
-      <Row gutter={16}>
-        <Col xs={24} md={12}>
-          <AttacksSelection editing={editing} savedCharacter={savedCharacter} />
-        </Col>
-        <Col xs={24} md={12}>
-          <SpellsSelection editing={editing} savedCharacter={savedCharacter} />
-        </Col>
-      </Row>
-      <br />
-      <Form.Item label={null}>
-        <Button type="primary" htmlType="submit">
-          Save Character
-        </Button>
-      </Form.Item>
-      <Button onClick={handleCancel}>Cancel</Button>
-    </Form>
+    <>
+      <Title>{title}</Title>
+      <Form
+        name="character"
+        labelCol={{ span: 24 }}
+        wrapperCol={{ span: 24 }}
+        style={{ maxWidth: 1200, margin: "0 auto" }}
+        initialValues={initialValues}
+        onFinish={onFinish}
+        autoComplete="off"
+        size={formSize}
+        requiredMark="optional"
+        scrollToFirstError={{ focus: true }}
+      >
+        <Row gutter={16} align="middle">
+          <Col xs={24} md={12}>
+            <GeneralInfoSelection />
+          </Col>
+          <Col xs={24} md={12}>
+            <GeneralStatsSelection />
+          </Col>
+        </Row>
+        <br />
+        <Row gutter={16} align="middle">
+          <Col xs={24} md={12}>
+            <AttributeSelection
+              editing={editing}
+              savedCharacter={savedCharacter}
+            />
+          </Col>
+          <Col xs={24} md={12}>
+            <SavesSelection />
+          </Col>
+        </Row>
+        <br />
+        <Row>
+          <Col span={24}>
+            <SkillSelection editing={editing} savedCharacter={savedCharacter} />
+          </Col>
+        </Row>
+        <br />
+        <Row gutter={16}>
+          <Col xs={24} md={12}>
+            <AttacksSelection
+              editing={editing}
+              savedCharacter={savedCharacter}
+            />
+          </Col>
+          <Col xs={24} md={12}>
+            <SpellsSelection
+              editing={editing}
+              savedCharacter={savedCharacter}
+            />
+          </Col>
+        </Row>
+        <br />
+        <Form.Item label={null}>
+          <Button type="primary" htmlType="submit">
+            Save Character
+          </Button>
+        </Form.Item>
+        <Button onClick={handleCancel}>Cancel</Button>
+      </Form>
+    </>
   );
 }

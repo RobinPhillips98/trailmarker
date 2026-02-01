@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Tabs } from "antd";
+import { Button, Tabs, Typography } from "antd";
 
 import { AuthContext } from "../../contexts/AuthContext";
 import api from "../../api";
@@ -17,6 +17,8 @@ export default function Characters() {
   const navigate = useNavigate();
 
   const { token } = useContext(AuthContext);
+
+  const { Title } = Typography;
 
   async function deleteCharacter(character) {
     await api.delete(`characters/${character.id}`, {
@@ -73,6 +75,7 @@ export default function Characters() {
   if (token)
     return (
       <>
+        <Title level={1}>Saved Characters</Title>
         <Tabs items={characterTabs} />
         <br />
         <Button type="primary" onClick={handleClick}>
