@@ -8,12 +8,13 @@ import { Card, Form, InputNumber, Select } from "antd";
  */
 export default function GeneralStatsSelection() {
   return (
-    <Card style={{ height: 350, width: 300, marginLeft: 100 }}>
+    <Card style={{ width: "100%" }}>
       <Form.Item
         label="Level"
+        labelCol={{ span: 12 }}
         name="level"
         rules={[{ required: true, message: "Please input a level" }]}
-        style={{ marginTop: 50 }}
+        style={{ marginTop: 20 }}
       >
         <Select
           style={{ width: 100 }}
@@ -33,8 +34,12 @@ export default function GeneralStatsSelection() {
           ]}
         />
       </Form.Item>
+      <Form.Item label="XP" labelCol={{ span: 12 }} name="xp">
+        <InputNumber min={0} max={1000} style={{ width: 120 }} />
+      </Form.Item>
       <Form.Item
         label="Hit Point Maximum"
+        labelCol={{ span: 12 }}
         name="max_hit_points"
         rules={[
           { required: true, message: "Please input a hit point maximum value" },
@@ -44,6 +49,7 @@ export default function GeneralStatsSelection() {
       </Form.Item>
       <Form.Item
         label="Armor Class"
+        labelCol={{ span: 12 }}
         name={["defenses", "armor_class"]}
         rules={[
           { required: true, message: "Please input an armor class value" },
@@ -53,6 +59,7 @@ export default function GeneralStatsSelection() {
       </Form.Item>
       <Form.Item
         label="Speed"
+        labelCol={{ span: 12 }}
         name="speed"
         rules={[{ required: true, message: "Please input a speed value" }]}
       >
@@ -60,6 +67,7 @@ export default function GeneralStatsSelection() {
       </Form.Item>
       <Form.Item
         label="Perception"
+        labelCol={{ span: 12 }}
         name="perception"
         rules={[{ required: true, message: "Please input a perception value" }]}
       >

@@ -10,12 +10,10 @@ import { ancestries, backgrounds, classes } from "../../characterHelpers";
  */
 export default function GeneralInfoSelection() {
   return (
-    <Card style={{ height: 350, width: 300, marginLeft: 100 }}>
+    <Card style={{ width: "100%" }}>
       <Form.Item
         label="Name"
         name="name"
-        labelCol={{ span: 24 }}
-        wrapperCol={{ span: 24 }}
         rules={[{ required: true, message: "Please input a character name" }]}
       >
         <Input />
@@ -23,34 +21,29 @@ export default function GeneralInfoSelection() {
       <Form.Item
         label="Player Name"
         name="player"
-        labelCol={{ span: 24 }}
-        wrapperCol={{ span: 24 }}
-      >
+        >
         <Input />
-      </Form.Item>
-      <Form.Item label="XP" name="xp">
-        <InputNumber min={0} max={1000} />
       </Form.Item>
       <Form.Item
         label="Ancestry"
         name="ancestry"
         rules={[{ required: true, message: "Please select an ancestry" }]}
       >
-        <Select options={ancestries} />
+        <Select options={ancestries} style={{ width: "100%" }} />
       </Form.Item>
       <Form.Item
         label="Background"
         name="background"
         rules={[{ required: true, message: "Please select a background" }]}
       >
-        <Select options={backgrounds} />
+        <Select options={backgrounds} style={{ width: "100%" }} />
       </Form.Item>
       <Form.Item
         label="Class"
         name="class"
         rules={[{ required: true, message: "Please select a class" }]}
       >
-        <Select options={classes} />
+        <Select options={classes} style={{ width: "100%" }} />
       </Form.Item>
     </Card>
   );
