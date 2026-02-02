@@ -1,7 +1,7 @@
 from ..simulation.creatures.creature import Creature
 from ..simulation.creatures.enemy import Enemy
 from ..simulation.creatures.player import Player
-from .sample_data import test_creature, test_enemy, test_player
+from .sample_data import test_creature, test_enemy, test_player, test_player_4
 
 
 class TestCreature:
@@ -127,6 +127,87 @@ class TestPlayer:
         assert shortbow.num_dice == 1
         assert shortbow.die_size == 6
         assert shortbow.damage_type == "piercing"
+
+
+class TestPlayerSpells:
+    player = Player(test_player_4)
+
+    def test_simple_spells(self):
+        spell_1 = self.player.spells[0]
+        assert spell_1.name == "Force Barrage"
+        assert spell_1.slots == 1
+        assert spell_1.level == 1
+        assert spell_1.num_dice == 1
+        assert spell_1.die_size == 4
+        assert spell_1.damage_bonus == 1
+        assert spell_1.damage_type == "force"
+        assert spell_1.range == 120
+        assert spell_1.area_type is None
+        assert spell_1.area_size == 0
+        assert spell_1.save == "none"
+        assert spell_1.targets == 1
+        assert spell_1.cost == 1
+
+        spell_2 = self.player.spells[1]
+        assert spell_2.name == "Force Bolt"
+        assert spell_2.slots == 1
+        assert spell_2.level == 1
+        assert spell_2.num_dice == 1
+        assert spell_2.die_size == 4
+        assert spell_2.damage_bonus == 1
+        assert spell_2.damage_type == "force"
+        assert spell_2.range == 30
+        assert spell_2.area_type is None
+        assert spell_2.area_size == 0
+        assert spell_2.save == "none"
+        assert spell_2.targets == 1
+        assert spell_2.cost == 2
+
+        spell_3 = self.player.spells[2]
+        assert spell_3.name == "Gouging Claw"
+        assert spell_3.slots == 1
+        assert spell_3.level == 0
+        assert spell_3.num_dice == 2
+        assert spell_3.die_size == 6
+        assert spell_3.damage_bonus == 0
+        assert spell_3.damage_type == "slashing"
+        assert spell_3.range == 5
+        assert spell_3.area_type is None
+        assert spell_3.area_size == 0
+        assert spell_3.save == "none"
+        assert spell_3.targets == 1
+        assert spell_3.cost == 2
+
+        spell_4 = self.player.spells[3]
+        assert spell_4.name == "Telekinetic Projectile"
+        assert spell_4.slots == 1
+        assert spell_4.level == 0
+        assert spell_4.num_dice == 2
+        assert spell_4.die_size == 6
+        assert spell_4.damage_bonus == 0
+        assert spell_4.damage_type == "bludgeoning"
+        assert spell_4.range == 30
+        assert spell_4.area_type is None
+        assert spell_4.area_size == 0
+        assert spell_4.save == "none"
+        assert spell_4.targets == 1
+        assert spell_4.cost == 2
+
+    def test_complex_spell(self):
+        spell = self.player.spells[4]
+        assert spell.name == "Breathe Fire"
+        assert spell.slots == 1
+        assert spell.level == 1
+        assert spell.num_dice == 2
+        assert spell.die_size == 6
+        assert spell.damage_bonus == 0
+        assert spell.damage_type == "fire"
+        assert spell.range == 5
+        assert spell.area_type == "cone"
+        assert spell.area_size == 15
+        assert spell.save == "reflex"
+        assert spell.targets == 0
+        assert spell.cost == 2
 
 
 class TestEnemy:

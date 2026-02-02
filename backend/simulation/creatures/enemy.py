@@ -11,11 +11,11 @@ class Enemy(Creature):
 
     # Built-in Methods
 
-    def __init__(self, enemy: dict[any], simulation=None):
+    def __init__(self, enemy: dict[str, any], simulation=None):
         """Initializes the enemy based on the passed in dictionary.
 
         Args:
-            enemy (dict[any]): The data used to build the enemy
+            enemy (dict[str, any]): The data used to build the enemy
             simulation (Simulation, optional): The simulation the creature is
                 in. Defaults to None.
         """
