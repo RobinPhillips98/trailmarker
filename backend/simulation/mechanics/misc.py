@@ -1,4 +1,5 @@
 import random
+from enum import IntEnum
 
 
 class Die:
@@ -7,6 +8,13 @@ class Die:
 
     def roll(self):
         return random.randint(1, self.num_sides)
+
+
+class Degree(IntEnum):
+    CRITICAL_FAILURE = 0
+    FAILURE = 1
+    SUCCESS = 2
+    CRITICAL_SUCCESS = 3
 
 
 # Initializing some common dice so other modules can import them

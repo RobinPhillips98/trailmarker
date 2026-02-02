@@ -1,7 +1,9 @@
+import math
+import random
 from typing import Self
 
 from ..mechanics.actions import Action, Attack, Spell
-from ..mechanics.dice import Die, d20
+from ..mechanics.misc import Degree, Die, d20
 
 
 class Creature:
@@ -48,6 +50,9 @@ class Creature:
         self.current_hit_points: int = self.max_hit_points
         self.speed: int = creature["speed"]
         self.armor_class: int = creature["defenses"]["armor_class"]
+        # TODO: Retrieve spell attack bonus and spell save DC properly
+        self.spell_attack_bonus: int = 8
+        self.spell_save_dc: int = 15
 
         # Attribute Modifiers
         attributes = creature["attribute_modifiers"]
@@ -162,7 +167,7 @@ class Creature:
         Returns:
             int: A number representing how valuable the target is.
         """
-        weight = ((self.max_hit_points - self.current_hit_points)) * self.level
+        weight = (self.max_hit_points - self.current_hit_points) * self.level
 
         return weight
 
@@ -196,50 +201,52 @@ class Creature:
 
     def _perform_action(self) -> None:
         best_action = self.actions[0]
+        best_weight = best_action.calculate_weight(self.map)
 
         # Just a simple linear search because number of actions should never
-        # get too high (typically 3-5, 10-20 at most w/ spells)
-        for action in self.actions[:1]:
-            effective_weight = action.weight
-            if isinstance(best_action, Attack):
-                effective_weight -= self.map
-                # Third attacks are almost always a bad option
-                if self.map >= 8:
-                    effective_weight *= 0.5
-
-            if effective_weight > best_action.weight:
+        # get too high (typically 3-5, 10-15 at most w/ spells)
+        for action in self.actions[1:]:
+            if action.calculate_weight(self.map) > best_weight:
                 best_action = action
+                best_weight = best_action.calculate_weight(self.map)
 
         if isinstance(best_action, Attack):
-            if self.team == 1:
-                target = self._pick_target(self.encounter.enemies)
-            elif self.team == 2:
-                target = self._pick_target(self.encounter.players)
+            target = self._pick_target()
             self._attack(best_action, target)
-        # TODO: Implement other actions such as spells
+        elif isinstance(best_action, Spell):
+            self._cast_spell(best_action)
 
         self.num_actions -= best_action.cost
 
-    def _pick_target(self, targets: list[Self]) -> Self:
-        best_target = targets[0]
-        best_target_weight = best_target.calculate_weight()
+    def _pick_target(self) -> Self:
+        targets = []
+        if self.team == 1:
+            targets = self.encounter.enemies
+        elif self.team == 2:
+            targets = self.encounter.players
 
-        for target in targets[:1]:
-            if target.calculate_weight() > best_target_weight:
+        best_target = targets[0]
+        best_weight = best_target.calculate_weight()
+
+        for target in targets[1:]:
+            if target.calculate_weight() > best_weight:
                 best_target = target
-                best_target_weight = best_target.calculate_weight()
+                best_weight = best_target.calculate_weight()
 
         return best_target
 
-    def _attack(self, attack: Attack, target: Self) -> bool:
+    def _attack(self, attack: Action, target: Self) -> bool:
         self._log(f"{self} is attacking {target} with their {attack}.")
 
         # Calculate attack roll and check for hit before calculating damage
         attack_roll = d20.roll()
-        attack_total = attack_roll + attack.attack_bonus - self.map
+        if isinstance(attack, Attack):
+            attack_total = attack_roll + attack.attack_bonus - self.map
+            if self.encounter:
+                self.map += 5
+        elif isinstance(attack, Spell):
+            attack_total = attack_roll + self.spell_attack_bonus
         self._log(f"{self} rolled {attack_total} to attack.")
-        if self.encounter:
-            self.map += 5
 
         if attack_roll == 20 or attack_total >= target.armor_class + 10:
             critical_hit = True
@@ -272,6 +279,106 @@ class Creature:
         target.take_damage(damage)
 
         return True
+
+    def _cast_spell(self, spell: Spell) -> None:
+        self._log(f"{self} is casting {spell}!")
+
+        if spell.targets:
+            for i in range(spell.targets):
+                target = self._pick_target()
+                self._attack(spell, target)
+        elif spell.area_size:
+            self._aoe_spell(spell)
+
+        if spell.level >= 1:
+            spell.slots -= 1
+
+    def _aoe_spell(self, spell: Spell):
+        num_targets = 0
+        match spell.area_type:
+            case "burst":
+                num_targets = math.ceil(spell.area_size / 5)
+            case "cone":
+                num_targets = math.ceil(spell.area_size / 10)
+            case "emanation":
+                num_targets = math.ceil(spell.area_size / 5)
+            case "line":
+                num_targets = math.ceil(spell.area_size / 30)
+            case _:
+                raise Exception("Invalid spell area type")
+
+        if self.team == 1:
+            enemies = self.encounter.enemies
+            if num_targets <= len(enemies):
+                targets = random.sample(enemies, num_targets)
+            else:
+                targets = enemies
+        elif self.team == 2:
+            players = self.encounter.players
+            if num_targets <= len(players):
+                targets = random.sample(players, num_targets)
+            else:
+                targets = players
+
+        # TODO: Add support for various damage type effects
+        damage_die = Die(spell.die_size)
+
+        damage_roll = damage_die.roll()
+        damage = (spell.num_dice * damage_roll) + spell.damage_bonus
+
+        target_names = ", ".join(map(str, targets))
+        self._log(f"{self} is attacking {target_names} with {spell}!")
+        for target in targets:
+            target._spell_save(damage, spell, self)
+
+    def _spell_save(self, damage: int, spell: Spell, attacker: Self) -> None:
+        save_bonus = 0
+        match spell.save:
+            case "fortitude":
+                save_bonus = self.fortitude
+            case "reflex":
+                save_bonus = self.reflex
+            case "will":
+                save_bonus = self.will
+            case _:
+                raise Exception("Invalid save type")
+
+        roll = d20.roll()
+        saving_throw = roll + save_bonus
+        self._log(
+            f"{self} rolled a {saving_throw} {spell.save} saving throw against {spell}!"  # noqa
+        )
+
+        difficulty = attacker.spell_save_dc
+        if saving_throw >= difficulty + 10:
+            degree_of_success = Degree.CRITICAL_SUCCESS
+        elif saving_throw >= difficulty:
+            degree_of_success = Degree.SUCCESS
+        elif saving_throw <= difficulty - 10:
+            degree_of_success = Degree.CRITICAL_FAILURE
+        else:
+            degree_of_success = Degree.FAILURE
+
+        if roll == 20 and degree_of_success < Degree.CRITICAL_SUCCESS:
+            degree_of_success += 1
+        elif roll == 1 and degree_of_success > Degree.CRITICAL_FAILURE:
+            degree_of_success -= 1
+
+        match degree_of_success:
+            case Degree.CRITICAL_SUCCESS:
+                damage_taken = 0
+                self._log(f"{self} critically succeeded. No damage taken!")
+            case Degree.SUCCESS:
+                damage_taken = math.floor(damage / 2)
+                self._log(f"{self} succeeded and takes {damage_taken} damage")
+            case Degree.FAILURE:
+                damage_taken = damage
+                self._log(f"{self} failed and takes {damage_taken} damage")
+            case Degree.CRITICAL_FAILURE:
+                damage_taken = math.floor(damage * 2)
+                self._log(
+                    f"{self} critically failed. {damage_taken} damage taken!"
+                )
 
     def _die(self) -> None:
         self._log(f"{self} has died!")

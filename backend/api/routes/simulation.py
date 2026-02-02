@@ -78,7 +78,7 @@ def convert_to_player_dict(character: Character) -> dict[str, any]:
             "will": character.defenses.saves.will,
         },
     }
-    actions_dict = {"attacks": []}
+    actions_dict = {"attacks": [], "spells": []}
     if character.actions.attacks:
         for attack in character.actions.attacks:
             attack_dict = {
@@ -88,6 +88,21 @@ def convert_to_player_dict(character: Character) -> dict[str, any]:
                 "damageType": attack.damageType,
             }
             actions_dict["attacks"].append(attack_dict)
+    if character.actions.spells:
+        for spell in character.actions.spells:
+            spell_dict = {
+                "name": spell.name,
+                "slots": spell.slots,
+                "level": spell.level,
+                "damage_roll": spell.damage_roll,
+                "damage_type": spell.damage_type,
+                "range": spell.range_,
+                "area": spell.area,
+                "save": spell.save,
+                "target": spell.target,
+                "actions": spell.actions,
+            }
+            actions_dict["spells"].append(spell_dict)
 
     player_dict = {
         "name": character.name,
