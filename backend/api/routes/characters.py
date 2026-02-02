@@ -164,6 +164,7 @@ def convert_to_db_character(
                 "damage_type": spell.damage_type,
                 "range": spell.range_,
                 "area": spell.area,
+                "save": spell.save,
                 "target": spell.target,
                 "actions": spell.actions,
             }

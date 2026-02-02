@@ -4,7 +4,7 @@ from ..encounters.encounter import Encounter
 
 
 def run_simulation(
-    player_dicts: list[dict[any]], enemy_dicts: list[dict[any]]
+    player_dicts: list[dict[str, any]], enemy_dicts: list[dict[str, any]]
 ) -> dict[str, str | int | list[str]]:
     """Runs one simulation and returns a dictionary with the data from it.
 
@@ -15,8 +15,9 @@ def run_simulation(
 
 
     Args:
-        player_dicts (list[dict[any]]): Dictionaries to initialize Players.
-        enemy_dicts (list[dict[any]]): Dictionaries to initialize Enemies.
+        player_dicts (list[dict[str, any]]): Dictionaries to initialize
+            Players.
+        enemy_dicts (list[dict[str, any]]): Dictionaries to initialize Enemies.
 
     Returns:
         dict[str, str | int | list[str]]: Dict with data from the simulation.
@@ -37,7 +38,9 @@ def run_simulation(
 
 class _Simulation:
     def __init__(
-        self, player_dicts: list[dict[any]], enemy_dicts: list[dict[any]]
+        self,
+        player_dicts: list[dict[str, any]],
+        enemy_dicts: list[dict[str, any]],
     ):
         self.winner: str = ""
         self.players_killed: int = 0

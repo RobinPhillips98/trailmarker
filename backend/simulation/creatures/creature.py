@@ -1,6 +1,6 @@
 from typing import Self
 
-from ..mechanics.actions import Action, Attack
+from ..mechanics.actions import Action, Attack, Spell
 from ..mechanics.dice import Die, d20
 
 
@@ -32,11 +32,11 @@ class Creature:
 
     # Built-in Methods
 
-    def __init__(self, creature: dict[any], simulation=None):
+    def __init__(self, creature: dict[str, any], simulation=None):
         """Initializes the creature based on the given dictioanry
 
         Args:
-            creature (dict[any]): Data used to build the Creature.
+            creature (dict[str, any]): Data used to build the Creature.
             simulation (Simulation, optional): The simulation the creature is
                 in. Defaults to None.
         """
@@ -94,8 +94,19 @@ class Creature:
         except KeyError:
             self.attacks = None
 
-        # TODO: Implement other kinds of actions, ex. spells
-        self.actions: list[Action] = self.attacks
+        self.spells: list[Spell] = []
+        try:
+            for spell_dict in creature["actions"]["spells"]:
+                spell = Spell(spell_dict)
+                self.spells.append(spell)
+        except KeyError:
+            self.spells = None
+
+        self.actions: list[Action] = []
+        if self.attacks:
+            self.actions.extend(self.attacks)
+        if self.spells:
+            self.actions.extend(self.spells)
 
         # Encounter Data
         self.encounter = None

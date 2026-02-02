@@ -61,14 +61,14 @@ def run_simulations(
     return response
 
 
-def convert_to_player_dict(character: Character) -> dict[any]:
+def convert_to_player_dict(character: Character) -> dict[str, any]:
     """Returns a reformatted dictionary using the given character object.
 
     Args:
         character (Character): The Character object to be converted.
 
     Returns:
-        dict[any]: Dictionary formatted for use by the simulation.
+        dict[str, any]: Dictionary formatted for use by the simulation.
     """
     defense_dict = {
         "armor_class": character.defenses.armor_class,
@@ -106,14 +106,14 @@ def convert_to_player_dict(character: Character) -> dict[any]:
     return player_dict
 
 
-def convert_to_enemy_dict(enemy: Enemy) -> dict[any]:
+def convert_to_enemy_dict(enemy: Enemy) -> dict[str, any]:
     """Returns a reformatted dictionary using the given enemy object.
 
     Args:
         enemy (Enemy): The Enemy object to be converted.
 
     Returns:
-        dict[any]: Dictionary formatted for use by the simulation.
+        dict[str, any]: Dictionary formatted for use by the simulation.
     """
     enemy_dict = {
         "name": enemy.name,

@@ -134,14 +134,14 @@ def add_enemies(raw_path: str, db: Session) -> None:
     print("Enemies added to database!")
 
 
-def build_enemy_dict(raw_dict: dict[any]) -> dict[any]:
+def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
     """Converts the json file into a reformatted dictionary
 
     Args:
-        raw_dict (dict[any]): The raw data retrieved from GitHub
+        raw_dict (dict[str, any]): The raw data retrieved from GitHub
 
     Returns:
-        dict[any]: The reformatted data
+        dict[str, any]: The reformatted data
     """
     enemy = {
         "name": "",
@@ -193,7 +193,7 @@ def build_enemy_dict(raw_dict: dict[any]) -> dict[any]:
     return enemy
 
 
-def add_traits(raw_dict: dict[any], enemy: dict[any]) -> None:
+def add_traits(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
     enemy["traits"].append(raw_dict["system"]["traits"]["rarity"])
     enemy["traits"].append(raw_dict["system"]["traits"]["size"]["value"])
 
@@ -202,13 +202,15 @@ def add_traits(raw_dict: dict[any], enemy: dict[any]) -> None:
         enemy["traits"].append(trait)
 
 
-def add_skills(raw_dict: dict[any], enemy: dict[any]) -> None:
+def add_skills(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
     skills = raw_dict["system"]["skills"]
     for skill in skills:
         enemy["skills"][skill] = skills[skill]["base"]
 
 
-def add_attribute_modifiers(raw_dict: dict[any], enemy: dict[any]) -> None:
+def add_attribute_modifiers(
+    raw_dict: dict[str, any], enemy: dict[str, any]
+) -> None:
     abilities = raw_dict["system"]["abilities"]
     enemy["attribute_modifiers"]["strength"] = abilities["str"]["mod"]
     enemy["attribute_modifiers"]["dexterity"] = abilities["dex"]["mod"]
@@ -218,19 +220,21 @@ def add_attribute_modifiers(raw_dict: dict[any], enemy: dict[any]) -> None:
     enemy["attribute_modifiers"]["charisma"] = abilities["cha"]["mod"]
 
 
-def add_saves(raw_dict: dict[any], enemy: dict[any]) -> None:
+def add_saves(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
     saves = raw_dict["system"]["saves"]
     for save in saves:
         enemy["defenses"]["saves"][save] = saves[save]["value"]
 
 
-def add_immunities(system_attributes: dict[any], enemy: dict[any]):
+def add_immunities(
+    system_attributes: dict[str, any], enemy: dict[str, any]
+) -> None:
     immunities = system_attributes["immunities"]
     for immunity in immunities:
         enemy["immunities"].append(immunity["type"])
 
 
-def add_actions(raw_dict, enemy):
+def add_actions(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
     items = raw_dict["items"]
     for item in items:
         if "attack" in item["system"]:
@@ -245,7 +249,7 @@ def add_actions(raw_dict, enemy):
             add_spell(item, enemy)
 
 
-def add_attack(item, enemy):
+def add_attack(item: dict[str, any], enemy: dict[str, any]) -> None:
     attack_dict = {}
     attack_dict["name"] = item["name"]
     attack_dict["attackBonus"] = item["system"]["bonus"]["value"]
@@ -262,7 +266,7 @@ def add_attack(item, enemy):
     enemy["actions"]["attacks"].append(attack_dict)
 
 
-def add_spell(item, enemy):
+def add_spell(item: dict[str, any], enemy: dict[str, any]) -> None:
     spell_dict = {}
     raw_spell_dict = item["system"]
     spell_dict["name"] = item["name"]
@@ -294,7 +298,7 @@ def add_spell(item, enemy):
     enemy["actions"]["spells"].append(spell_dict)
 
 
-def convert_to_db_enemy(enemy: dict[any]) -> Enemy:
+def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
     """Reformats a given enemy to match the model used by the database
 
     Args:

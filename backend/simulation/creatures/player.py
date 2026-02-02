@@ -11,11 +11,11 @@ class Player(Creature):
 
     # Built-in Methods
 
-    def __init__(self, player: dict[any], simulation=None):
+    def __init__(self, player: dict[str, any], simulation=None):
         """Initializes the player based on the passed in dictionary.
 
         Args:
-            player (dict[any]): The data used to build the player
+            player (dict[str, any]): The data used to build the player
             simulation (Simulation, optional): The simulation the creature is
                 in. Defaults to None.
         """
