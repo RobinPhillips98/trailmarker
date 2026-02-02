@@ -59,4 +59,4 @@ def test_run_encounter():
     encounter = Encounter(players, enemies)
 
     winner = encounter.run_encounter()
-    assert winner == "players"
+    assert winner

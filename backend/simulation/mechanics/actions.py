@@ -13,6 +13,9 @@ class Action:
         self.cost: int = cost
         self.weight: int = weight
 
+    def calculate_weight(self, penalty: int) -> int:
+        return self.weight
+
 
 class Attack(Action):
     """A representation of an attack
@@ -55,6 +58,13 @@ class Attack(Action):
     def __repr__(self):
         return self.name.lower()
 
+    def calculate_weight(self, penalty: int) -> int:
+        effective_weight = self.weight - penalty
+        if penalty >= 8:  # a third attack is almost always a bad option
+            effective_weight *= 0.5
+
+        return effective_weight
+
 
 class Spell(Action):
     """A representation of a spell in Pathfinder
@@ -93,14 +103,23 @@ class Spell(Action):
         self.damage_type: str = spell_dict["damage_type"]
 
         range_ = spell_dict["range"].lower().strip()
-        if range_ == "none" or range_ == "melee":
+        if not range_ or range_ == "none" or range_ == "melee":
             self.range: int = 5
         else:
             self.range: int = int(range_.split()[0])
 
         try:
-            self.area_type: str = spell_dict["area"]["type"]
-            self.area_size: int = int(spell_dict["area"]["value"].split()[0])
+            area_dict = spell_dict["area"]
+            if area_dict:
+                self.area_type: str = area_dict["type"]
+                area_value = area_dict["value"]
+                if isinstance(area_value, str):
+                    self.area_size: int = int(area_value.split()[0])
+                else:
+                    self.area_size: int = area_value
+            else:
+                self.area_type: str = None
+                self.area_size: int = 0
         except KeyError:
             self.area_type: str = None
             self.area_size: int = 0
@@ -123,10 +142,19 @@ class Spell(Action):
         self.weight: int = (
             (self.num_dice * self.die_size)
             + self.damage_bonus
-            + self.range
+            # + (self.range / 5)
             + self.area_size
             + self.targets
-        ) * self.slots
+        )
 
     def __repr__(self):
         return self.name.lower()
+
+    def calculate_weight(self, penalty: int) -> int:
+        if self.level == 0:
+            return self.weight * 1.5
+        else:
+            return self.weight * self.slots
+
+
+# TODO: Healing
