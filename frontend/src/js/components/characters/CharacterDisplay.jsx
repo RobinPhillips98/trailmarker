@@ -83,21 +83,14 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
       children: character.defenses.armor_class,
     },
     {
-      key: "attributes",
-      label: "Attribute Modifiers",
-      children: (
-        <List size="small">
-          {Object.keys(character.attribute_modifiers).map((attribute) => {
-            return (
-              <List.Item>
-                {toTitleCase(attribute)}:{" "}
-                {character.attribute_modifiers[attribute]}
-              </List.Item>
-            );
-          })}
-        </List>
-      ),
-      span: 2,
+      key: "spell_attack_bonus",
+      label: "Spell Attack Bonus",
+      children: character.spell_attack_bonus || "None",
+    },
+    {
+      key: "spell_dc",
+      label: "Spell DC",
+      children: character.spell_dc || "None",
     },
     {
       key: "saves",
@@ -113,6 +106,24 @@ export default function CharacterDisplay({ character, deleteCharacter }) {
           })}
         </List>
       ),
+    },
+    {
+      key: "attributes",
+      label: "Attribute Modifiers",
+      children: (
+        <List
+          size="small"
+          grid={{ gutter: 16, column: 3 }}
+          dataSource={Object.keys(character.attribute_modifiers)}
+          renderItem={(attribute) => (
+            <List.Item>
+              {toTitleCase(attribute)}:{" "}
+              {character.attribute_modifiers[attribute]}
+            </List.Item>
+          )}
+        />
+      ),
+      span: 3,
     },
     {
       key: "skills",

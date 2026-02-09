@@ -48,6 +48,20 @@ export default function GeneralStatsSelection() {
         <InputNumber min={0} max={100} />
       </Form.Item>
       <Form.Item
+        label="Spell Attack Bonus"
+        labelCol={{ span: 12 }}
+        name="spell_attack_bonus"
+      >
+        <InputNumber min={0} max={20} style={{ width: 120 }} />
+      </Form.Item>
+      <Form.Item
+        label="Spell DC"
+        labelCol={{ span: 12 }}
+        name="spell_dc"
+      >
+        <InputNumber min={0} max={30} style={{ width: 120 }} />
+      </Form.Item>
+      <Form.Item
         label="Armor Class"
         labelCol={{ span: 12 }}
         name={["defenses", "armor_class"]}

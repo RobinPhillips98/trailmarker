@@ -162,6 +162,8 @@ def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
             "saves": {"fortitude": 0, "reflex": 0, "will": 0},
         },
         "max_hit_points": 0,
+        "spell_dc": None,
+        "spell_attack_bonus": None,
         "immunities": [],
         "speed": 0,
         "actions": {"attacks": [], "spells": []},
@@ -239,10 +241,7 @@ def add_actions(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
     for item in items:
         if "attack" in item["system"]:
             add_attack(item, enemy)
-        elif (
-            item["type"] == "spellcastingEntry"
-            and "spell_dc" not in enemy.keys()
-        ):
+        elif item["type"] == "spellcastingEntry" and enemy["spell_dc"] is None:
             enemy["spell_dc"] = item["system"]["spelldc"]["dc"]
             enemy["spell_attack_bonus"] = item["system"]["spelldc"]["value"]
         elif item["type"] == "spell" and item["system"]["damage"]:
@@ -341,6 +340,8 @@ def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
         attribute_modifiers=enemy["attribute_modifiers"],
         defenses=defense_dict,
         max_hit_points=enemy["max_hit_points"],
+        spell_dc=enemy["spell_dc"],
+        spell_attack_bonus=enemy["spell_attack_bonus"],
         immunities=enemy["immunities"],
         speed=enemy["speed"],
         actions=actions_dict,
