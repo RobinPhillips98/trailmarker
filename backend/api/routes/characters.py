@@ -184,6 +184,8 @@ def convert_to_db_character(
         attribute_modifiers=dict(character.attribute_modifiers),
         defenses=defense_dict,
         max_hit_points=character.max_hit_points,
+        spell_attack_bonus=character.spell_attack_bonus,
+        spell_dc=character.spell_dc,
         speed=character.speed,
         actions=actions_dict,
     )

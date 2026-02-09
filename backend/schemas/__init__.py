@@ -92,6 +92,8 @@ class Creature(BaseModel):
     attribute_modifiers: Attributes
     defenses: Defenses
     max_hit_points: int
+    spell_attack_bonus: Optional[int] = None
+    spell_dc: Optional[int] = None
     speed: int
     actions: Optional[Actions]
 
@@ -120,6 +122,8 @@ class CreatureCreate(BaseModel):
     attribute_modifiers: Attributes
     defenses: Defenses
     max_hit_points: int
+    spell_attack_bonus: Optional[int] = None
+    spell_dc: Optional[int] = None
     speed: int
     actions: Optional[Actions]
 
@@ -133,6 +137,8 @@ class CreatureUpdate(BaseModel):
     attribute_modifiers: Attributes
     defenses: Defenses
     max_hit_points: int
+    spell_attack_bonus: Optional[int] = None
+    spell_dc: Optional[int] = None
     speed: int
     actions: Optional[Actions]
 

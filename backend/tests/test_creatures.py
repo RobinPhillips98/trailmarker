@@ -1,7 +1,13 @@
 from ..simulation.creatures.creature import Creature
 from ..simulation.creatures.enemy import Enemy
 from ..simulation.creatures.player import Player
-from .sample_data import test_creature, test_enemy, test_player, test_player_4
+from .sample_data import (
+    test_creature,
+    test_enemy,
+    test_enemy_3,
+    test_player,
+    test_player_4,
+)
 
 
 class TestCreature:
@@ -131,6 +137,10 @@ class TestPlayer:
 
 class TestPlayerSpells:
     player = Player(test_player_4)
+
+    def test_spell_stats(self):
+        assert self.player.spell_attack_bonus == 7
+        assert self.player.spell_dc == 17
 
     def test_simple_spells(self):
         spell_1 = self.player.spells[0]
@@ -276,6 +286,46 @@ class TestEnemy:
         assert shortbow.num_dice == 1
         assert shortbow.die_size == 6
         assert shortbow.damage_type == "piercing"
+
+
+class TestEnemySpells:
+    enemy = Enemy(test_enemy_3)
+
+    def test_spell_stats(self):
+        assert self.enemy.spell_attack_bonus == 6
+        assert self.enemy.spell_dc == 16
+
+    def test_simple_spell(self):
+        spell = self.enemy.spells[1]
+        assert spell.name == "Telekinetic Projectile"
+        assert spell.slots == 1
+        assert spell.level == 0
+        assert spell.num_dice == 2
+        assert spell.die_size == 6
+        assert spell.damage_bonus == 0
+        assert spell.damage_type == "untyped"
+        assert spell.range == 30
+        assert spell.area_type is None
+        assert spell.area_size == 0
+        assert spell.save == "none"
+        assert spell.targets == 1
+        assert spell.cost == 2
+
+    def test_complex_spell(self):
+        spell = self.enemy.spells[0]
+        assert spell.name == "Breathe Fire"
+        assert spell.slots == 3
+        assert spell.level == 1
+        assert spell.num_dice == 2
+        assert spell.die_size == 6
+        assert spell.damage_bonus == 0
+        assert spell.damage_type == "fire"
+        assert spell.range == 5
+        assert spell.area_type == "cone"
+        assert spell.area_size == 15
+        assert spell.save == "reflex"
+        assert spell.targets == 0
+        assert spell.cost == 2
 
 
 class TestCreatureMethods:

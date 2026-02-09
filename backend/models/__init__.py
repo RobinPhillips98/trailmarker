@@ -27,6 +27,8 @@ class Enemy(Base):
     attribute_modifiers = Column(JSON, nullable=False)
     defenses = Column(JSON, nullable=False)
     max_hit_points = Column(Integer, nullable=False)
+    spell_attack_bonus = Column(Integer)
+    spell_dc = Column(Integer)
     immunities = Column(ARRAY(String))
     speed = Column(Integer, nullable=False)
     actions = Column(JSON)
@@ -50,6 +52,8 @@ class Character(Base):
     attribute_modifiers = Column(JSON, nullable=False)
     defenses = Column(JSON, nullable=False)
     max_hit_points = Column(Integer, nullable=False)
+    spell_attack_bonus = Column(Integer)
+    spell_dc = Column(Integer)
     speed = Column(Integer, nullable=False)
     actions = Column(JSON)
 

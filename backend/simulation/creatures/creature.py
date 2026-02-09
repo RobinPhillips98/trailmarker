@@ -50,9 +50,8 @@ class Creature:
         self.current_hit_points: int = self.max_hit_points
         self.speed: int = creature["speed"]
         self.armor_class: int = creature["defenses"]["armor_class"]
-        # TODO: Retrieve spell attack bonus and spell save DC properly
-        self.spell_attack_bonus: int = 8
-        self.spell_save_dc: int = 15
+        self.spell_attack_bonus: int = creature.get("spell_attack_bonus")
+        self.spell_dc: int = creature.get("spell_dc")
 
         # Attribute Modifiers
         attributes = creature["attribute_modifiers"]
@@ -349,7 +348,7 @@ class Creature:
             f"{self} rolled a {saving_throw} {spell.save} saving throw against {spell}!"  # noqa
         )
 
-        difficulty = attacker.spell_save_dc
+        difficulty = attacker.spell_dc
         if saving_throw >= difficulty + 10:
             degree_of_success = Degree.CRITICAL_SUCCESS
         elif saving_throw >= difficulty:

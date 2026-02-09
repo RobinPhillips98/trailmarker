@@ -43,6 +43,8 @@ export default function CharacterCreationForm() {
         class: savedCharacter.class,
         level: savedCharacter.level,
         max_hit_points: savedCharacter.max_hit_points,
+        spell_attack_bonus: savedCharacter.spell_attack_bonus,
+        spell_dc: savedCharacter.spell_dc,
         defenses: {
           armor_class: savedCharacter.defenses.armor_class,
           saves: {
