@@ -6,7 +6,6 @@ import { AuthContext } from "../../../../contexts/AuthContext";
 
 import Encounter from "./Encounter";
 
-
 /**
  * A component that displays a list of saved encounters
  *
@@ -30,7 +29,7 @@ export default function SavedEncounters({ handleLoad }) {
       },
     });
     setEncounters((prev) =>
-      prev.filter((currentEncounter) => currentEncounter !== encounter)
+      prev.filter((currentEncounter) => currentEncounter !== encounter),
     );
   }
 
@@ -67,6 +66,7 @@ export default function SavedEncounters({ handleLoad }) {
       <Button
         style={{ marginBottom: 10 }}
         type="primary"
+        block
         onClick={showModal}
         disabled={!user}
       >

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Select, Switch, Typography } from "antd";
+import { Select, Switch, Typography, Space, Card } from "antd";
 
 import { AuthContext } from "../../../contexts/AuthContext";
 
@@ -69,25 +69,41 @@ export default function PartyInfoForm(props) {
   ];
 
   return (
-    <div id="#partyInfoForm">
-      <Title level={2}>Use saved characters?</Title>
-      <Switch checked={switched} onChange={handleChange} disabled={!user} />
-      <Title level={2}>Number of Players</Title>
-      <Select
-        defaultValue="2"
-        value={partySize}
-        options={sizeOptions}
-        onChange={handlePartySize}
-        disabled={switched}
-      />
-      <Title level={2}>Party Level</Title>
-      <Select
-        defaultValue="1"
-        value={partyLevel}
-        options={levelOptions}
-        onChange={handlePartyLevel}
-        disabled={switched}
-      />
-    </div>
+    <Card style={{ height: "100%" }}>
+      <Space direction="vertical" style={{ width: "100%" }} size="large">
+        <div>
+          <Title level={4} style={{ marginBottom: 8 }}>
+            Use Saved Characters?
+          </Title>
+          <Switch checked={switched} onChange={handleChange} disabled={!user} />
+        </div>
+        <div>
+          <Title level={4} style={{ marginBottom: 8 }}>
+            Number of Players
+          </Title>
+          <Select
+            defaultValue="2"
+            value={partySize}
+            options={sizeOptions}
+            onChange={handlePartySize}
+            disabled={switched}
+            style={{ width: "100%" }}
+          />
+        </div>
+        <div>
+          <Title level={4} style={{ marginBottom: 8 }}>
+            Party Level
+          </Title>
+          <Select
+            defaultValue="1"
+            value={partyLevel}
+            options={levelOptions}
+            onChange={handlePartyLevel}
+            disabled={switched}
+            style={{ width: "100%" }}
+          />
+        </div>
+      </Space>
+    </Card>
   );
 }

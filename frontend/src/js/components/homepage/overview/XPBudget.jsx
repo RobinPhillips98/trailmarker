@@ -1,4 +1,4 @@
-import { List, Typography } from "antd";
+import { Typography, Card, Space, Tag } from "antd";
 
 /**
  * A component to display the XP budget for the current party size
@@ -8,22 +8,41 @@ import { List, Typography } from "antd";
  * @returns {JSX.Element}
  */
 export default function XPBudget({ budget }) {
-  const { Title } = Typography;
+  const { Title, Text } = Typography;
 
-  const budgetDisplay = [
-    `Trivial: ${budget.trivial} XP`,
-    `Low: ${budget.low} XP`,
-    `Moderate: ${budget.moderate} XP`,
-    `Severe: ${budget.severe} XP`,
-    `Extreme: ${budget.extreme} XP`,
+  const budgetTiers = [
+    { label: "Trivial", xp: budget.trivial, color: "green" },
+    { label: "Low", xp: budget.low, color: "cyan" },
+    { label: "Moderate", xp: budget.moderate, color: "blue" },
+    { label: "Severe", xp: budget.severe, color: "orange" },
+    { label: "Extreme", xp: budget.extreme, color: "red" },
   ];
+
   return (
-    <List
-      header={<Title level={2}>XP Budget</Title>}
-      size="small"
-      dataSource={budgetDisplay}
-      renderItem={(item) => <List.Item>{item}</List.Item>}
-      bordered={true}
-    />
+    <Card style={{ height: "100%" }}>
+      <Title level={4} style={{ marginTop: 0 }}>
+        XP Budget
+      </Title>
+      <Space direction="vertical" style={{ width: "100%" }} size={12}>
+        {budgetTiers.map((tier) => (
+          <div
+            key={tier.label}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <Tag color={tier.color} style={{ fontSize: "14px", margin: 0 }}>
+              {tier.label}
+            </Tag>
+            <Text strong style={{ fontSize: "18px" }}>
+              {tier.xp} XP
+            </Text>
+          </div>
+        ))}
+      </Space>
+    </Card>
   );
 }

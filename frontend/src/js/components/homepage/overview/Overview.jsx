@@ -2,14 +2,14 @@ import { useState, useEffect, useContext } from "react";
 
 import { AuthContext } from "../../../contexts/AuthContext";
 import api from "../../../api";
-import EncounterOptions from "../encounter_display/EncounterOptions";
 
 import SavedEncounters from "./saved_encounters/SavedEncounters";
 import PartyInfoForm from "./PartyInfoForm";
 import CurrentDifficultyDisplay from "./CurrentDifficultyDisplay";
 import XPBudget from "./XPBudget";
+import EncounterControls from "./EncounterControls";
 import { useNavigate } from "react-router-dom";
-import { Button } from "antd";
+import { Button, Row, Col, Divider } from "antd";
 import { isEmpty } from "../../../services/helpers";
 
 /**
@@ -47,7 +47,7 @@ export default function Overview(props) {
           if (characters.length >= 2) setPartySize(characters.length);
           else {
             alert(
-              "Less than 2 characters saved, setting party size to minimum 2"
+              "Less than 2 characters saved, setting party size to minimum 2",
             );
             setPartySize(2);
           }
@@ -153,32 +153,51 @@ export default function Overview(props) {
   }
 
   return (
-    <div style={{ display: "flex", gap: 10, justifyContent: "space-around" }}>
-      <div style={{ alignContent: "space-around" }}>
-        <Button
-          type="primary"
-          style={{ marginBottom: 10 }}
-          onClick={handleClick}
-          disabled={!user || isEmpty(selectedEnemies)}
-        >
-          Run Simulation
-        </Button>
-        <SavedEncounters handleLoad={handleLoad} />
-        <EncounterOptions
-          enemies={selectedEnemies}
-          clearEncounter={clearEncounter}
-        />
-      </div>
-      <PartyInfoForm
-        partySize={partySize}
-        partyLevel={partyLevel}
-        switched={switched}
-        handlePartySize={handlePartySize}
-        handlePartyLevel={handlePartyLevel}
-        handleChange={handleChange}
-      />
-      <XPBudget budget={budget} />
-      <CurrentDifficultyDisplay difficulty={difficulty} xp={xp} />
+    <div style={{ width: "100%" }}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col span={24}>
+          <Button
+            type="primary"
+            size="large"
+            block
+            onClick={handleClick}
+            disabled={!user || isEmpty(selectedEnemies)}
+          >
+            Run Simulation
+          </Button>
+        </Col>
+      </Row>
+
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+        <Col xs={24} sm={12} md={8}>
+          <PartyInfoForm
+            partySize={partySize}
+            partyLevel={partyLevel}
+            switched={switched}
+            handlePartySize={handlePartySize}
+            handlePartyLevel={handlePartyLevel}
+            handleChange={handleChange}
+          />
+        </Col>
+        <Col xs={24} sm={12} md={8}>
+          <XPBudget budget={budget} />
+        </Col>
+        <Col xs={24} md={8}>
+          <CurrentDifficultyDisplay difficulty={difficulty} xp={xp} />
+        </Col>
+      </Row>
+
+      <Divider />
+
+      <Row gutter={[16, 16]}>
+        <Col span={24}>
+          <EncounterControls
+            enemies={selectedEnemies}
+            clearEncounter={clearEncounter}
+            handleLoad={handleLoad}
+          />
+        </Col>
+      </Row>
     </div>
   );
 }

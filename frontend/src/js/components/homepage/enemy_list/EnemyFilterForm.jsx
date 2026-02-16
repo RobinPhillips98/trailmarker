@@ -1,0 +1,122 @@
+import {
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Button,
+  Row,
+  Col,
+  Switch,
+  Typography,
+  Card,
+} from "antd";
+import { ClearOutlined } from "@ant-design/icons";
+import { traitOptions } from "./enemyHelpers";
+
+/**
+ * A component to display a filter form for the enemy list
+ *
+ * @param {object} props
+ * @param {object} props.form The Ant Design form instance
+ * @returns {JSX.Element}
+ */
+export default function EnemyFilterForm({ form }) {
+  const handleClear = () => {
+    form.resetFields();
+  };
+
+  const initialValues = {
+    name: "",
+    minLevel: -1,
+    maxLevel: 5,
+    traits: [],
+    traitFilterMode: false, // false = ANY (OR), true = ALL (AND)
+  };
+
+  return (
+    <Card style={{ marginBottom: 16 }}>
+      <Form
+        form={form}
+        initialValues={initialValues}
+        layout="vertical"
+        autoComplete="off"
+      >
+        <Row gutter={[16, 0]}>
+          <Col xs={24} sm={12} md={8}>
+            <Form.Item label="Name" name="name" style={{ marginBottom: 0 }}>
+              <Input placeholder="Search by name" allowClear />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12} md={8}>
+            <Form.Item
+              label="Min Level"
+              name="minLevel"
+              style={{ marginBottom: 0 }}
+            >
+              <InputNumber
+                min={-1}
+                max={5}
+                style={{ width: "100%" }}
+                placeholder="Min"
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} sm={12} md={8}>
+            <Form.Item
+              label="Max Level"
+              name="maxLevel"
+              style={{ marginBottom: 0 }}
+            >
+              <InputNumber
+                min={-1}
+                max={5}
+                style={{ width: "100%" }}
+                placeholder="Max"
+              />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 0]} style={{ marginTop: 16 }}>
+          <Col xs={24} md={20}>
+            <Form.Item label="Traits" name="traits" style={{ marginBottom: 0 }}>
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Filter by traits"
+                options={traitOptions}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={4}>
+            <Form.Item
+              label="Match any/all?"
+              name="traitFilterMode"
+              valuePropName="checked"
+              style={{ marginBottom: 0 }}
+            >
+              <Switch checkedChildren="All" unCheckedChildren="Any" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 0]} style={{ marginTop: 16 }}>
+          <Col xs={24}>
+            <Button
+              icon={<ClearOutlined />}
+              type="primary"
+              danger
+              onClick={handleClear}
+              block
+            >
+              Reset Filters
+            </Button>
+          </Col>
+        </Row>
+      </Form>
+    </Card>
+  );
+}
