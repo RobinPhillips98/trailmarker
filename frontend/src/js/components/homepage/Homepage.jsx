@@ -101,6 +101,7 @@ export default function Homepage() {
         handleAdd={incrementQuantity}
         enemies={selectedEnemies}
       />
+      <br />
       <EnemyList handleAdd={addEnemy} />
     </>
   );

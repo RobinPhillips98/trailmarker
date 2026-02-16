@@ -196,12 +196,27 @@ def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
 
 
 def add_traits(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
-    enemy["traits"].append(raw_dict["system"]["traits"]["rarity"])
-    enemy["traits"].append(raw_dict["system"]["traits"]["size"]["value"])
+    size = raw_dict["system"]["traits"]["size"]["value"]
+    match size:
+        case "tiny":
+            enemy["traits"].append("tiny")
+        case "sm":
+            enemy["traits"].append("small")
+        case "med":
+            enemy["traits"].append("medium")
+        case "lg":
+            enemy["traits"].append("large")
+        case _:
+            raise Exception(f"Invalid size trait: {size}")
+    # enemy["traits"].append(raw_dict["system"]["traits"]["size"]["value"])
 
     traits = raw_dict["system"]["traits"]["value"]
+    trait_exceptions = ["chaotic", "lawful", "good", "evil"]
     for trait in traits:
-        enemy["traits"].append(trait)
+        if trait in trait_exceptions:
+            continue
+        else:
+            enemy["traits"].append(trait)
 
 
 def add_skills(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:

@@ -1,4 +1,4 @@
-import { List, Typography } from "antd";
+import { List, Typography, Empty, Card } from "antd";
 
 import SelectedEnemy from "./SelectedEnemy";
 
@@ -20,15 +20,21 @@ export default function EncounterDisplay(props) {
   const { Title } = Typography;
 
   return (
-    <div>
+    <Card>
+      <Title level={4} style={{ marginTop: 0, marginBottom: 16 }}>
+        Encounter
+      </Title>
       <List
-        header={<Title level={3}>Encounter</Title>}
-        bordered={true}
-        size="small"
-        style={{ maxHeight: 300, overflow: "scroll" }}
-      >
-        {enemies.map((enemy) => (
-          <List.Item key={enemy.id}>
+        bordered
+        size="large"
+        style={{
+          maxHeight: "35vh",
+          overflow: "auto",
+        }}
+        dataSource={enemies}
+        locale={{ emptyText: <Empty description="No enemies selected" /> }}
+        renderItem={(enemy) => (
+          <List.Item style={{ padding: "16px" }}>
             <SelectedEnemy
               enemy={enemy}
               handleRemove={handleRemove}
@@ -36,8 +42,8 @@ export default function EncounterDisplay(props) {
               handleAdd={handleAdd}
             />
           </List.Item>
-        ))}
-      </List>
-    </div>
+        )}
+      />
+    </Card>
   );
 }
