@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Button, Collapse, Grid, List, Spin, Switch, Typography } from "antd";
 import api from "../../api";
 import { AuthContext } from "../../contexts/AuthContext";
-import { toTitleCase } from "../../services/helpers";
-import { Button, Collapse, List, Spin, Typography } from "antd";
+import { getRandom, toTitleCase } from "../../services/helpers";
 
 /**
  * A page to display the results of a simulation.
@@ -21,6 +21,7 @@ export default function Simulation() {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { enemies } = state;
+  const { useBreakpoint } = Grid;
   const [simData, setSimData] = useState([{}]);
   const [wins, setWins] = useState();
   const [winsRatio, setWinsRatio] = useState();
@@ -30,7 +31,17 @@ export default function Simulation() {
   const [avgRounds, setAvgRounds] = useState();
   const [loaded, setLoaded] = useState(false);
   const [run, setRun] = useState(false);
+  const [switched, setSwitched] = useState(false);
   const { Paragraph, Title } = Typography;
+  const screens = useBreakpoint();
+
+  function handleChange() {
+    setSwitched(!switched);
+  }
+
+  const simTitle = switched
+    ? "Individual Simulation Data"
+    : "Sampled Simulation Data";
 
   useEffect(() => {
     if (!token) {
@@ -67,14 +78,14 @@ export default function Simulation() {
         setAvgDeaths(
           response.data.sim_data.reduce(
             (acc, current) => acc + current.players_killed,
-            0
-          ) / response.data.total_sims
+            0,
+          ) / response.data.total_sims,
         );
         setAvgRounds(
           response.data.sim_data.reduce(
             (acc, current) => acc + current.rounds,
-            0
-          ) / response.data.total_sims
+            0,
+          ) / response.data.total_sims,
         );
         setTotalPlayers(response.data.sim_data[0].total_players);
         setLoaded(true);
@@ -97,12 +108,25 @@ export default function Simulation() {
   }
 
   if (loaded) {
-    const simDataDisplay = simData.map((sim, i) => {
+    const randomSimData = getRandom(simData, 10).sort(
+      (a, b) => a.sim_num - b.sim_num,
+    );
+
+    const simDataToUse = switched ? simData : randomSimData;
+
+    const simDataDisplay = simDataToUse.map((sim, i) => {
       return {
         key: i + 1,
-        label: `Simulation ${i + 1} - Winner: ${toTitleCase(sim.winner)}!`,
+        label: `Simulation ${sim.sim_num} - Winner: ${toTitleCase(
+          sim.winner,
+        )}!`,
         children: (
-          <div style={{ height: 500, overflow: "scroll" }}>
+          <div
+            style={{
+              maxHeight: screens.md ? 500 : 300,
+              overflow: "auto",
+            }}
+          >
             <Title level={2}>Overview</Title>
             <Paragraph>
               Players killed: {sim.players_killed}/{totalPlayers}
@@ -144,17 +168,26 @@ export default function Simulation() {
         <Title level={2}>
           Players won {wins}/{totalSims} simulations ({winsRatio.toFixed(0)}%)
         </Title>
-        <List bordered style={{ width: 350 }}>
+        <List bordered style={{ maxWidth: screens.md ? 350 : "100%" }}>
           <List.Item>
             Average Number of Players Killed: {avgDeaths}/{totalPlayers}
           </List.Item>
           <List.Item>Average Number of Rounds: {avgRounds}</List.Item>
         </List>
-        <Title level={2}>Individual Simulation Data:</Title>
+        <Title level={2}>Show data for all simulations?</Title>
+        <Switch checked={switched} onChange={handleChange} />
+        <Title level={2}>{simTitle}:</Title>
         <Collapse
           accordion
           items={simDataDisplay}
-          style={{ height: 800, overflow: "scroll" }}
+          style={
+            switched
+              ? {
+                  maxHeight: screens.md ? 600 : "none",
+                  overflow: screens.md ? "auto" : "visible",
+                }
+              : null
+          }
           size="large"
         />
       </>

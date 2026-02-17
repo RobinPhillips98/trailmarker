@@ -191,6 +191,7 @@ class SimData(BaseModel):
     rounds: int
     players_killed: int
     total_players: int
+    sim_num: int
     log: list[str]
 
 
