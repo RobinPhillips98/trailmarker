@@ -97,7 +97,9 @@ export default function CharacterCreationForm() {
           },
         });
       }
-      navigate("/characters");
+      navigate("/characters", {
+        state: { selectedCharacter: character.name },
+      });
     } catch (error) {
       alert(error.response.data.detail);
     }
