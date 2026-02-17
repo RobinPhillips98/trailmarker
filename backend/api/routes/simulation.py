@@ -53,6 +53,7 @@ def run_simulations(
     for i in range(total_sims):
         # print(f"Running simulation {i + 1}...")
         sim_data = run_simulation(players, enemies)
+        sim_data["sim_num"] = i + 1
         if sim_data["winner"] == "players":
             response["wins"] += 1
         response["sim_data"].append(sim_data)
