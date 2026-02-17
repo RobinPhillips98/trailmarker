@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Tabs, Typography } from "antd";
+import { PlusOutlined } from "@ant-design/icons"
 
 import { AuthContext } from "../../contexts/AuthContext";
 import api from "../../api";
@@ -14,21 +15,28 @@ import CharacterDisplay from "./CharacterDisplay";
  */
 export default function Characters() {
   const [characters, setCharacters] = useState([]);
+  const [activeTab, setActiveTab] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { token } = useContext(AuthContext);
 
   const { Title } = Typography;
 
   async function deleteCharacter(character) {
-    await api.delete(`characters/${character.id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setCharacters((prev) =>
-      prev.filter((currentCharacter) => currentCharacter !== character)
-    );
+    try {
+      await api.delete(`characters/${character.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCharacters((prev) =>
+        prev.filter((currentCharacter) => currentCharacter !== character),
+      );
+    } catch (error) {
+      console.log("Error deleting character", error);
+      alert(error.response.data.detail);
+    }
   }
 
   useEffect(() => {
@@ -42,7 +50,17 @@ export default function Characters() {
             Authorization: `Bearer ${token}`,
           },
         });
-        setCharacters(response.data.characters);
+        const sortedCharacters = response.data.characters.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+        setCharacters(sortedCharacters);
+
+        // Set active tab to the character from navigation state if available
+        if (location.state?.selectedCharacter) {
+          setActiveTab(location.state.selectedCharacter);
+        } else if (sortedCharacters.length > 0) {
+          setActiveTab(sortedCharacters[0].name);
+        }
       } catch (error) {
         console.error("Error fetching characters", error);
         alert(error.response.data.detail);
@@ -53,7 +71,7 @@ export default function Characters() {
       alert("Sorry: You must be logged in to access this page");
       navigate("/login");
     }
-  }, [token, navigate]);
+  }, [token, navigate, location.state]);
 
   function handleClick() {
     navigate("/characters/create", {
@@ -76,11 +94,23 @@ export default function Characters() {
     return (
       <>
         <Title level={1}>Saved Characters</Title>
-        <Tabs items={characterTabs} />
-        <br />
-        <Button type="primary" onClick={handleClick}>
-          Create New Character
+        <Button
+          type="primary"
+          onClick={handleClick}
+          style={{ marginBottom: 10 }}
+          icon={<PlusOutlined />}
+        >
+          Create Character
         </Button>
+        <Tabs
+          type="card"
+          size="large"
+          items={characterTabs}
+          className="character-tabs"
+          activeKey={activeTab}
+          onChange={setActiveTab}
+        />
+        <br />
       </>
     );
 }
