@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Form, Input, Typography } from "antd";
+import { Button, Form, Grid, Input, Typography } from "antd";
 
 import { AuthContext } from "../contexts/AuthContext";
 
@@ -12,6 +12,8 @@ import { AuthContext } from "../contexts/AuthContext";
 export default function Register() {
   const { register, user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
 
   const { Title } = Typography;
 
@@ -32,15 +34,24 @@ export default function Register() {
       <Form
         name="register"
         onFinish={handleSubmit}
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
+        labelCol={{
+          span: screens.sm ? 8 : 24,
+        }}
+        wrapperCol={{
+          span: screens.sm ? 16 : 24,
+        }}
         style={{ maxWidth: 600 }}
         scrollToFirstError={{ focus: true }}
       >
         <Form.Item
           label="Username"
           name="username"
-          rules={[{ required: true, message: "Please input your username!" }]}
+          rules={[
+            {
+              required: true,
+              message: "Please input your username!",
+            },
+          ]}
         >
           <Input />
         </Form.Item>
@@ -48,7 +59,12 @@ export default function Register() {
         <Form.Item
           label="Password"
           name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[
+            {
+              required: true,
+              message: "Please input your password!",
+            },
+          ]}
         >
           <Input.Password />
         </Form.Item>

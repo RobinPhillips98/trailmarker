@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Button, Form, Input, Typography } from "antd";
+import { Button, Form, Grid, Input, Typography } from "antd";
 
 import { AuthContext } from "../contexts/AuthContext.jsx";
 
@@ -10,6 +10,8 @@ import { AuthContext } from "../contexts/AuthContext.jsx";
  */
 export default function Login() {
   const { login } = useContext(AuthContext);
+  const { useBreakpoint } = Grid;
+  const screens = useBreakpoint();
 
   const { Title } = Typography;
 
@@ -23,15 +25,24 @@ export default function Login() {
       <Form
         name="login"
         onFinish={handleSubmit}
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
+        labelCol={{
+          span: screens.sm ? 8 : 24,
+        }}
+        wrapperCol={{
+          span: screens.sm ? 16 : 24,
+        }}
         style={{ maxWidth: 600 }}
         scrollToFirstError={{ focus: true }}
       >
         <Form.Item
           label="Username"
           name="username"
-          rules={[{ required: true, message: "Please input your username!" }]}
+          rules={[
+            {
+              required: true,
+              message: "Please input your username!",
+            },
+          ]}
         >
           <Input />
         </Form.Item>
@@ -39,7 +50,12 @@ export default function Login() {
         <Form.Item
           label="Password"
           name="password"
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[
+            {
+              required: true,
+              message: "Please input your password!",
+            },
+          ]}
         >
           <Input.Password />
         </Form.Item>
