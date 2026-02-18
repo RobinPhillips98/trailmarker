@@ -1,9 +1,11 @@
 import { useContext, useState } from "react";
-import { Button, Input, Space, Row, Col } from "antd";
+import { Button, Input, Space, Row, Col, Grid } from "antd";
+import { ClearOutlined, LockOutlined, SaveOutlined } from "@ant-design/icons";
 
-import api from "../../../api";
-import { AuthContext } from "../../../contexts/AuthContext";
+import api from "../../../../api";
+import { AuthContext } from "../../../../contexts/AuthContext";
 import SavedEncounters from "./saved_encounters/SavedEncounters";
+import { errorAlert } from "../../../../services/helpers";
 
 /**
  * A component to display controls for saving, loading, and clearing encounters
@@ -19,6 +21,7 @@ export default function EncounterControls({
   clearEncounter,
   handleLoad,
 }) {
+  const screens = Grid.useBreakpoint();
   const [encounterName, setEncounterName] = useState("");
 
   const handleChange = (event) => {
@@ -57,7 +60,7 @@ export default function EncounterControls({
       setEncounterName("");
       alert("Encounter saved!");
     } catch (error) {
-      alert(error);
+      errorAlert("Failed to save encounter", error);
     }
   }
 
@@ -68,7 +71,13 @@ export default function EncounterControls({
           <SavedEncounters handleLoad={handleLoad} />
         </Col>
         <Col xs={24} sm={12}>
-          <Button type="primary" danger onClick={clearEncounter} block>
+          <Button
+            type="primary"
+            danger
+            onClick={clearEncounter}
+            block
+            icon={<ClearOutlined />}
+          >
             Clear Encounter
           </Button>
         </Col>
@@ -76,7 +85,9 @@ export default function EncounterControls({
 
       <Row gutter={[16, 16]}>
         <Col xs={24}>
-          <Space.Compact style={{ width: "100%" }}>
+          <Space.Compact
+            style={screens.md ? { width: "50%" } : { width: "100%" }}
+          >
             <Input
               type="text"
               id="name"
@@ -91,8 +102,9 @@ export default function EncounterControls({
               onClick={save}
               disabled={!user}
               style={{ width: "auto" }}
+              icon={user ? <SaveOutlined /> : <LockOutlined />}
             >
-              Save
+              Save Encounter
             </Button>
           </Space.Compact>
         </Col>

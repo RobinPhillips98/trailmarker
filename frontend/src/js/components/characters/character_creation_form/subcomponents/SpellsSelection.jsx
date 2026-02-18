@@ -180,7 +180,7 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       rules={[
                         { required: true, message: "Please input a damage" },
                         {
-                          pattern: /^[012]( to [23])?$/i,
+                          pattern: /^[0123]( to [23])?$/i,
                           message:
                             "Input must be a valid number of actions (ex. '1' or '1 to 3')",
                         },

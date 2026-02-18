@@ -1,10 +1,13 @@
 import { useContext, useEffect, useState } from "react";
 import { Button, Modal, Card } from "antd";
+import { FolderOpenOutlined, LockOutlined } from "@ant-design/icons";
 
-import api from "../../../../api";
-import { AuthContext } from "../../../../contexts/AuthContext";
+
+import api from "../../../../../api";
+import { AuthContext } from "../../../../../contexts/AuthContext";
 
 import Encounter from "./Encounter";
+import { errorAlert } from "../../../../../services/helpers";
 
 /**
  * A component that displays a list of saved encounters
@@ -55,7 +58,7 @@ export default function SavedEncounters({ handleLoad }) {
         });
         setEncounters(response.data.encounters);
       } catch (error) {
-        console.error("Error fetching encounters", error);
+        errorAlert("Error fetching encouters", error)
       }
     }
     fetchEncounters();
@@ -69,6 +72,7 @@ export default function SavedEncounters({ handleLoad }) {
         block
         onClick={showModal}
         disabled={!user}
+        icon={user ? <FolderOpenOutlined /> : <LockOutlined />}
       >
         Open Saved Encounters
       </Button>

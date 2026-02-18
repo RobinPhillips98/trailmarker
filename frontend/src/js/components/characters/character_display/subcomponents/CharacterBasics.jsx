@@ -1,5 +1,5 @@
 import { Card, Row, Col, Typography } from "antd";
-import { toTitleCase } from "../../../services/helpers";
+import { toTitleCase } from "../../../../services/helpers";
 
 const { Text } = Typography;
 

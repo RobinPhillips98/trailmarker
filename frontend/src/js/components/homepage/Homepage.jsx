@@ -5,7 +5,7 @@ import api from "../../api";
 import Overview from "./overview/Overview";
 import EncounterDisplay from "./encounter_display/EncounterDisplay";
 import EnemyList from "./enemy_list/EnemyList";
-import { Typography } from "antd";
+import { FloatButton, Typography } from "antd";
 
 /**
  * The homepage of the site which displays information and options about the
@@ -103,6 +103,7 @@ export default function Homepage() {
       />
       <br />
       <EnemyList handleAdd={addEnemy} />
+      <FloatButton.BackTop />
     </>
   );
 }

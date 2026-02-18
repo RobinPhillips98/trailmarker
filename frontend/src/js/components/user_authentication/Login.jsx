@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Button, Form, Grid, Input, Typography } from "antd";
 
-import { AuthContext } from "../contexts/AuthContext.jsx";
+import { AuthContext } from "../../contexts/AuthContext.jsx";
 
 /**
  * The page for the user to log into their account

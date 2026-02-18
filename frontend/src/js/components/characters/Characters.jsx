@@ -1,11 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, Tabs, Typography } from "antd";
-import { PlusOutlined } from "@ant-design/icons"
+import { Button, FloatButton, Tabs, Typography } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 import { AuthContext } from "../../contexts/AuthContext";
 import api from "../../api";
-import CharacterDisplay from "./CharacterDisplay";
+import CharacterDisplay from "./character_display/CharacterDisplay";
+import { errorAlert } from "../../services/helpers";
 
 /**
  * The page for displaying saved characters, with options to edit saved characters
@@ -34,8 +35,7 @@ export default function Characters() {
         prev.filter((currentCharacter) => currentCharacter !== character),
       );
     } catch (error) {
-      console.log("Error deleting character", error);
-      alert(error.response.data.detail);
+      errorAlert("Error deleting character", error);
     }
   }
 
@@ -51,7 +51,7 @@ export default function Characters() {
           },
         });
         const sortedCharacters = response.data.characters.sort((a, b) =>
-          a.name.localeCompare(b.name)
+          a.name.localeCompare(b.name),
         );
         setCharacters(sortedCharacters);
 
@@ -62,8 +62,7 @@ export default function Characters() {
           setActiveTab(sortedCharacters[0].name);
         }
       } catch (error) {
-        console.error("Error fetching characters", error);
-        alert(error.response.data.detail);
+        errorAlert("Error fetching characters", error);
       }
     }
     if (token) fetchCharacters();
@@ -110,7 +109,7 @@ export default function Characters() {
           activeKey={activeTab}
           onChange={setActiveTab}
         />
-        <br />
+        <FloatButton.BackTop />
       </>
     );
 }

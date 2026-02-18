@@ -1,9 +1,20 @@
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Collapse, Grid, List, Spin, Switch, Typography } from "antd";
+import {
+  Button,
+  Collapse,
+  FloatButton,
+  Grid,
+  List,
+  Spin,
+  Switch,
+  Typography,
+} from "antd";
+import { PlayCircleOutlined } from "@ant-design/icons";
+
 import api from "../../api";
 import { AuthContext } from "../../contexts/AuthContext";
-import { getRandom, toTitleCase } from "../../services/helpers";
+import { errorAlert, getRandom, toTitleCase } from "../../services/helpers";
 
 /**
  * A page to display the results of a simulation.
@@ -90,8 +101,7 @@ export default function Simulation() {
         setTotalPlayers(response.data.sim_data[0].total_players);
         setLoaded(true);
       } catch (error) {
-        console.error("Error running simulation", error);
-        alert(error.response.statusText);
+        errorAlert("Error running simulation", error);
       }
     }
     callSimulation();
@@ -162,7 +172,11 @@ export default function Simulation() {
     return (
       <>
         <Title>Simulation Results</Title>
-        <Button type="primary" onClick={handleClick}>
+        <Button
+          type="primary"
+          onClick={handleClick}
+          icon={<PlayCircleOutlined />}
+        >
           Run Again
         </Button>
         <Title level={2}>
@@ -190,6 +204,7 @@ export default function Simulation() {
           }
           size="large"
         />
+        <FloatButton.BackTop />
       </>
     );
   } else {

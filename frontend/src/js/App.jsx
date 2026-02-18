@@ -1,21 +1,20 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { ConfigProvider, Flex, Layout, theme } from "antd";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
-import Register from "./components/Register.jsx";
-import Login from "./components/Login.jsx";
+import Register from "./components/user_authentication/Register.jsx";
+import Login from "./components/user_authentication/Login.jsx";
 import Homepage from "./components/homepage/Homepage.jsx";
 import NavBar from "./components/NavBar.jsx";
 import Characters from "./components/characters/Characters.jsx";
 import CharacterCreationForm from "./components/characters/character_creation_form/CharacterCreationForm.jsx";
 import Simulation from "./components/simulation/Simulation.jsx";
+import PolicyNotice from "./components/PolicyNotice.jsx";
 
 export default function App() {
-  const { Header, Content } = Layout;
+  const { Header, Content, Footer } = Layout;
   const themeConfig = {
     token: {
-      colorPrimary: "#5B2D86",
-
       colorBgLayout: "#0f1418",
       colorBgContainer: "#15181c",
       colorBgBase: "#0b0f12",
@@ -26,14 +25,14 @@ export default function App() {
       colorBorder: "#26292d",
       colorSplit: "#1d2124",
 
-      colorInfo: "#5B2D86",
+      colorInfo: "#00c3ffff",
       colorWarning: "#D17E1A",
       colorError: "#E65353",
       colorSuccess: "#2F9D7E",
 
-      borderRadius: 6
+      borderRadius: 6,
     },
-    algorithm: theme.darkAlgorithm
+    algorithm: theme.darkAlgorithm,
   };
 
   return (
@@ -42,11 +41,15 @@ export default function App() {
         <ConfigProvider theme={themeConfig}>
           <Flex>
             <Layout>
-              <Header style={{ background: themeConfig.token.colorBgContainer, marginBottom: 10 }}>
+              <Header
+                style={{
+                  background: themeConfig.token.colorBgContainer,
+                  marginBottom: 10,
+                }}
+              >
                 <NavBar />
               </Header>
               <Content>
-                
                 <Routes>
                   <Route path="/" element={<Homepage />} />
                   <Route path="/characters" element={<Characters />} />
@@ -57,8 +60,15 @@ export default function App() {
                   <Route path="/register" element={<Register />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/simulation" element={<Simulation />} />
+                  <Route path="/copyright" element={<PolicyNotice />} />
                 </Routes>
               </Content>
+              <Footer>
+                This website is not published, endorsed, or specifically
+                approved by Paizo Inc. We are expressly prohibited from charging
+                you to use or access this content.{" "}
+                <Link to="/copyright">See more.</Link>
+              </Footer>
             </Layout>
           </Flex>
         </ConfigProvider>

@@ -1,16 +1,16 @@
 import { useState, useEffect, useContext } from "react";
-
-import { AuthContext } from "../../../contexts/AuthContext";
-import api from "../../../api";
-
-import SavedEncounters from "./saved_encounters/SavedEncounters";
-import PartyInfoForm from "./PartyInfoForm";
-import CurrentDifficultyDisplay from "./CurrentDifficultyDisplay";
-import XPBudget from "./XPBudget";
-import EncounterControls from "./EncounterControls";
 import { useNavigate } from "react-router-dom";
 import { Button, Row, Col, Divider } from "antd";
-import { isEmpty } from "../../../services/helpers";
+import { LockOutlined, PlayCircleOutlined } from "@ant-design/icons";
+
+import PartyInfoForm from "./subcomponents/PartyInfoForm";
+import CurrentDifficultyDisplay from "./subcomponents/CurrentDifficultyDisplay";
+import XPBudget from "./subcomponents/XPBudget";
+import EncounterControls from "./subcomponents/EncounterControls";
+
+import api from "../../../api";
+import { errorAlert, isEmpty } from "../../../services/helpers";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 /**
  * An overview with information and options for the current encounter
@@ -44,19 +44,13 @@ export default function Overview(props) {
         if (response.data.characters.length > 0) {
           const characters = response.data.characters;
           setPartyLevel(characters.at(0).level);
-          if (characters.length >= 2) setPartySize(characters.length);
-          else {
-            alert(
-              "Less than 2 characters saved, setting party size to minimum 2",
-            );
-            setPartySize(2);
-          }
+          setPartySize(characters.length);
         } else {
           alert("No saved characters!");
           setSwitched(false);
         }
       } catch (error) {
-        console.error("Error fetching characters", error);
+        errorAlert("Error fetching characters", error);
       }
     }
     if (switched) getPartyInfoFromServer();
@@ -83,13 +77,24 @@ export default function Overview(props) {
   // Sets XP budget based on party size
   useEffect(() => {
     const characterAdjustment = partySize - 4;
-    const newBudget = {
-      trivial: 40 + 10 * characterAdjustment,
-      low: 60 + 20 * characterAdjustment,
-      moderate: 80 + 20 * characterAdjustment,
-      severe: 120 + 30 * characterAdjustment,
-      extreme: 160 + 40 * characterAdjustment,
-    };
+    const newBudget =
+      // Math breaks at party size of 1, but what if only one character saved?
+      // At party size of 2, trivial and low are equal, blame Paizo
+      partySize > 1
+        ? {
+            trivial: 40 + 10 * characterAdjustment,
+            low: 60 + 20 * characterAdjustment,
+            moderate: 80 + 20 * characterAdjustment,
+            severe: 120 + 30 * characterAdjustment,
+            extreme: 160 + 40 * characterAdjustment,
+          }
+        : {
+            trivial: 5,
+            low: 10,
+            moderate: 20,
+            severe: 30,
+            extreme: 40,
+          };
     setBudget(newBudget);
   }, [partySize]);
 
@@ -154,14 +159,15 @@ export default function Overview(props) {
 
   return (
     <div style={{ width: "100%" }}>
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-        <Col span={24}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 24 }} justify="center">
+        <Col sm={24} md={8}>
           <Button
             type="primary"
             size="large"
             block
             onClick={handleClick}
             disabled={!user || isEmpty(selectedEnemies)}
+            icon={!user ? <LockOutlined /> : <PlayCircleOutlined />}
           >
             Run Simulation
           </Button>

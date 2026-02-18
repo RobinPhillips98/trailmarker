@@ -1,4 +1,5 @@
 import { Button, Table } from "antd";
+import { DeleteOutlined, DownloadOutlined } from "@ant-design/icons";
 
 /**
  * A component for displaying information about a saved encounter
@@ -52,10 +53,16 @@ export default function Encounter(props) {
         type="primary"
         style={{ marginRight: 10 }}
         onClick={handleClickLoad}
+        icon={<DownloadOutlined />}
       >
         Load Encounter
       </Button>
-      <Button danger onClick={handleClickDelete}>
+      <Button
+        type="primary"
+        danger
+        onClick={handleClickDelete}
+        icon={<DeleteOutlined />}
+      >
         Delete Encounter
       </Button>
     </div>

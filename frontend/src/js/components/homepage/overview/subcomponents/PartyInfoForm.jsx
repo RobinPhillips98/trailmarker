@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Select, Switch, Typography, Space, Card } from "antd";
 
-import { AuthContext } from "../../../contexts/AuthContext";
+import { AuthContext } from "../../../../contexts/AuthContext";
 
 /**
  * A component to allow users to enter information about their party
@@ -31,6 +31,10 @@ export default function PartyInfoForm(props) {
   const { user } = useContext(AuthContext);
 
   const sizeOptions = [
+    {
+      value: "1",
+      label: 1,
+    },
     {
       value: "2",
       label: "2",
