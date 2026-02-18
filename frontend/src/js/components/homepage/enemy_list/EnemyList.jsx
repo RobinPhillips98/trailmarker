@@ -4,6 +4,7 @@ import { Typography, Empty, Spin, Row, Col, Form } from "antd";
 import api from "../../../api";
 import Enemy from "./Enemy";
 import EnemyFilterForm from "./EnemyFilterForm";
+import { errorAlert } from "../../../services/helpers";
 
 /**
  * A component to display a list of all enemies from the database
@@ -28,8 +29,7 @@ export default function EnemyList({ handleAdd }) {
       setDisplayEnemies(response.data.enemies);
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching enemies", error);
-      alert(error);
+      errorAlert("Error fetching enemies", error)
       setLoading(false);
     }
   }
@@ -46,11 +46,9 @@ export default function EnemyList({ handleAdd }) {
   const traitFilterMode = Form.useWatch("traitFilterMode", form);
 
   useEffect(() => {
-    console.log(traitFilterMode);
-
     let filteredEnemies = enemies.filter(
       (enemy) =>
-        enemy.name.includes(name) &&
+        enemy.name.toLowerCase().includes(name.toLowerCase()) &&
         enemy.level >= minLevel &&
         enemy.level <= maxLevel,
     );

@@ -1,5 +1,5 @@
 import { Card, Row, Col, List } from "antd";
-import { toTitleCase } from "../../../services/helpers";
+import { toTitleCase } from "../../../../services/helpers";
 
 /**
  * A component to display character attacks

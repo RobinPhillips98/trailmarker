@@ -1,7 +1,5 @@
 import { Card, Row, Col, Divider, List, Typography, Empty } from "antd";
-import { toTitleCase, splitCamelCase } from "../../../services/helpers";
-
-const { Title } = Typography;
+import { toTitleCase, splitCamelCase } from "../../../../services/helpers";
 
 /**
  * A component to display character spellcasting information
@@ -12,6 +10,8 @@ const { Title } = Typography;
  * @returns {JSX.element}
  */
 export default function SpellcastingSection({ character }) {
+  const { Title } = Typography;
+
   const hasSpells =
     character.actions?.spells && character.actions.spells.length > 0;
 

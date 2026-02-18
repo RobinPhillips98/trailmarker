@@ -18,10 +18,7 @@ export default function GeneralInfoSelection() {
       >
         <Input />
       </Form.Item>
-      <Form.Item
-        label="Player Name"
-        name="player"
-        >
+      <Form.Item label="Player Name" name="player">
         <Input />
       </Form.Item>
       <Form.Item

@@ -1,6 +1,16 @@
 import { useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Col, Form, Row, Grid, Typography } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Row,
+  Grid,
+  Typography,
+  Space,
+  FloatButton,
+} from "antd";
+import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
 
 import api from "../../../api";
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -12,6 +22,7 @@ import AttacksSelection from "./subcomponents/AttacksSelection";
 import GeneralInfoSelection from "./subcomponents/GeneralInfoSelection";
 import GeneralStatsSelection from "./subcomponents/GeneralStatsSelection";
 import SpellsSelection from "./subcomponents/SpellsSelection";
+import { errorAlert } from "../../../services/helpers";
 
 /**
  * A component to allow a user to create or edit a player character
@@ -101,7 +112,7 @@ export default function CharacterCreationForm() {
         state: { selectedCharacter: character.name },
       });
     } catch (error) {
-      alert(error.response.data.detail);
+      errorAlert("Error saving character", error);
     }
   }
 
@@ -128,6 +139,25 @@ export default function CharacterCreationForm() {
         requiredMark="optional"
         scrollToFirstError={{ focus: true }}
       >
+        <Space style={{ marginTop: 24, marginBottom: 24 }}>
+          <Form.Item label={null}>
+            <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+              Save Character
+            </Button>
+          </Form.Item>
+          <Form.Item label={null}>
+            <Button onClick={handleCancel} icon={<CloseOutlined />}>Cancel</Button>
+          </Form.Item>
+        </Space>
+        <FloatButton.Group shape="square">
+          <FloatButton
+            type="primary"
+            htmlType="submit"
+            icon={<SaveOutlined />}
+          />
+          <FloatButton onClick={handleCancel} icon={<CloseOutlined />}/>
+          <FloatButton.BackTop />
+        </FloatButton.Group>
         <Row gutter={16} align="middle">
           <Col xs={24} md={12}>
             <GeneralInfoSelection />
@@ -170,12 +200,6 @@ export default function CharacterCreationForm() {
           </Col>
         </Row>
         <br />
-        <Form.Item label={null}>
-          <Button type="primary" htmlType="submit">
-            Save Character
-          </Button>
-        </Form.Item>
-        <Button onClick={handleCancel}>Cancel</Button>
       </Form>
     </>
   );

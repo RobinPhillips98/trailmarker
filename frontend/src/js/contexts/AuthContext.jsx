@@ -6,6 +6,7 @@ import {
   registerUser,
   fetchUserProfile,
 } from "../services/AuthHelpers";
+import { errorAlert } from "../services/helpers";
 
 const AuthContext = createContext({});
 
@@ -49,7 +50,7 @@ function AuthProvider({ children }) {
         navigate("/");
       }
     } catch (error) {
-      alert(error.response.data.detail);
+      errorAlert("Error logging in", error)
     }
   }
 
@@ -65,7 +66,7 @@ function AuthProvider({ children }) {
       await registerUser({ username, password });
       navigate("/login");
     } catch (error) {
-      alert(error.response.data.detail);
+      errorAlert("Error registering", error)
     }
   }
 
