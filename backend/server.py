@@ -27,16 +27,12 @@ app.include_router(simulation.router)
 app.include_router(user.router)
 app.include_router(auth.router, prefix="/auth")
 
-models.Base.metadata.create_all(bind=engine)
 
-# def get_db():
-#     db = SessionLocal()
-#     try:
-#         yield db
-#     finally:
-#         db.close()
-
-# db = Annotated[Session, Depends(get_db)]
+# models.Base.metadata.create_all(bind=engine)
+@app.on_event("startup")
+async def startup():
+    async with engine.begin() as conn:
+        await conn.run_sync(models.Base.metadata.create_all)
 
 
 if __name__ == "__main__":
