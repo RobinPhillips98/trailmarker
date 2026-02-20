@@ -25,7 +25,8 @@ import { AuthContext } from "../../../contexts/AuthContext";
  */
 export default function Overview(props) {
   const { selectedEnemies, handleLoad, clearEncounter } = props;
-  const [switched, setSwitched] = useState(false);
+  const [useSaved, setUseSaved] = useState(false);
+  const [colorBlind, setColorBlind] = useState(false);
 
   const { token, user } = useContext(AuthContext);
 
@@ -47,17 +48,21 @@ export default function Overview(props) {
           setPartySize(characters.length);
         } else {
           alert("No saved characters!");
-          setSwitched(false);
+          setUseSaved(false);
         }
       } catch (error) {
         errorAlert("Error fetching characters", error);
       }
     }
-    if (switched) getPartyInfoFromServer();
-  }, [switched, token]);
+    if (useSaved) getPartyInfoFromServer();
+  }, [useSaved, token]);
 
-  function handleChange() {
-    setSwitched(!switched);
+  function handleChangeSaved() {
+    setUseSaved(!useSaved);
+  }
+
+  function handleChangeColorBlind() {
+    setColorBlind(!colorBlind);
   }
 
   const [partySize, setPartySize] = useState(4);
@@ -151,6 +156,22 @@ export default function Overview(props) {
     else setDifficulty("extreme");
   }, [xp, budget]);
 
+  const difficultyColors = colorBlind
+    ? {
+        trivial: "#164c64",
+        low: "#0e288e",
+        moderate: "#881a58",
+        severe: " #b32db5",
+        extreme: "#a53606",
+      }
+    : {
+        trivial: "blue",
+        low: "green",
+        moderate: "yellow",
+        severe: "orange",
+        extreme: "red",
+      };
+
   const navigate = useNavigate();
 
   function handleClick() {
@@ -179,17 +200,26 @@ export default function Overview(props) {
           <PartyInfoForm
             partySize={partySize}
             partyLevel={partyLevel}
-            switched={switched}
+            switched={useSaved}
             handlePartySize={handlePartySize}
             handlePartyLevel={handlePartyLevel}
-            handleChange={handleChange}
+            handleChange={handleChangeSaved}
           />
         </Col>
         <Col xs={24} sm={12} md={8}>
-          <XPBudget budget={budget} />
+          <XPBudget
+            budget={budget}
+            switched={colorBlind}
+            handleChange={handleChangeColorBlind}
+            colors={difficultyColors}
+          />
         </Col>
         <Col xs={24} md={8}>
-          <CurrentDifficultyDisplay difficulty={difficulty} xp={xp} />
+          <CurrentDifficultyDisplay
+            difficulty={difficulty}
+            xp={xp}
+            colors={difficultyColors}
+          />
         </Col>
       </Row>
 
