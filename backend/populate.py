@@ -3,18 +3,16 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Annotated
 
 import requests
-from fastapi import Depends
 from github import Github
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from db import engine, get_db
+from db import engine_sync
 from models import Base, Enemy
 
-db_dependency = Annotated[Session, Depends(get_db)]
+# db_dependency = Annotated[Session, Depends(get_db)]
 
 
 def initialize_enemies(db: Session):
@@ -365,7 +363,7 @@ def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
     return db_enemy
 
 
-def drop_all_tables(engine=engine):
+def drop_all_tables(engine=engine_sync):
     """Drop all tables in the database"""
     print("Starting table operations...")
     try:
@@ -393,7 +391,7 @@ def main():
     args = parser.parse_args()
 
     # Print database URL (with password masked)
-    db_url = str(engine.url)
+    db_url = str(engine_sync.url)
     print(f"Database URL: {db_url}")
     if "postgresql" in db_url:
         print(f"Connecting to database: {db_url.split('@')[1]}")
@@ -420,13 +418,13 @@ from scratch.
 
     print("Creating database tables...")
     try:
-        Base.metadata.create_all(bind=engine)
+        Base.metadata.create_all(bind=engine_sync)
         print("Tables created successfully")
     except Exception as e:
         print(f"Error creating tables: {e}")
         raise
 
-    with Session(bind=engine) as db:
+    with Session(bind=engine_sync) as db:
         try:
             # Check if we already have data
             if (
