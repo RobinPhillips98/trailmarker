@@ -26,7 +26,7 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=UserResponse)
-def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
+async def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
     """Adds a given user to the database.
 
     Takes in a user andchecks that its username doesn't already exist in the
@@ -44,7 +44,7 @@ def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
     Returns:
         UserResponse: A dictionary containing information about the new user
     """
-    db_user = get_user(db, user.username)
+    db_user = await get_user(db, user.username)
     if db_user:
         raise HTTPException(
             status_code=400, detail="Username already registered."
@@ -52,8 +52,9 @@ def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
     hashed_password = get_password_hash(user.password)
     db_user = User(username=user.username, hashed_password=hashed_password)
     db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    await db.commit()
+    await db.refresh(db_user)
+
     return db_user
 
 
@@ -75,7 +76,7 @@ async def login_for_access_token(
     Returns:
         Token: A JSON Web Token used to authenticate the user
     """
-    user = authenticate_user(db, form_data.username, form_data.password)
+    user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

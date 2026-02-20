@@ -14,6 +14,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
+from sqlalchemy.future import select
 
 from models import User
 from schemas import TokenData
@@ -55,7 +56,7 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-def get_user(db: db_dependency, username: str) -> User:
+async def get_user(db: db_dependency, username: str) -> User:
     """Fetches a given user from the database using their username
 
     Args:
@@ -65,11 +66,14 @@ def get_user(db: db_dependency, username: str) -> User:
     Returns:
         User: The user fetched from the database
     """
-    db_user = db.query(User).filter(User.username == username).first()
-    return db_user
+    result = await db.execute(select(User).where(User.username == username))
+    user = result.scalar_one_or_none()
+    return user
 
 
-def authenticate_user(db: db_dependency, username: str, password: str) -> bool:
+async def authenticate_user(
+    db: db_dependency, username: str, password: str
+) -> bool:
     """Checks whether a given username and password matches a saved user
 
     Attempts to fetch the user from the database using the given username,
@@ -83,7 +87,8 @@ def authenticate_user(db: db_dependency, username: str, password: str) -> bool:
     Returns:
         bool: True if the authentication is successful, false otherwise
     """
-    user = get_user(db, username)
+    user = await get_user(db, username)
+
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -143,13 +148,10 @@ async def get_current_user(
     except InvalidTokenError:
         raise credentials_exception
 
-    user = db.query(User).filter(User.username == token_data.username).first()
+    result = await db.execute(
+        select(User).where(User.username == token_data.username)
+    )
+    user = result.scalar_one_or_none()
     if user is None:
         raise credentials_exception
     return user
-
-
-# async def get_current_active_user(
-#     current_user: User = Depends(get_current_user),
-# ):
-#     return current_user

@@ -14,7 +14,7 @@ router = APIRouter()
 @router.post(
     "/simulation", response_model=SimResponse, status_code=status.HTTP_200_OK
 )
-def run_simulations(
+async def run_simulations(
     request: SimRequest,
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
@@ -38,26 +38,24 @@ def run_simulations(
     total_sims = 100
     response = {"wins": 0, "total_sims": total_sims, "sim_data": []}
     players = []
-    characters = fetch_characters_from_db(current_user, db).characters
+    result = await fetch_characters_from_db(current_user, db)
+    characters = result.characters
     for character in characters:
         players.append(convert_to_player_dict(character))
 
     enemies = []
     for enemy in request.enemies:
-        db_enemy = get_enemy(enemy.id, db)
+        db_enemy = await get_enemy(enemy.id, db)
         enemy_dict = convert_to_enemy_dict(db_enemy)
         for i in range(enemy.quantity):
             enemies.append(enemy_dict)
 
-    # print("Running simulations...")
     for i in range(total_sims):
-        # print(f"Running simulation {i + 1}...")
         sim_data = run_simulation(players, enemies)
         sim_data["sim_num"] = i + 1
         if sim_data["winner"] == "players":
             response["wins"] += 1
         response["sim_data"].append(sim_data)
-    # print("Simulations complete. Sending response...")
 
     return response
 
