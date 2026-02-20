@@ -1,4 +1,4 @@
-import { Typography, Card, Space, Tag } from "antd";
+import { Typography, Card, Space, Tag, Switch } from "antd";
 
 /**
  * A component to display the XP budget for the current party size
@@ -7,15 +7,15 @@ import { Typography, Card, Space, Tag } from "antd";
  * @param {object} props.budget The XP budget for the current party size
  * @returns {JSX.Element}
  */
-export default function XPBudget({ budget }) {
+export default function XPBudget({ budget, switched, handleChange, colors }) {
   const { Title, Text } = Typography;
 
   const budgetTiers = [
-    { label: "Trivial", xp: budget.trivial, color: "green" },
-    { label: "Low", xp: budget.low, color: "cyan" },
-    { label: "Moderate", xp: budget.moderate, color: "blue" },
-    { label: "Severe", xp: budget.severe, color: "orange" },
-    { label: "Extreme", xp: budget.extreme, color: "red" },
+    { label: "Trivial", xp: budget.trivial, color: colors.trivial },
+    { label: "Low", xp: budget.low, color: colors.low },
+    { label: "Moderate", xp: budget.moderate, color: colors.moderate },
+    { label: "Severe", xp: budget.severe, color: colors.severe },
+    { label: "Extreme", xp: budget.extreme, color: colors.extreme },
   ];
 
   return (
@@ -42,6 +42,10 @@ export default function XPBudget({ budget }) {
             </Text>
           </div>
         ))}
+        <Title level={5} style={{ marginBottom: 8 }}>
+          Colorblind friendly?
+        </Title>
+        <Switch checked={switched} onChange={handleChange} />
       </Space>
     </Card>
   );
