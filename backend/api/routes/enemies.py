@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.get("/enemies", response_model=Enemies, status_code=status.HTTP_200_OK)
-def get_enemies(db: db_dependency) -> Enemies:
+async def get_enemies(db: db_dependency) -> Enemies:
     """Fetches all enemies from the database.
 
     Args:
@@ -27,7 +27,7 @@ def get_enemies(db: db_dependency) -> Enemies:
         Enemies: A list of enemy objects
     """
     query = select(models.Enemy)
-    result = db.execute(query)
+    result = await db.execute(query)
     enemies = result.scalars().all()
     enemy_list = [e.__dict__ for e in enemies]
     return Enemies(enemies=enemy_list)
@@ -36,7 +36,7 @@ def get_enemies(db: db_dependency) -> Enemies:
 @router.get(
     "/enemies/{enemy_id}", response_model=Enemy, status_code=status.HTTP_200_OK
 )
-def get_enemy(enemy_id: int, db: db_dependency) -> Enemy:
+async def get_enemy(enemy_id: int, db: db_dependency) -> Enemy:
     """Fetches a specific enemy from the database
 
     Args:
@@ -46,10 +46,10 @@ def get_enemy(enemy_id: int, db: db_dependency) -> Enemy:
     Returns:
         Enemy: A dictionary representing an enemy
     """
+    query = select(models.Enemy)
+    query = query.where(models.Enemy.id == enemy_id)
 
-    query = db.query(models.Enemy).where(models.Enemy.id == enemy_id)
-
-    result = db.execute(query)
+    result = await db.execute(query)
     enemy = result.scalars().first()
 
     return enemy

@@ -6,6 +6,8 @@ route of the API including creating, reading, updating, and deleting characters
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 import models
 from schemas import Character, CharacterCreate, Characters, CharacterUpdate
@@ -21,7 +23,7 @@ router = APIRouter()
 @router.get(
     "/characters", response_model=Characters, status_code=status.HTTP_200_OK
 )
-def get_characters(
+async def get_characters(
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
 ) -> Characters:
@@ -35,50 +37,7 @@ def get_characters(
     Returns:
         Characters: A list of Character objects
     """
-    return fetch_characters_from_db(current_user, db)
-
-
-@router.get(
-    "/characters/{character_id}",
-    response_model=Character,
-    status_code=status.HTTP_200_OK,
-)
-def get_character(
-    character_id: int,
-    db: db_dependency,
-    current_user: models.User = Depends(get_current_user),
-) -> Character:
-    """Fetches a specific character from the database
-
-    Args:
-        character_id (int): The ID of the character to be fetched
-        db (db_dependency): A SQLAlchemy database session
-        current_user (models.User, optional): The currently logged in user.
-             Defaults to Depends(get_current_user).
-
-    Raises:
-        NotFoundException: A 404 exception if the character is not found.
-        NotAuthorizedException: A 403 exception if the character does not
-            belong to the current user
-
-    Returns:
-        Character: An dictionary representing the character fetched.
-    """
-
-    query = db.query(models.Character).where(
-        models.Character.id == character_id
-    )
-
-    result = db.execute(query)
-    character = result.scalars().first()
-
-    if not character:
-        raise NotFoundException(route="character")
-
-    if character.user_id != current_user.id:
-        raise NotAuthorizedException(action="get", route="character")
-
-    return character
+    return await fetch_characters_from_db(current_user, db)
 
 
 @router.post(
@@ -86,7 +45,7 @@ def get_character(
     response_model=Character,
     status_code=status.HTTP_201_CREATED,
 )
-def add_character(
+async def add_character(
     character: CharacterCreate,
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
@@ -111,8 +70,8 @@ def add_character(
         db_character = convert_to_db_character(character, current_user)
 
         db.add(db_character)
-        db.commit()
-        db.refresh(db_character)
+        await db.commit()
+        await db.refresh(db_character)
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
@@ -196,7 +155,7 @@ def convert_to_db_character(
 @router.patch(
     "/characters", response_model=Character, status_code=status.HTTP_200_OK
 )
-def update_character(
+async def update_character(
     character_update: CharacterUpdate,
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
@@ -226,7 +185,7 @@ def update_character(
         Character: The updated character's data
     """
     try:
-        db_character = db.get(models.Character, character_update.id)
+        db_character = await db.get(models.Character, character_update.id)
 
         if db_character is None:
             raise NotFoundException(route="character")
@@ -238,8 +197,8 @@ def update_character(
         for key, value in update_data.items():
             setattr(db_character, key, value)
 
-        db.commit()
-        db.refresh(db_character)
+        await db.commit()
+        await db.refresh(db_character)
 
         updated_character = Character.from_orm(db_character)
         return updated_character
@@ -258,7 +217,7 @@ def update_character(
     response_model=object,
     status_code=status.HTTP_200_OK,
 )
-def delete_character(
+async def delete_character(
     character_id: int,
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
@@ -279,12 +238,14 @@ def delete_character(
     Returns:
         object: A response object confirming the character was deleted.
     """
-    query = db.query(models.Character).where(
-        models.Character.id == character_id
+    stmt = (
+        select(models.Character)
+        .options(selectinload(models.Character.user))
+        .where(models.Character.id == character_id)
     )
 
-    result = db.execute(query)
-    character = result.scalars().first()
+    result = await db.execute(stmt)
+    character = result.scalar_one_or_none()
 
     if not character:
         raise NotFoundException(route="character")
@@ -292,7 +253,7 @@ def delete_character(
     if character.user_id != current_user.id:
         raise NotAuthorizedException(action="delete", route="character")
 
-    db.delete(character)
-    db.commit()
+    await db.delete(character)
+    await db.commit()
 
     return {"message": "Character deleted"}

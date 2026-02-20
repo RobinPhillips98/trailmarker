@@ -4,7 +4,7 @@ import models
 from schemas import Characters
 
 
-def fetch_characters_from_db(current_user, db) -> Characters:
+async def fetch_characters_from_db(current_user, db) -> Characters:
     """Fetches all characters owned by the current user
 
     Args:
@@ -16,7 +16,7 @@ def fetch_characters_from_db(current_user, db) -> Characters:
     """
     query = select(models.Character)
     query = query.where(models.Character.user_id == current_user.id)
-    result = db.execute(query)
+    result = await db.execute(query)
     characters = result.scalars().all()
     character_list = [e.__dict__ for e in characters]
     return Characters(characters=character_list)
