@@ -13,8 +13,9 @@ class Action:
         self.cost: int = cost
         self.weight: int = weight
         self.range: int = 5
+        self.ranged: bool = False
 
-    def calculate_weight(self, penalty: int) -> int:
+    def calculate_weight(self, penalty: int, in_melee: bool = False) -> int:
         return self.weight
 
 
@@ -36,7 +37,8 @@ class Attack(Action):
         self.name: str = attack_dict["name"].strip()
         self.attack_bonus: int = attack_dict["attackBonus"]
         self.damage_type: str = attack_dict["damageType"]
-        self.range: int = 5
+        self.range: int = attack_dict.get("range", 5)
+        self.ranged: bool = self.range > 5
 
         # Due to regex verification on frontend, damage will always be listed
         # in the form "XdY" or "XdY±Z", so split on d, +, and - in order to
@@ -55,12 +57,15 @@ class Attack(Action):
             (self.num_dice * self.die_size)
             + self.damage_bonus
             + self.attack_bonus
+            + self.range / 10
         )
 
     def __repr__(self):
         return self.name.lower()
 
-    def calculate_weight(self, penalty: int) -> int:
+    def calculate_weight(self, penalty: int, in_melee: bool = False) -> int:
+        if in_melee and self.ranged:
+            return 0
         effective_weight = self.weight - penalty
         if penalty >= 8:  # a third attack is almost always a bad option
             effective_weight *= 0.5
@@ -110,6 +115,8 @@ class Spell(Action):
         else:
             self.range: int = int(range_.split()[0])
 
+        self.ranged: bool = self.range > 5
+
         try:
             area_dict = spell_dict["area"]
             if area_dict:
@@ -152,7 +159,7 @@ class Spell(Action):
     def __repr__(self):
         return self.name.lower()
 
-    def calculate_weight(self, penalty: int) -> int:
+    def calculate_weight(self, penalty: int, in_melee: bool = False) -> int:
         if self.level == 0:
             return self.weight * 1.5
         else:

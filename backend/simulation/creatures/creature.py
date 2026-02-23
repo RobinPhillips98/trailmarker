@@ -218,15 +218,16 @@ class Creature:
             self.initiative = d20.roll() + self.perception
 
     def _perform_action(self) -> None:
+        in_melee = self._check_adjacent_creatures()
         best_action = self.actions[0]
         best_weight = best_action.calculate_weight(self.map)
 
         # Just a simple linear search because number of actions should never
         # get too high (typically 3-5, 10-15 at most w/ spells)
         for action in self.actions[1:]:
-            if action.calculate_weight(self.map) > best_weight:
+            if action.calculate_weight(self.map, in_melee) > best_weight:
                 best_action = action
-                best_weight = best_action.calculate_weight(self.map)
+                best_weight = best_action.calculate_weight(self.map, in_melee)
 
         if isinstance(best_action, Attack):
             target = self._pick_target(best_action.range)
@@ -239,6 +240,19 @@ class Creature:
             self._cast_spell(best_action)
 
         self.num_actions -= best_action.cost
+
+    def _check_adjacent_creatures(self):
+        opponents = (
+            self.encounter.enemies
+            if self.team == 1
+            else self.encounter.players
+        )
+
+        for opponent in opponents:
+            if self.calculate_distance(opponent) <= 5:
+                return True
+
+        return False
 
     def _pick_target(self, attack_range) -> Self:
         targets = []
