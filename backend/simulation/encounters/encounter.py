@@ -46,6 +46,22 @@ class Encounter:
         for creature in self.creatures:
             creature.join_encounter(self)
 
+        position_x = 0
+        position_y = 0
+        if players:
+            for player in players:
+                player.position_x = position_x
+                player.position_y = position_y
+                position_y += 1
+
+        if enemies:
+            position_x = 10
+            position_y = 0
+            for enemy in enemies:
+                enemy.position_x = position_x
+                enemy.position_y = position_y
+                position_y += 1
+
         # Sort by initiative before starting encounter
         self.creatures = sorted(
             self.creatures,
