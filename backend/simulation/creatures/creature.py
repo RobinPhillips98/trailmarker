@@ -124,8 +124,8 @@ class Creature:
         self.simulation = simulation
 
         # Map Data
-        self.position_x: int = None
-        self.position_y: int = None
+        self.position_x: int = 0
+        self.position_y: int = 0
 
     def __repr__(self) -> str:
         return self.name
@@ -154,23 +154,27 @@ class Creature:
         self.num_actions = 3
         self.map = 0
 
-        # Simulating one action spent on movement
-        self.num_actions -= 1
-        # TODO: Proper movement (stretch goal)
-
         while self.num_actions > 0:
             if self.encounter.players and self.encounter.enemies:
                 self._perform_action()
             else:
                 break
 
-    def calculate_weight(self) -> int:
+    def calculate_weight(self, attacker: Self, consider_distance: bool) -> int:
         """Calculates how valuable a target the creature is.
 
         Returns:
             int: A number representing how valuable the target is.
         """
-        weight = (self.max_hit_points - self.current_hit_points) * self.level
+        damage_taken = self.max_hit_points - self.current_hit_points
+
+        weight = damage_taken * self.level
+        if consider_distance:
+            distance = self.calculate_distance(attacker)
+            weight -= distance / 5
+
+        # if distance <= range:
+        #     weight *= 2
 
         return weight
 
@@ -190,6 +194,17 @@ class Creature:
             self._die()
         else:
             self._log(f"{self} has {self.current_hit_points} HP remaining!")
+
+    def calculate_distance(self, target: Self) -> int:
+        base_distance = math.dist(
+            [target.position_x, target.position_y],
+            [self.position_x, self.position_y],
+        )
+
+        distance_in_feet = 5 * base_distance
+        rounded_distance = 5 * math.floor(distance_in_feet / 5)
+
+        return rounded_distance
 
     # Private Methods
 
@@ -214,32 +229,101 @@ class Creature:
                 best_weight = best_action.calculate_weight(self.map)
 
         if isinstance(best_action, Attack):
-            target = self._pick_target()
+            target = self._pick_target(best_action.range)
+            if self.calculate_distance(target) > best_action.range:
+                self._move_to(target, best_action.range)
+                if self.num_actions <= 0:
+                    return
             self._attack(best_action, target)
         elif isinstance(best_action, Spell):
             self._cast_spell(best_action)
 
         self.num_actions -= best_action.cost
 
-    def _pick_target(self) -> Self:
+    def _pick_target(self, attack_range) -> Self:
         targets = []
+        consider_distance = True
         if self.team == 1:
             targets = self.encounter.enemies
         elif self.team == 2:
             targets = self.encounter.players
 
+        targets_in_range = []
+        for target in targets:
+            if self.calculate_distance(target) <= attack_range:
+                targets_in_range.append(target)
+
+        # If we're already in range of targets, only consider them
+        if targets_in_range:
+            targets = targets_in_range
+            consider_distance = False
+
         best_target = targets[0]
-        best_weight = best_target.calculate_weight()
+        best_weight = best_target.calculate_weight(self, consider_distance)
 
         for target in targets[1:]:
-            if target.calculate_weight() > best_weight:
+            if target.calculate_weight(self, consider_distance) > best_weight:
                 best_target = target
-                best_weight = best_target.calculate_weight()
+                best_weight = best_target.calculate_weight(
+                    self, consider_distance
+                )
 
         return best_target
 
+    def _move_to(self, target: Self, attack_range: int) -> None:
+        distance_remaining = self.speed
+        while self.num_actions >= 0:
+            diagonal_moves = 1
+            distance = self.calculate_distance(target)
+
+            if distance <= attack_range:
+                return
+
+            self._log(f"{self} Strides toward {target}, {distance} feet away.")
+
+            while distance_remaining > 0 and distance > attack_range:
+                out_of_range_x = abs(self.position_x - target.position_x) > 1
+                out_of_range_y = abs(self.position_y - target.position_y) > 1
+                can_travel_diagonally = True
+                if diagonal_moves % 2 == 0 and distance_remaining >= 10:
+                    can_travel_diagonally = False
+
+                if out_of_range_x and out_of_range_y and can_travel_diagonally:
+                    self._step_x(target)
+                    self._step_y(target)
+                    # Every other diagonal step is five feet of extra movement
+                    if diagonal_moves % 2 == 0:
+                        distance_remaining -= 5
+                    diagonal_moves += 1
+                elif out_of_range_x:
+                    self._step_x(target)
+                elif out_of_range_y:
+                    self._step_y(target)
+                else:
+                    self.num_actions -= 1
+                    return
+                distance_remaining -= 5
+
+            distance_remaining = self.speed
+            self.num_actions -= 1
+
+    def _step_x(self, target):
+        if self.position_x < target.position_x:
+            self.position_x += 1
+        else:
+            self.position_x -= 1
+
+    def _step_y(self, target):
+        if self.position_y < target.position_y:
+            self.position_y += 1
+        else:
+            self.position_y -= 1
+
     def _attack(self, attack: Action, target: Self) -> bool:
-        self._log(f"{self} is attacking {target} with their {attack}.")
+        if isinstance(attack, Attack):
+            self._log(f"{self} Strikes {target} with their {attack}.")
+        else:
+            self._log(f"{self} attacks {target} with their {attack}.")
 
         # Calculate attack roll and check for hit before calculating damage
         attack_roll = d20.roll()
@@ -249,6 +333,8 @@ class Creature:
                 self.map += 5
         elif isinstance(attack, Spell):
             attack_total = attack_roll + self.spell_attack_bonus
+        if attack_total <= 0:
+            attack_total = 1
         self._log(f"{self} rolled {attack_total} to attack.")
 
         if attack_roll == 20 or attack_total >= target.armor_class + 10:
@@ -284,11 +370,11 @@ class Creature:
         return True
 
     def _cast_spell(self, spell: Spell) -> None:
-        self._log(f"{self} is casting {spell}!")
+        self._log(f"{self} casts {spell}!")
 
         if spell.targets:
             for i in range(spell.targets):
-                target = self._pick_target()
+                target = self._pick_target(spell.range)
                 self._attack(spell, target)
         elif spell.area_size:
             self._aoe_spell(spell)
@@ -330,7 +416,7 @@ class Creature:
         damage = (spell.num_dice * damage_roll) + spell.damage_bonus
 
         target_names = ", ".join(map(str, targets))
-        self._log(f"{self} is attacking {target_names} with {spell}!")
+        self._log(f"{self} attacks {target_names} with {spell}!")
         for target in targets:
             target._spell_save(damage, spell, self)
 
