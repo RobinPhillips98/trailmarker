@@ -12,6 +12,7 @@ class Action:
     def __init__(self, cost=1, weight=0):
         self.cost: int = cost
         self.weight: int = weight
+        self.range: int = 5
 
     def calculate_weight(self, penalty: int) -> int:
         return self.weight
@@ -35,6 +36,7 @@ class Attack(Action):
         self.name: str = attack_dict["name"].strip()
         self.attack_bonus: int = attack_dict["attackBonus"]
         self.damage_type: str = attack_dict["damageType"]
+        self.range: int = 5
 
         # Due to regex verification on frontend, damage will always be listed
         # in the form "XdY" or "XdY±Z", so split on d, +, and - in order to
