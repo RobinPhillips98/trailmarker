@@ -38,9 +38,9 @@ export function isEmpty(obj) {
   return Object.keys(obj).length === 0;
 }
 
-export function errorAlert(error, message) {
+export function errorAlert(message, error) {
   console.error(message, error);
-  alert(`${message}: ${error.response.statusText}`)
+  alert(`${message}: ${error.response.data.detail}`)
 }
 
 // Source - https://stackoverflow.com/a/19270021
