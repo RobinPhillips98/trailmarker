@@ -12,8 +12,6 @@ from sqlalchemy.orm import Session
 from db import engine_sync
 from models import Base, Enemy
 
-# db_dependency = Annotated[Session, Depends(get_db)]
-
 
 def initialize_enemies(db: Session):
     """Initializes the enemies table in the database.
@@ -275,6 +273,8 @@ def add_attack(item: dict[str, any], enemy: dict[str, any]) -> None:
         attack_dict["damageType"] = damage_rolls[key]["damageType"]
     except IndexError:
         pass  # Some attacks don't do damage, so don't add them
+    if item["system"]["range"]:
+        attack_dict["range"] = item["system"]["range"]["increment"]
     enemy["actions"]["attacks"].append(attack_dict)
 
 
@@ -337,6 +337,10 @@ def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
         try:
             attack_dict["damage"] = attack["damage"]
             attack_dict["damageType"] = attack["damageType"]
+        except KeyError:
+            pass
+        try:
+            attack_dict["range"] = attack["range"]
         except KeyError:
             pass
         actions_dict["attacks"].append(attack_dict)

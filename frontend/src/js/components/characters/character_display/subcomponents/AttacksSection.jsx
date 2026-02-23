@@ -28,6 +28,10 @@ export default function AttacksSection({ character }) {
                 <List.Item>
                   <strong>Type:</strong> {toTitleCase(attack.damageType)}
                 </List.Item>
+                <List.Item>
+                  <strong>Range: </strong> {attack.range ? attack.range : "5"}
+                  {" "} feet
+                </List.Item>
               </List>
             </Card>
           </Col>
