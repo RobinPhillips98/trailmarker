@@ -123,6 +123,10 @@ class Creature:
         # Simulation Data
         self.simulation = simulation
 
+        # Map Data
+        self.position_x: int = None
+        self.position_y: int = None
+
     def __repr__(self) -> str:
         return self.name
 
