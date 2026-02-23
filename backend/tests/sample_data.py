@@ -83,6 +83,7 @@ test_player = {
                 "attackBonus": 7,
                 "damage": "1d6",
                 "damageType": "piercing",
+                "range": 60,
             },
         ],
         "spells": [],
@@ -147,6 +148,7 @@ test_enemy = {
                 "attackBonus": 7,
                 "damage": "1d6",
                 "damageType": "piercing",
+                "range": 60,
             },
         ]
     },
@@ -339,6 +341,7 @@ test_player_4 = {
                 "attackBonus": 5,
                 "damage": "1d8",
                 "damageType": "piercing",
+                "range": 120,
             },
         ],
         "spells": [
@@ -463,6 +466,7 @@ test_enemy_2 = {
                 "attackBonus": 8,
                 "damage": "1d6",
                 "damageType": "piercing",
+                "range": 60,
             },
         ]
     },

@@ -77,6 +77,13 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                 >
                   <Select options={damageTypes.slice(0, 3)} />
                 </Form.Item>
+                <Form.Item
+                  {...restField}
+                  name={[name, "range"]}
+                  label="Range"
+                >
+                  <InputNumber min={5} max={500}/>
+                </Form.Item>
                 <Button
                   type="dashed"
                   icon={<MinusOutlined />}

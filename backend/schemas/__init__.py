@@ -20,6 +20,7 @@ class Attack(BaseModel):
     attackBonus: int
     damage: Optional[str] = None
     damageType: Optional[str] = None
+    range: Optional[int] = None
 
 
 class Spell(BaseModel):
