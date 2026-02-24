@@ -6,16 +6,22 @@ class Action:
     """A representation of a pathfinder action
 
     Attributes:
+        name: The name of the action
         cost: An integer indicating the cost of the action from 1 to 3
         weight: An integer indicating how likely the action is to be selected
+        range: The distance at which the action can target a creature
+        ranged: Whether the action can be used at a distance
     """
 
-    def __init__(self, name=None, cost=1, weight=0):
+    def __init__(self, name="Undefined", cost=1, weight=0):
         self.name: str = name
         self.cost: int = cost
         self.weight: int = weight
         self.range: int = 5
         self.ranged: bool = False
+
+    def __repr__(self):
+        return self.name.lower()
 
     def calculate_weight(
         self, penalty: int, actions_remaining: int, in_melee: bool = False
@@ -30,22 +36,19 @@ class Attack(Action):
     """A representation of an attack
 
     Attributes:
-        name: The name of the attack
         attack_bonus: The bonus added to the attack roll for the attack
         damage_type: The type of damage the attack deals
         num_dice: The number of dice rolled for damage
         die_size: The number of faces on the die rolled for damage
         damage_bonus: The bonus added to the damage roll for the attack
-        cost: An integer indicating the cost of the attack from 1 to 3
-        weight: An integer indicating how likely the attack is to be selected
     """
 
     def __init__(self, attack_dict: dict[str, str | int]):
         self.name: str = attack_dict["name"].strip()
-        self.attack_bonus: int = attack_dict["attackBonus"]
-        self.damage_type: str = attack_dict["damageType"]
         self.range: int = attack_dict.get("range", 5)
         self.ranged: bool = self.range > 5
+        self.attack_bonus: int = attack_dict["attackBonus"]
+        self.damage_type: str = attack_dict["damageType"]
 
         # Due to regex verification on frontend, damage will always be listed
         # in the form "XdY" or "XdY±Z", so split on d, +, and - in order to
@@ -67,9 +70,6 @@ class Attack(Action):
             + self.range / 10
         )
 
-    def __repr__(self):
-        return self.name.lower()
-
     def calculate_weight(
         self, penalty: int, actions_remaining: int, in_melee: bool = False
     ) -> int:
@@ -89,20 +89,16 @@ class Spell(Action):
     """A representation of a spell in Pathfinder
 
     Attributes:
-        name: The name of the spell
         slots: The number of slots the spell is prepared in
         level: The level of the spell
         num_dice: The number of dice rolled for damage
         die_size: The number of faces on the die rolled for damage
         damage_bonus: The bonus added to the damage roll for the spell
         damage_type: The type of damage the spell deals
-        range: The range, in feet, of the spell, if any
         area_type: The type of area the spell has, such as a burst, if any
         area_size: The size of the spell's area, such as a radius, if any
         save: The saving throw used to defend against the spell, if any
         targets: The number of creatures the spell can target, if any
-        cost: An integer indicating the cost of the spell from 1 to 3
-        weight: An integer indicating how likely the spell is to be selected
     """
 
     def __init__(
@@ -172,9 +168,6 @@ class Spell(Action):
 
         if self.range:
             self.weight += self.range / 5
-
-    def __repr__(self):
-        return self.name.lower()
 
     def calculate_weight(
         self, penalty: int, actions_remaining: int, in_melee: bool = False
