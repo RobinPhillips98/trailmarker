@@ -25,3 +25,5 @@ d10 = Die(10)
 d8 = Die(8)
 d6 = Die(6)
 d4 = Die(4)
+
+# TODO: Conditions
