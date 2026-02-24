@@ -2,7 +2,7 @@ import math
 from typing import Self
 
 from ..mechanics.actions import Action, Attack, Spell
-from ..mechanics.misc import Degree, d20
+from ..mechanics.misc import Degree, calculate_dos, d20
 
 
 class Creature:
@@ -282,21 +282,9 @@ class Creature:
             f"{self} rolled a {saving_throw} {spell.save} save against {spell}!"  # noqa
         )
 
-        # TODO: Extract degree of success function
-        difficulty = attacker.spell_dc
-        if saving_throw >= difficulty + 10:
-            degree_of_success = Degree.CRITICAL_SUCCESS
-        elif saving_throw >= difficulty:
-            degree_of_success = Degree.SUCCESS
-        elif saving_throw <= difficulty - 10:
-            degree_of_success = Degree.CRITICAL_FAILURE
-        else:
-            degree_of_success = Degree.FAILURE
-
-        if roll == 20 and degree_of_success < Degree.CRITICAL_SUCCESS:
-            degree_of_success += 1
-        elif roll == 1 and degree_of_success > Degree.CRITICAL_FAILURE:
-            degree_of_success -= 1
+        degree_of_success = calculate_dos(
+            roll, saving_throw, attacker.spell_dc
+        )
 
         match degree_of_success:
             case Degree.CRITICAL_SUCCESS:

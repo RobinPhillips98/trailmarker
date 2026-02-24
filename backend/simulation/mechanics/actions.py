@@ -2,7 +2,7 @@ import math
 import random
 import re
 
-from ..mechanics.misc import Die, d20
+from ..mechanics.misc import Degree, Die, calculate_dos, d20
 
 
 class Action:
@@ -45,7 +45,7 @@ class Action:
             attacker.log(f"{attacker} attacks {target} with their {self}.")
 
         if auto_hit:
-            critical_hit = False
+            degree_of_success = Degree.SUCCESS
         else:
             # Calculate attack roll and check for hit before calculating damage
             attack_roll = d20.roll()
@@ -64,26 +64,18 @@ class Action:
                 roll_display = f"{attack_roll} + {attacker.spell_attack_bonus}"
             if attack_total <= 0:
                 attack_total = 1
+
             attacker.log(
                 f"{attacker} rolled {attack_total} ({roll_display}) to attack."
             )
 
-            # TODO: Replace this with degree of success function
-            if attack_roll == 20 or attack_total >= target.armor_class + 10:
-                critical_hit = True
-            else:
-                critical_hit = False
+            degree_of_success = calculate_dos(
+                attack_roll, attack_total, target.armor_class
+            )
 
-            if attack_total < target.armor_class:
-                # Rolling a 20 upgrades a miss into a non-critical hit, so set
-                # critical_hit back to false and proceed with damage
-                if attack_roll == 20:
-                    critical_hit = False
-                # If we didn't hit the target AC and we didn't roll a 20,
-                # we don't do damage, so return
-                else:
-                    attacker.log(f"Miss! (AC {target.armor_class})")
-                    return False
+            if degree_of_success <= Degree.FAILURE:
+                attacker.log(f"Miss! (AC {target.armor_class})")
+                return False
 
             attacker.log(f"Hit! (AC {target.armor_class})")
 
@@ -93,7 +85,7 @@ class Action:
         # TODO: Separate damage rolls
         damage_roll = damage_die.roll()
         damage = (self.num_dice * damage_roll) + self.damage_bonus
-        if critical_hit:
+        if degree_of_success == Degree.CRITICAL_SUCCESS:
             attacker.log(f"{attacker} dealt a critical hit to {target}!")
             damage *= 2
 

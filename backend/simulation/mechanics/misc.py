@@ -17,6 +17,25 @@ class Degree(IntEnum):
     CRITICAL_SUCCESS = 3
 
 
+def calculate_dos(roll: int, result: int, difficulty: int) -> int:
+    degree_of_success = 0
+    if result >= difficulty + 10:
+        degree_of_success = Degree.CRITICAL_SUCCESS
+    elif result >= difficulty:
+        degree_of_success = Degree.SUCCESS
+    elif result <= difficulty - 10:
+        degree_of_success = Degree.CRITICAL_FAILURE
+    else:
+        degree_of_success = Degree.FAILURE
+
+    if roll == 20 and degree_of_success < Degree.CRITICAL_SUCCESS:
+        degree_of_success += 1
+    elif roll == 1 and degree_of_success > Degree.CRITICAL_FAILURE:
+        degree_of_success -= 1
+
+    return degree_of_success
+
+
 # Initializing some common dice so other modules can import them
 d100 = Die(100)
 d20 = Die(20)
