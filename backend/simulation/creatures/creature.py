@@ -1,9 +1,8 @@
 import math
-import random
 from typing import Self
 
 from ..mechanics.actions import Action, Attack, Spell
-from ..mechanics.misc import Degree, Die, d20
+from ..mechanics.misc import Degree, d20
 
 
 class Creature:
@@ -150,7 +149,7 @@ class Creature:
         if not self.encounter:
             raise Exception("Turns cannot be taken outside of an encounter")
 
-        self._log(f"{self}'s turn:")
+        self.log(f"{self}'s turn:")
         self.num_actions = 3
         self.map = 0
 
@@ -175,6 +174,79 @@ class Creature:
 
         return weight
 
+    def pick_target(self, attack_range) -> Self:
+        targets = []
+        consider_distance = True
+        targets = (
+            self.encounter.enemies
+            if self.team == 1
+            else self.encounter.players
+        )
+
+        targets_in_range = []
+        for target in targets:
+            if self._calculate_distance(target) <= attack_range:
+                targets_in_range.append(target)
+
+        # If we're already in range of targets, only consider them
+        if targets_in_range:
+            targets = targets_in_range
+            consider_distance = False
+
+        best_target = targets[0]
+        best_weight = best_target.calculate_weight(self, consider_distance)
+
+        for target in targets[1:]:
+            if target.calculate_weight(self, consider_distance) > best_weight:
+                best_target = target
+                best_weight = best_target.calculate_weight(
+                    self, consider_distance
+                )
+
+        return best_target
+
+    def move_to(self, target: Self, attack_range: int) -> None:
+        speed_remaining = self.speed
+
+        # Outer loop for each Stride action (move up to speed)
+        while self.num_actions >= 0:
+            diagonal_moves = 1
+            distance = self._calculate_distance(target)
+
+            if distance <= attack_range:
+                return
+
+            self.log(f"{self} Strides toward {target}, {distance} feet away.")
+
+            # Inner loop for the logic of each individual step (one square)
+            while distance > attack_range and speed_remaining > 0:
+                out_of_range_x = abs(self.position_x - target.position_x) > 1
+                out_of_range_y = abs(self.position_y - target.position_y) > 1
+                can_travel_diagonally = True
+                if diagonal_moves % 2 == 0 and speed_remaining <= 10:
+                    can_travel_diagonally = False
+
+                # Both x and y are out of range, step diagonally
+                if out_of_range_x and out_of_range_y and can_travel_diagonally:
+                    self._step_x(target)
+                    self._step_y(target)
+                    # Every other diagonal step is five feet of extra movement
+                    if diagonal_moves % 2 == 0:
+                        speed_remaining -= 5
+                    diagonal_moves += 1
+                elif out_of_range_x:
+                    self._step_x(target)
+                elif out_of_range_y:
+                    self._step_y(target)
+                # In range, done moving
+                else:
+                    self.num_actions -= 1
+                    return
+                speed_remaining -= 5
+
+            speed_remaining = self.speed
+            self.num_actions -= 1
+
     def take_damage(self, damage: int) -> None:
         """Subtracts the given damage from the creature's HP.
 
@@ -190,7 +262,7 @@ class Creature:
         if self.current_hit_points <= 0:
             self._die()
         else:
-            self._log(f"{self} has {self.current_hit_points} HP remaining!")
+            self.log(f"{self} has {self.current_hit_points} HP remaining!")
 
     def spell_save(self, damage: int, spell: Spell, attacker: Self) -> None:
         save_bonus = 0
@@ -206,7 +278,7 @@ class Creature:
 
         roll = d20.roll()
         saving_throw = roll + save_bonus
-        self._log(
+        self.log(
             f"{self} rolled a {saving_throw} {spell.save} save against {spell}!"  # noqa
         )
 
@@ -229,18 +301,24 @@ class Creature:
         match degree_of_success:
             case Degree.CRITICAL_SUCCESS:
                 damage_taken = 0
-                self._log(f"{self} critically succeeded. No damage taken!")
+                self.log(f"{self} critically succeeded. No damage taken!")
             case Degree.SUCCESS:
                 damage_taken = math.floor(damage / 2)
-                self._log(f"{self} succeeded and takes {damage_taken} damage")
+                self.log(f"{self} succeeded and takes {damage_taken} damage")
             case Degree.FAILURE:
                 damage_taken = damage
-                self._log(f"{self} failed and takes {damage_taken} damage")
+                self.log(f"{self} failed and takes {damage_taken} damage")
             case Degree.CRITICAL_FAILURE:
                 damage_taken = math.floor(damage * 2)
-                self._log(
+                self.log(
                     f"{self} critically failed. {damage_taken} damage taken!"
                 )
+
+    def log(self, message: str) -> None:
+        if self.simulation:
+            self.simulation.log(message)
+        else:
+            print(message)
 
     # Private Methods
 
@@ -273,14 +351,14 @@ class Creature:
                 )
 
         if isinstance(best_action, Attack):
-            target = self._pick_target(best_action.range)
+            target = self.pick_target(best_action.range)
             if self._calculate_distance(target) > best_action.range:
-                self._move_to(target, best_action.range)
+                self.move_to(target, best_action.range)
                 if self.num_actions <= 0:
                     return
-            self._attack(best_action, target)
+            best_action.attack(self, target)
         elif isinstance(best_action, Spell):
-            self._cast_spell(best_action)
+            best_action.cast(self)
 
         self.num_actions -= best_action.cost
 
@@ -312,79 +390,6 @@ class Creature:
 
         return rounded_distance
 
-    def _pick_target(self, attack_range) -> Self:
-        targets = []
-        consider_distance = True
-        targets = (
-            self.encounter.enemies
-            if self.team == 1
-            else self.encounter.players
-        )
-
-        targets_in_range = []
-        for target in targets:
-            if self._calculate_distance(target) <= attack_range:
-                targets_in_range.append(target)
-
-        # If we're already in range of targets, only consider them
-        if targets_in_range:
-            targets = targets_in_range
-            consider_distance = False
-
-        best_target = targets[0]
-        best_weight = best_target.calculate_weight(self, consider_distance)
-
-        for target in targets[1:]:
-            if target.calculate_weight(self, consider_distance) > best_weight:
-                best_target = target
-                best_weight = best_target.calculate_weight(
-                    self, consider_distance
-                )
-
-        return best_target
-
-    def _move_to(self, target: Self, attack_range: int) -> None:
-        speed_remaining = self.speed
-
-        # Outer loop for each Stride action (move up to speed)
-        while self.num_actions >= 0:
-            diagonal_moves = 1
-            distance = self._calculate_distance(target)
-
-            if distance <= attack_range:
-                return
-
-            self._log(f"{self} Strides toward {target}, {distance} feet away.")
-
-            # Inner loop for the logic of each individual step (one square)
-            while distance > attack_range and speed_remaining > 0:
-                out_of_range_x = abs(self.position_x - target.position_x) > 1
-                out_of_range_y = abs(self.position_y - target.position_y) > 1
-                can_travel_diagonally = True
-                if diagonal_moves % 2 == 0 and speed_remaining <= 10:
-                    can_travel_diagonally = False
-
-                # Both x and y are out of range, step diagonally
-                if out_of_range_x and out_of_range_y and can_travel_diagonally:
-                    self._step_x(target)
-                    self._step_y(target)
-                    # Every other diagonal step is five feet of extra movement
-                    if diagonal_moves % 2 == 0:
-                        speed_remaining -= 5
-                    diagonal_moves += 1
-                elif out_of_range_x:
-                    self._step_x(target)
-                elif out_of_range_y:
-                    self._step_y(target)
-                # In range, done moving
-                else:
-                    self.num_actions -= 1
-                    return
-                speed_remaining -= 5
-
-            speed_remaining = self.speed
-            self.num_actions -= 1
-
     def _step_x(self, target):
         if self.position_x < target.position_x:
             self.position_x += 1
@@ -397,146 +402,8 @@ class Creature:
         else:
             self.position_y -= 1
 
-    def _attack(self, attack: Action, target: Self) -> bool:
-        auto_hit = (
-            attack.name.lower() == "force barrage"
-            or attack.name.lower() == "force bolt"
-        )
-        if isinstance(attack, Attack):
-            self._log(f"{self} Strikes {target} with their {attack}.")
-        else:
-            self._log(f"{self} attacks {target} with their {attack}.")
-
-        if auto_hit:
-            critical_hit = False
-        else:
-            # Calculate attack roll and check for hit before calculating damage
-            attack_roll = d20.roll()
-            roll_display = ""
-            if isinstance(attack, Attack):
-                attack_total = attack_roll + attack.attack_bonus - self.map
-                roll_display = (
-                    f"{attack_roll} + {attack.attack_bonus}"
-                    if self.map <= 0
-                    else f"{attack_roll} + {attack.attack_bonus} - {self.map}"
-                )
-                if self.encounter:
-                    self.map += 5
-            elif isinstance(attack, Spell):
-                attack_total = attack_roll + self.spell_attack_bonus
-                roll_display = f"{attack_roll} + {self.spell_attack_bonus}"
-            if attack_total <= 0:
-                attack_total = 1
-            self._log(
-                f"{self} rolled {attack_total} ({roll_display}) to attack."
-            )
-
-            # TODO: Replace this with degree of success function
-            if attack_roll == 20 or attack_total >= target.armor_class + 10:
-                critical_hit = True
-            else:
-                critical_hit = False
-
-            if attack_total < target.armor_class:
-                # Rolling a 20 upgrades a miss into a non-critical hit, so set
-                # critical_hit back to false and proceed with damage
-                if attack_roll == 20:
-                    critical_hit = False
-                # If we didn't hit the target AC and we didn't roll a 20,
-                # we don't do damage, so return
-                else:
-                    self._log(f"Miss! (AC {target.armor_class})")
-                    return False
-
-            self._log(f"Hit! (AC {target.armor_class})")
-
-        damage_type = attack.damage_type
-        damage_die = Die(attack.die_size)
-
-        # TODO: Separate damage rolls
-        damage_roll = damage_die.roll()
-        damage = (attack.num_dice * damage_roll) + attack.damage_bonus
-        if critical_hit:
-            self._log(f"{self} dealt a critical hit to {target}!")
-            damage *= 2
-
-        self._log(f"{self} dealt {damage} {damage_type} damage to {target}!")
-        target.take_damage(damage)
-
-        return True
-
-    def _cast_spell(self, spell: Spell) -> None:
-
-        if spell.targets:
-            targets = []
-
-            # Pick best target and move to them
-            first_target = self._pick_target(spell.range)
-            targets.append(first_target)
-            self._move_to(first_target, spell.range)
-            if self.num_actions <= spell.cost:
-                return
-
-            self._log(f"{self} casts {spell}!")
-            # Pick remaining targets
-            for i in range(spell.targets - 1):
-                target = self._pick_target(spell.range)
-                targets.append(target)
-            for target in targets:
-                self._attack(spell, target)
-        elif spell.area_size:
-            self._log(f"{self} casts {spell}!")
-            self._aoe_spell(spell)
-
-        if spell.level >= 1:
-            spell.slots -= 1
-
-    def _aoe_spell(self, spell: Spell):
-        # AOE spells calculate an abstract number of targets
-        # May modify to use map in the future
-        num_targets = 0
-        match spell.area_type:
-            case "burst":
-                num_targets = math.ceil(spell.area_size / 5)
-            case "cone":
-                num_targets = math.ceil(spell.area_size / 10)
-            case "emanation":
-                num_targets = math.ceil(spell.area_size / 5)
-            case "line":
-                num_targets = math.ceil(spell.area_size / 30)
-            case _:
-                raise Exception("Invalid spell area type")
-
-        opponents = (
-            self.encounter.enemies
-            if self.team == 1
-            else self.encounter.players
-        )
-        if num_targets <= len(opponents):
-            targets = random.sample(opponents, num_targets)
-        else:
-            targets = opponents
-
-        # TODO: Add support for various damage type effects
-        damage_die = Die(spell.die_size)
-
-        # TODO: Separate damage rolls
-        damage_roll = damage_die.roll()
-        damage = (spell.num_dice * damage_roll) + spell.damage_bonus
-
-        target_names = ", ".join(map(str, targets))
-        self._log(f"{self} attacks {target_names} with {spell}!")
-        for target in targets:
-            target.spell_save(damage, spell, self)
-
     def _die(self) -> None:
-        self._log(f"{self} has died!")
+        self.log(f"{self} has died!")
         self.is_dead = True
         if self.encounter:
             self.encounter.remove_creature(self)
-
-    def _log(self, message: str) -> None:
-        if self.simulation:
-            self.simulation.log(message)
-        else:
-            print(message)

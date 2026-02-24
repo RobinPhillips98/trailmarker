@@ -1,5 +1,8 @@
+import math
+import random
 import re
-from math import inf
+
+from ..mechanics.misc import Die, d20
 
 
 class Action:
@@ -27,9 +30,79 @@ class Action:
         self, penalty: int, actions_remaining: int, in_melee: bool = False
     ) -> int:
         if self.cost > actions_remaining:
-            return -inf
+            return -math.inf
 
             return self.weight
+
+    def attack(self, attacker, target) -> bool:
+        auto_hit = (
+            self.name.lower() == "force barrage"
+            or self.name.lower() == "force bolt"
+        )
+        if isinstance(self, Attack):
+            attacker.log(f"{attacker} Strikes {target} with their {self}.")
+        else:
+            attacker.log(f"{attacker} attacks {target} with their {self}.")
+
+        if auto_hit:
+            critical_hit = False
+        else:
+            # Calculate attack roll and check for hit before calculating damage
+            attack_roll = d20.roll()
+            roll_display = ""
+            if isinstance(self, Attack):
+                attack_total = attack_roll + self.attack_bonus - attacker.map
+                roll_display = (
+                    f"{attack_roll} + {self.attack_bonus}"
+                    if attacker.map <= 0
+                    else f"{attack_roll} + {self.attack_bonus} - {attacker.map}"  # noqa
+                )
+                if attacker.encounter:
+                    attacker.map += 5
+            elif isinstance(self, Spell):
+                attack_total = attack_roll + attacker.spell_attack_bonus
+                roll_display = f"{attack_roll} + {attacker.spell_attack_bonus}"
+            if attack_total <= 0:
+                attack_total = 1
+            attacker.log(
+                f"{attacker} rolled {attack_total} ({roll_display}) to attack."
+            )
+
+            # TODO: Replace this with degree of success function
+            if attack_roll == 20 or attack_total >= target.armor_class + 10:
+                critical_hit = True
+            else:
+                critical_hit = False
+
+            if attack_total < target.armor_class:
+                # Rolling a 20 upgrades a miss into a non-critical hit, so set
+                # critical_hit back to false and proceed with damage
+                if attack_roll == 20:
+                    critical_hit = False
+                # If we didn't hit the target AC and we didn't roll a 20,
+                # we don't do damage, so return
+                else:
+                    attacker.log(f"Miss! (AC {target.armor_class})")
+                    return False
+
+            attacker.log(f"Hit! (AC {target.armor_class})")
+
+        damage_type = self.damage_type
+        damage_die = Die(self.die_size)
+
+        # TODO: Separate damage rolls
+        damage_roll = damage_die.roll()
+        damage = (self.num_dice * damage_roll) + self.damage_bonus
+        if critical_hit:
+            attacker.log(f"{attacker} dealt a critical hit to {target}!")
+            damage *= 2
+
+        attacker.log(
+            f"{attacker} dealt {damage} {damage_type} damage to {target}!"
+        )
+        target.take_damage(damage)
+
+        return True
 
 
 class Attack(Action):
@@ -74,7 +147,7 @@ class Attack(Action):
         self, penalty: int, actions_remaining: int, in_melee: bool = False
     ) -> int:
         if self.cost > actions_remaining:
-            return -inf
+            return -math.inf
         if in_melee and self.ranged:
             return 0
 
@@ -162,7 +235,7 @@ class Spell(Action):
         self.weight: int = (
             (self.num_dice * self.die_size)
             + self.damage_bonus
-            + self.area_size
+            + self.area_size * 3
             + self.targets
         )
 
@@ -173,7 +246,7 @@ class Spell(Action):
         self, penalty: int, actions_remaining: int, in_melee: bool = False
     ) -> int:
         if self.cost > actions_remaining or self.slots == 0:
-            return -inf
+            return -math.inf
         if self.level == 0:
             weight = self.weight * 1.5
         else:
@@ -189,6 +262,69 @@ class Spell(Action):
             weight += self.bonus
 
         return weight
+
+    def cast(self, caster) -> None:
+        if self.targets:
+            targets = []
+
+            # Pick best target and move to them
+            first_target = caster.pick_target(self.range)
+            targets.append(first_target)
+            caster.move_to(first_target, self.range)
+            if caster.num_actions <= self.cost:
+                return
+
+            caster.log(f"{caster} casts {self}!")
+            # Pick remaining targets
+            for i in range(self.targets - 1):
+                target = caster.pick_target(self.range)
+                targets.append(target)
+            for target in targets:
+                self.attack(caster, target)
+        elif self.area_size:
+            caster.log(f"{caster} casts {self}!")
+            self._aoe(caster)
+
+        if self.level >= 1:
+            self.slots -= 1
+
+    def _aoe(self, caster):
+        # AOE spells calculate an abstract number of targets
+        # May modify to use map in the future
+        num_targets = 0
+        match self.area_type:
+            case "burst":
+                num_targets = math.ceil(self.area_size / 5)
+            case "cone":
+                num_targets = math.ceil(self.area_size / 10)
+            case "emanation":
+                num_targets = math.ceil(self.area_size / 5)
+            case "line":
+                num_targets = math.ceil(self.area_size / 30)
+            case _:
+                raise Exception("Invalid spell area type")
+
+        opponents = (
+            caster.encounter.enemies
+            if caster.team == 1
+            else caster.encounter.players
+        )
+        if num_targets <= len(opponents):
+            targets = random.sample(opponents, num_targets)
+        else:
+            targets = opponents
+
+        # TODO: Add support for various damage type effects
+        damage_die = Die(self.die_size)
+
+        # TODO: Separate damage rolls
+        damage_roll = damage_die.roll()
+        damage = (self.num_dice * damage_roll) + self.damage_bonus
+
+        target_names = ", ".join(map(str, targets))
+        caster.log(f"{caster} attacks {target_names} with {self}!")
+        for target in targets:
+            target.spell_save(damage, self, caster)
 
 
 # TODO: Healing

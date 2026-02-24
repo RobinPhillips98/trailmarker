@@ -357,19 +357,19 @@ class TestCreatureMethods:
         assert not self.player.is_dead
         assert not self.enemy.is_dead
 
-        if self.player._attack(player_weapon, self.enemy):
+        if player_weapon.attack(self.player, self.enemy):
             assert self.enemy.current_hit_points < self.enemy.max_hit_points
         else:
             assert self.enemy.current_hit_points == self.enemy.max_hit_points
 
-        if self.enemy._attack(enemy_weapon, self.player):
+        if enemy_weapon.attack(self.enemy, self.player):
             assert self.player.current_hit_points < self.player.max_hit_points
         else:
             assert self.player.current_hit_points == self.player.max_hit_points
 
         while not self.enemy.is_dead:
             prev_hp = self.enemy.current_hit_points
-            if self.player._attack(player_weapon, self.enemy):
+            if player_weapon.attack(self.player, self.enemy):
                 assert self.enemy.current_hit_points < prev_hp
 
         assert self.enemy.is_dead
