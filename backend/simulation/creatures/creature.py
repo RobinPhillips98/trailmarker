@@ -101,7 +101,7 @@ class Creature:
         self.spells: list[Spell] = []
         try:
             for spell_dict in creature["actions"]["spells"]:
-                spell = Spell(spell_dict)
+                spell = Spell(spell_dict, self.spell_attack_bonus)
                 self.spells.append(spell)
         except KeyError:
             self.spells = None
@@ -173,9 +173,6 @@ class Creature:
             distance = self.calculate_distance(attacker)
             weight -= distance / 5
 
-        # if distance <= range:
-        #     weight *= 2
-
         return weight
 
     def take_damage(self, damage: int) -> None:
@@ -220,14 +217,23 @@ class Creature:
     def _perform_action(self) -> None:
         in_melee = self._check_adjacent_creatures()
         best_action = self.actions[0]
-        best_weight = best_action.calculate_weight(self.map)
+        best_weight = best_action.calculate_weight(
+            self.map, self.num_actions, in_melee
+        )
+        # self._log(f"Weight of {best_action} is {best_weight}")
 
         # Just a simple linear search because number of actions should never
         # get too high (typically 3-5, 10-15 at most w/ spells)
         for action in self.actions[1:]:
-            if action.calculate_weight(self.map, in_melee) > best_weight:
+            # self._log(f"Weight of {action} is {action.calculate_weight}")
+            if (
+                action.calculate_weight(self.map, self.num_actions, in_melee)
+                > best_weight
+            ):
                 best_action = action
-                best_weight = best_action.calculate_weight(self.map, in_melee)
+                best_weight = best_action.calculate_weight(
+                    self.map, self.num_actions, in_melee
+                )
 
         if isinstance(best_action, Attack):
             target = self._pick_target(best_action.range)
@@ -334,40 +340,56 @@ class Creature:
             self.position_y -= 1
 
     def _attack(self, attack: Action, target: Self) -> bool:
+        auto_hit = (
+            attack.name.lower() == "force barrage"
+            or attack.name.lower() == "force bolt"
+        )
         if isinstance(attack, Attack):
             self._log(f"{self} Strikes {target} with their {attack}.")
         else:
             self._log(f"{self} attacks {target} with their {attack}.")
 
-        # Calculate attack roll and check for hit before calculating damage
-        attack_roll = d20.roll()
-        if isinstance(attack, Attack):
-            attack_total = attack_roll + attack.attack_bonus - self.map
-            if self.encounter:
-                self.map += 5
-        elif isinstance(attack, Spell):
-            attack_total = attack_roll + self.spell_attack_bonus
-        if attack_total <= 0:
-            attack_total = 1
-        self._log(f"{self} rolled {attack_total} to attack.")
-
-        if attack_roll == 20 or attack_total >= target.armor_class + 10:
-            critical_hit = True
-        else:
+        if auto_hit:
             critical_hit = False
+        else:
+            # Calculate attack roll and check for hit before calculating damage
+            attack_roll = d20.roll()
+            roll_display = ""
+            if isinstance(attack, Attack):
+                attack_total = attack_roll + attack.attack_bonus - self.map
+                roll_display = (
+                    f"{attack_roll} + {attack.attack_bonus}"
+                    if self.map <= 0
+                    else f"{attack_roll} + {attack.attack_bonus} - {self.map}"
+                )
+                if self.encounter:
+                    self.map += 5
+            elif isinstance(attack, Spell):
+                attack_total = attack_roll + self.spell_attack_bonus
+                roll_display = f"{attack_roll} + {self.spell_attack_bonus}"
+            if attack_total <= 0:
+                attack_total = 1
+            self._log(
+                f"{self} rolled {attack_total} ({roll_display}) to attack."
+            )
 
-        if attack_total < target.armor_class:
-            # Rolling a 20 upgrades a miss into a non-critical hit, so set
-            # critical_hit back to false and proceed with damage
-            if attack_roll == 20:
-                critical_hit = False
-            # If we didn't hit the target AC and we didn't roll a 20,
-            # we don't do damage, so return
+            if attack_roll == 20 or attack_total >= target.armor_class + 10:
+                critical_hit = True
             else:
-                self._log("Miss!")
-                return False
+                critical_hit = False
 
-        self._log("Hit!")
+            if attack_total < target.armor_class:
+                # Rolling a 20 upgrades a miss into a non-critical hit, so set
+                # critical_hit back to false and proceed with damage
+                if attack_roll == 20:
+                    critical_hit = False
+                # If we didn't hit the target AC and we didn't roll a 20,
+                # we don't do damage, so return
+                else:
+                    self._log(f"Miss! (AC {target.armor_class})")
+                    return False
+
+            self._log(f"Hit! (AC {target.armor_class})")
 
         damage_type = attack.damage_type
         damage_die = Die(attack.die_size)
@@ -384,13 +406,26 @@ class Creature:
         return True
 
     def _cast_spell(self, spell: Spell) -> None:
-        self._log(f"{self} casts {spell}!")
 
         if spell.targets:
-            for i in range(spell.targets):
+            targets = []
+
+            # Pick best target and move to them
+            first_target = self._pick_target(spell.range)
+            targets.append(first_target)
+            self._move_to(first_target, spell.range)
+            if self.num_actions <= spell.cost:
+                return
+
+            self._log(f"{self} casts {spell}!")
+            # Pick remaining targets
+            for i in range(spell.targets - 1):
                 target = self._pick_target(spell.range)
+                targets.append(target)
+            for target in targets:
                 self._attack(spell, target)
         elif spell.area_size:
+            self._log(f"{self} casts {spell}!")
             self._aoe_spell(spell)
 
         if spell.level >= 1:

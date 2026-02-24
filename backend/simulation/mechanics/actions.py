@@ -1,4 +1,5 @@
 import re
+from math import inf
 
 
 class Action:
@@ -9,14 +10,20 @@ class Action:
         weight: An integer indicating how likely the action is to be selected
     """
 
-    def __init__(self, cost=1, weight=0):
+    def __init__(self, name=None, cost=1, weight=0):
+        self.name: str = name
         self.cost: int = cost
         self.weight: int = weight
         self.range: int = 5
         self.ranged: bool = False
 
-    def calculate_weight(self, penalty: int, in_melee: bool = False) -> int:
-        return self.weight
+    def calculate_weight(
+        self, penalty: int, actions_remaining: int, in_melee: bool = False
+    ) -> int:
+        if self.cost > actions_remaining:
+            return -inf
+
+            return self.weight
 
 
 class Attack(Action):
@@ -63,9 +70,14 @@ class Attack(Action):
     def __repr__(self):
         return self.name.lower()
 
-    def calculate_weight(self, penalty: int, in_melee: bool = False) -> int:
+    def calculate_weight(
+        self, penalty: int, actions_remaining: int, in_melee: bool = False
+    ) -> int:
+        if self.cost > actions_remaining:
+            return -inf
         if in_melee and self.ranged:
             return 0
+
         effective_weight = self.weight - penalty
         if penalty >= 8:  # a third attack is almost always a bad option
             effective_weight *= 0.5
@@ -93,10 +105,13 @@ class Spell(Action):
         weight: An integer indicating how likely the spell is to be selected
     """
 
-    def __init__(self, spell_dict: dict[str, str | int | dict[str, str]]):
+    def __init__(
+        self, spell_dict: dict[str, str | int | dict[str, str]], bonus: int
+    ):
         self.name: str = spell_dict["name"].strip()
         self.slots: int = spell_dict["slots"]
         self.level: int = spell_dict["level"]
+        self.bonus = bonus
 
         damage_roll_string = spell_dict["damage_roll"]
         split_string = re.split(r"d|\+|-", damage_roll_string)
@@ -151,19 +166,36 @@ class Spell(Action):
         self.weight: int = (
             (self.num_dice * self.die_size)
             + self.damage_bonus
-            # + (self.range / 5)
             + self.area_size
             + self.targets
         )
 
+        if self.range:
+            self.weight += self.range / 5
+
     def __repr__(self):
         return self.name.lower()
 
-    def calculate_weight(self, penalty: int, in_melee: bool = False) -> int:
+    def calculate_weight(
+        self, penalty: int, actions_remaining: int, in_melee: bool = False
+    ) -> int:
+        if self.cost > actions_remaining or self.slots == 0:
+            return -inf
         if self.level == 0:
-            return self.weight * 1.5
+            weight = self.weight * 1.5
         else:
-            return self.weight * self.slots
+            weight = self.weight * self.slots
+
+        auto_hit = (
+            self.name.lower() == "force barrage"
+            or self.name.lower() == "force bolt"
+        )
+        if auto_hit:
+            weight += 20
+        else:
+            weight += self.bonus
+
+        return weight
 
 
 # TODO: Healing
