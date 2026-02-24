@@ -16,7 +16,9 @@ class Action:
         ranged: Whether the action can be used at a distance
     """
 
-    def __init__(self, name="Undefined", cost=1, weight=0):
+    def __init__(
+        self, name: str = "Undefined", cost: int = 1, weight: int = 0
+    ):
         self.name: str = name
         self.cost: int = cost
         self.weight: int = weight
@@ -80,21 +82,36 @@ class Action:
             attacker.log(f"Hit! (AC {target.armor_class})")
 
         damage_type = self.damage_type
-        damage_die = Die(self.die_size)
 
-        # TODO: Separate damage rolls
-        damage_roll = damage_die.roll()
-        damage = (self.num_dice * damage_roll) + self.damage_bonus
+        damage_rolls = self._roll_for_damage()
+        damage = sum(damage_rolls) + self.damage_bonus
+
+        rolls_str = " + ".join(str(roll) for roll in damage_rolls)
+
+        damage_display = (
+            f"{rolls_str} + {self.damage_bonus}"
+            if self.damage_bonus
+            else f"{rolls_str}"
+        )
+
         if degree_of_success == Degree.CRITICAL_SUCCESS:
             attacker.log(f"{attacker} dealt a critical hit to {target}!")
             damage *= 2
 
         attacker.log(
-            f"{attacker} dealt {damage} {damage_type} damage to {target}!"
+            f"{attacker} dealt {damage} ({damage_display}) {damage_type} damage to {target}!"  # noqa
         )
         target.take_damage(damage)
 
         return True
+
+    def _roll_for_damage(self) -> list[int]:
+        damage_die = Die(self.die_size)
+        damage_rolls = []
+        for i in range(self.num_dice):
+            damage_rolls.append(damage_die.roll())
+
+        return damage_rolls
 
 
 class Attack(Action):
@@ -307,11 +324,8 @@ class Spell(Action):
             targets = opponents
 
         # TODO: Add support for various damage type effects
-        damage_die = Die(self.die_size)
-
-        # TODO: Separate damage rolls
-        damage_roll = damage_die.roll()
-        damage = (self.num_dice * damage_roll) + self.damage_bonus
+        damage_rolls = self._roll_for_damage()
+        damage = sum(damage_rolls) + self.damage_bonus
 
         target_names = ", ".join(map(str, targets))
         caster.log(f"{caster} attacks {target_names} with {self}!")
