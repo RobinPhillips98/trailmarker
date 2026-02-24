@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import { Button, Modal, Card } from "antd";
 import { FolderOpenOutlined, LockOutlined } from "@ant-design/icons";
 
-
 import api from "../../../../../api";
 import { AuthContext } from "../../../../../contexts/AuthContext";
 
@@ -58,11 +57,11 @@ export default function SavedEncounters({ handleLoad }) {
         });
         setEncounters(response.data.encounters);
       } catch (error) {
-        errorAlert("Error fetching encouters", error)
+        errorAlert("Error fetching encounters", error);
       }
     }
-    fetchEncounters();
-  }, [isModalOpen, token]);
+    if (user) fetchEncounters();
+  }, [isModalOpen, user, token]);
 
   return (
     <div>
