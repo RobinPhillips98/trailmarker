@@ -170,7 +170,7 @@ class Creature:
 
         weight = damage_taken * self.level
         if consider_distance:
-            distance = self.calculate_distance(attacker)
+            distance = self._calculate_distance(attacker)
             weight -= distance / 5
 
         return weight
@@ -192,16 +192,55 @@ class Creature:
         else:
             self._log(f"{self} has {self.current_hit_points} HP remaining!")
 
-    def calculate_distance(self, target: Self) -> int:
-        base_distance = math.dist(
-            [target.position_x, target.position_y],
-            [self.position_x, self.position_y],
+    def spell_save(self, damage: int, spell: Spell, attacker: Self) -> None:
+        save_bonus = 0
+        match spell.save:
+            case "fortitude":
+                save_bonus = self.fortitude
+            case "reflex":
+                save_bonus = self.reflex
+            case "will":
+                save_bonus = self.will
+            case _:
+                raise Exception("Invalid save type")
+
+        roll = d20.roll()
+        saving_throw = roll + save_bonus
+        self._log(
+            f"{self} rolled a {saving_throw} {spell.save} save against {spell}!"  # noqa
         )
 
-        distance_in_feet = 5 * base_distance
-        rounded_distance = 5 * math.floor(distance_in_feet / 5)
+        # TODO: Extract degree of success function
+        difficulty = attacker.spell_dc
+        if saving_throw >= difficulty + 10:
+            degree_of_success = Degree.CRITICAL_SUCCESS
+        elif saving_throw >= difficulty:
+            degree_of_success = Degree.SUCCESS
+        elif saving_throw <= difficulty - 10:
+            degree_of_success = Degree.CRITICAL_FAILURE
+        else:
+            degree_of_success = Degree.FAILURE
 
-        return rounded_distance
+        if roll == 20 and degree_of_success < Degree.CRITICAL_SUCCESS:
+            degree_of_success += 1
+        elif roll == 1 and degree_of_success > Degree.CRITICAL_FAILURE:
+            degree_of_success -= 1
+
+        match degree_of_success:
+            case Degree.CRITICAL_SUCCESS:
+                damage_taken = 0
+                self._log(f"{self} critically succeeded. No damage taken!")
+            case Degree.SUCCESS:
+                damage_taken = math.floor(damage / 2)
+                self._log(f"{self} succeeded and takes {damage_taken} damage")
+            case Degree.FAILURE:
+                damage_taken = damage
+                self._log(f"{self} failed and takes {damage_taken} damage")
+            case Degree.CRITICAL_FAILURE:
+                damage_taken = math.floor(damage * 2)
+                self._log(
+                    f"{self} critically failed. {damage_taken} damage taken!"
+                )
 
     # Private Methods
 
@@ -220,16 +259,14 @@ class Creature:
         best_weight = best_action.calculate_weight(
             self.map, self.num_actions, in_melee
         )
-        # self._log(f"Weight of {best_action} is {best_weight}")
 
         # Just a simple linear search because number of actions should never
         # get too high (typically 3-5, 10-15 at most w/ spells)
         for action in self.actions[1:]:
-            # self._log(f"Weight of {action} is {action.calculate_weight}")
-            if (
-                action.calculate_weight(self.map, self.num_actions, in_melee)
-                > best_weight
-            ):
+            action_weight = action.calculate_weight(
+                self.map, self.num_actions, in_melee
+            )
+            if action_weight > best_weight:
                 best_action = action
                 best_weight = best_action.calculate_weight(
                     self.map, self.num_actions, in_melee
@@ -237,7 +274,7 @@ class Creature:
 
         if isinstance(best_action, Attack):
             target = self._pick_target(best_action.range)
-            if self.calculate_distance(target) > best_action.range:
+            if self._calculate_distance(target) > best_action.range:
                 self._move_to(target, best_action.range)
                 if self.num_actions <= 0:
                     return
@@ -255,22 +292,38 @@ class Creature:
         )
 
         for opponent in opponents:
-            if self.calculate_distance(opponent) <= 5:
+            if self._calculate_distance(opponent) <= 5:
                 return True
 
         return False
 
+    def _calculate_distance(self, target: Self) -> int:
+        base_distance = math.dist(
+            [target.position_x, target.position_y],
+            [self.position_x, self.position_y],
+        )
+
+        # We have the distance in squares, but we want it in feet
+        distance_in_feet = 5 * base_distance
+
+        # Then round to the nearest multiple of five to account for needing to
+        # measure distance in 5-foot squares
+        rounded_distance = 5 * round(distance_in_feet / 5)
+
+        return rounded_distance
+
     def _pick_target(self, attack_range) -> Self:
         targets = []
         consider_distance = True
-        if self.team == 1:
-            targets = self.encounter.enemies
-        elif self.team == 2:
-            targets = self.encounter.players
+        targets = (
+            self.encounter.enemies
+            if self.team == 1
+            else self.encounter.players
+        )
 
         targets_in_range = []
         for target in targets:
-            if self.calculate_distance(target) <= attack_range:
+            if self._calculate_distance(target) <= attack_range:
                 targets_in_range.append(target)
 
         # If we're already in range of targets, only consider them
@@ -291,40 +344,45 @@ class Creature:
         return best_target
 
     def _move_to(self, target: Self, attack_range: int) -> None:
-        distance_remaining = self.speed
+        speed_remaining = self.speed
+
+        # Outer loop for each Stride action (move up to speed)
         while self.num_actions >= 0:
             diagonal_moves = 1
-            distance = self.calculate_distance(target)
+            distance = self._calculate_distance(target)
 
             if distance <= attack_range:
                 return
 
             self._log(f"{self} Strides toward {target}, {distance} feet away.")
 
-            while distance_remaining > 0 and distance > attack_range:
+            # Inner loop for the logic of each individual step (one square)
+            while distance > attack_range and speed_remaining > 0:
                 out_of_range_x = abs(self.position_x - target.position_x) > 1
                 out_of_range_y = abs(self.position_y - target.position_y) > 1
                 can_travel_diagonally = True
-                if diagonal_moves % 2 == 0 and distance_remaining >= 10:
+                if diagonal_moves % 2 == 0 and speed_remaining <= 10:
                     can_travel_diagonally = False
 
+                # Both x and y are out of range, step diagonally
                 if out_of_range_x and out_of_range_y and can_travel_diagonally:
                     self._step_x(target)
                     self._step_y(target)
                     # Every other diagonal step is five feet of extra movement
                     if diagonal_moves % 2 == 0:
-                        distance_remaining -= 5
+                        speed_remaining -= 5
                     diagonal_moves += 1
                 elif out_of_range_x:
                     self._step_x(target)
                 elif out_of_range_y:
                     self._step_y(target)
+                # In range, done moving
                 else:
                     self.num_actions -= 1
                     return
-                distance_remaining -= 5
+                speed_remaining -= 5
 
-            distance_remaining = self.speed
+            speed_remaining = self.speed
             self.num_actions -= 1
 
     def _step_x(self, target):
@@ -373,6 +431,7 @@ class Creature:
                 f"{self} rolled {attack_total} ({roll_display}) to attack."
             )
 
+            # TODO: Replace this with degree of success function
             if attack_roll == 20 or attack_total >= target.armor_class + 10:
                 critical_hit = True
             else:
@@ -394,6 +453,7 @@ class Creature:
         damage_type = attack.damage_type
         damage_die = Die(attack.die_size)
 
+        # TODO: Separate damage rolls
         damage_roll = damage_die.roll()
         damage = (attack.num_dice * damage_roll) + attack.damage_bonus
         if critical_hit:
@@ -432,6 +492,8 @@ class Creature:
             spell.slots -= 1
 
     def _aoe_spell(self, spell: Spell):
+        # AOE spells calculate an abstract number of targets
+        # May modify to use map in the future
         num_targets = 0
         match spell.area_type:
             case "burst":
@@ -445,78 +507,27 @@ class Creature:
             case _:
                 raise Exception("Invalid spell area type")
 
-        if self.team == 1:
-            enemies = self.encounter.enemies
-            if num_targets <= len(enemies):
-                targets = random.sample(enemies, num_targets)
-            else:
-                targets = enemies
-        elif self.team == 2:
-            players = self.encounter.players
-            if num_targets <= len(players):
-                targets = random.sample(players, num_targets)
-            else:
-                targets = players
+        opponents = (
+            self.encounter.enemies
+            if self.team == 1
+            else self.encounter.players
+        )
+        if num_targets <= len(opponents):
+            targets = random.sample(opponents, num_targets)
+        else:
+            targets = opponents
 
         # TODO: Add support for various damage type effects
         damage_die = Die(spell.die_size)
 
+        # TODO: Separate damage rolls
         damage_roll = damage_die.roll()
         damage = (spell.num_dice * damage_roll) + spell.damage_bonus
 
         target_names = ", ".join(map(str, targets))
         self._log(f"{self} attacks {target_names} with {spell}!")
         for target in targets:
-            target._spell_save(damage, spell, self)
-
-    def _spell_save(self, damage: int, spell: Spell, attacker: Self) -> None:
-        save_bonus = 0
-        match spell.save:
-            case "fortitude":
-                save_bonus = self.fortitude
-            case "reflex":
-                save_bonus = self.reflex
-            case "will":
-                save_bonus = self.will
-            case _:
-                raise Exception("Invalid save type")
-
-        roll = d20.roll()
-        saving_throw = roll + save_bonus
-        self._log(
-            f"{self} rolled a {saving_throw} {spell.save} saving throw against {spell}!"  # noqa
-        )
-
-        difficulty = attacker.spell_dc
-        if saving_throw >= difficulty + 10:
-            degree_of_success = Degree.CRITICAL_SUCCESS
-        elif saving_throw >= difficulty:
-            degree_of_success = Degree.SUCCESS
-        elif saving_throw <= difficulty - 10:
-            degree_of_success = Degree.CRITICAL_FAILURE
-        else:
-            degree_of_success = Degree.FAILURE
-
-        if roll == 20 and degree_of_success < Degree.CRITICAL_SUCCESS:
-            degree_of_success += 1
-        elif roll == 1 and degree_of_success > Degree.CRITICAL_FAILURE:
-            degree_of_success -= 1
-
-        match degree_of_success:
-            case Degree.CRITICAL_SUCCESS:
-                damage_taken = 0
-                self._log(f"{self} critically succeeded. No damage taken!")
-            case Degree.SUCCESS:
-                damage_taken = math.floor(damage / 2)
-                self._log(f"{self} succeeded and takes {damage_taken} damage")
-            case Degree.FAILURE:
-                damage_taken = damage
-                self._log(f"{self} failed and takes {damage_taken} damage")
-            case Degree.CRITICAL_FAILURE:
-                damage_taken = math.floor(damage * 2)
-                self._log(
-                    f"{self} critically failed. {damage_taken} damage taken!"
-                )
+            target.spell_save(damage, spell, self)
 
     def _die(self) -> None:
         self._log(f"{self} has died!")
