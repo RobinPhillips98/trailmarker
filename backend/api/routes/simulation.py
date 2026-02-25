@@ -145,6 +145,8 @@ def convert_to_enemy_dict(enemy: Enemy) -> dict[str, any]:
         "actions": enemy.actions,
         "traits": enemy.traits,
         "immunities": enemy.immunities,
+        "weaknesses": enemy.weaknesses,
+        "resistances": enemy.resistances,
     }
 
     return enemy_dict

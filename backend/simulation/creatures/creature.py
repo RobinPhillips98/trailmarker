@@ -247,7 +247,7 @@ class Creature:
             speed_remaining = self.speed
             self.num_actions -= 1
 
-    def take_damage(self, damage: int) -> None:
+    def take_damage(self, damage: int, damage_type: str) -> None:
         """Subtracts the given damage from the creature's HP.
 
         The given damage is subtracted from the creature's current hit points,
@@ -301,6 +301,8 @@ class Creature:
                 self.log(
                     f"{self} critically failed. {damage_taken} damage taken!"
                 )
+
+        self.take_damage(damage_taken, spell.damage_type)
 
     def log(self, message: str) -> None:
         if self.simulation:

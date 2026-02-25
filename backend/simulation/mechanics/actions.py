@@ -101,7 +101,7 @@ class Action:
         attacker.log(
             f"{attacker} dealt {damage} ({damage_display}) {damage_type} damage to {target}!"  # noqa
         )
-        target.take_damage(damage)
+        target.take_damage(damage, damage_type)
 
         return True
 
@@ -323,7 +323,6 @@ class Spell(Action):
         else:
             targets = opponents
 
-        # TODO: Add support for various damage type effects
         damage_rolls = self._roll_for_damage()
         damage = sum(damage_rolls) + self.damage_bonus
 

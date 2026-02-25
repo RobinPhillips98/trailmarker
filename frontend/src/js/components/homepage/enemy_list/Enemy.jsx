@@ -1,5 +1,6 @@
 import { Button, Card, Tag, Space, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import { isEmpty } from "../../../services/helpers";
 
 /**
  * A component to display an enemy that can be added to the encounter
@@ -112,6 +113,111 @@ export default function Enemy({ handleAdd, enemy }) {
                 ))}
               </div>
             </div>
+            {(enemy.immunities === undefined || enemy.immunities.length == 0) ? null : (
+              <div style={{ minHeight: 0, flex: 1 }}>
+                <Text
+                  type="secondary"
+                  style={{ fontSize: "12px", display: "block" }}
+                >
+                  Immunities
+                </Text>
+                <div
+                  style={{
+                    marginTop: 4,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 4,
+                    maxHeight: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  {enemy.immunities.map((immunity) => (
+                    <Tag
+                      key={immunity}
+                      color="blue"
+                      style={{
+                        margin: 0,
+                        maxWidth: "100%",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {immunity}
+                    </Tag>
+                  ))}
+                </div>
+              </div>
+            )}
+            {(isEmpty(enemy.weaknesses)) ? null : (
+              <div style={{ minHeight: 0, flex: 1 }}>
+                <Text
+                  type="secondary"
+                  style={{ fontSize: "12px", display: "block" }}
+                >
+                  Weaknesses
+                </Text>
+                <div
+                  style={{
+                    marginTop: 4,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 4,
+                    maxHeight: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  {Object.keys(enemy.weaknesses).map((weakness) => (
+                    <Tag
+                      key={weakness}
+                      color="blue"
+                      style={{
+                        margin: 0,
+                        maxWidth: "100%",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {weakness} : {enemy.weaknesses[weakness]}
+                    </Tag>
+                  ))}
+                </div>
+              </div>
+            )}
+            {(isEmpty(enemy.resistances)) ? null : (
+              <div style={{ minHeight: 0, flex: 1 }}>
+                <Text
+                  type="secondary"
+                  style={{ fontSize: "12px", display: "block" }}
+                >
+                  Resistances
+                </Text>
+                <div
+                  style={{
+                    marginTop: 4,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 4,
+                    maxHeight: "100%",
+                    overflow: "hidden",
+                  }}
+                >
+                  {Object.keys(enemy.resistances).map((resistance) => (
+                    <Tag
+                      key={resistance}
+                      color="blue"
+                      style={{
+                        margin: 0,
+                        maxWidth: "100%",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {resistance} : {enemy.resistances[resistance]}
+                    </Tag>
+                  ))}
+                </div>
+              </div>
+            )}
           </Space>
         </div>
       </div>
