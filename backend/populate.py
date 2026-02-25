@@ -123,7 +123,7 @@ def add_enemies(raw_path: str, db: Session) -> None:
     if errors_found:
         print("NOTE: The following files had errors:")
         for file in error_list:
-            print(f"\t{file}")
+            print(f"\t• {file}")
     else:
         print("No errors occured while adding enemies.")
 
@@ -167,40 +167,38 @@ def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
         "actions": {"attacks": [], "spells": []},
     }
 
+    system_attributes = raw_dict["system"]["attributes"]
     enemy["name"] = raw_dict["prototypeToken"]["name"]
     enemy["level"] = raw_dict["system"]["details"]["level"]["value"]
-
-    add_traits(raw_dict, enemy)
-
     enemy["perception"] = raw_dict["system"]["perception"]["mod"]
-
-    add_skills(raw_dict, enemy)
-
-    add_attribute_modifiers(raw_dict, enemy)
-
-    system_attributes = raw_dict["system"]["attributes"]
     enemy["defenses"]["armor_class"] = system_attributes["ac"]["value"]
-    add_saves(raw_dict, enemy)
-
     enemy["max_hit_points"] = system_attributes["hp"]["max"]
-    if "immunities" in system_attributes:
-        add_immunities(system_attributes, enemy)
-
-    if "weaknesses" in system_attributes:
-        add_weaknesses(system_attributes, enemy)
-
-    if "resistances" in system_attributes:
-        add_resistances(system_attributes, enemy)
-
     enemy["speed"] = system_attributes["speed"]["value"]
 
-    add_actions(raw_dict, enemy)
+    add_traits(raw_dict["system"]["traits"], enemy)
+
+    add_skills(raw_dict["system"]["skills"], enemy)
+
+    add_attribute_modifiers(raw_dict["system"]["abilities"], enemy)
+
+    add_saves(raw_dict["system"]["saves"], enemy)
+
+    if "immunities" in system_attributes:
+        add_immunities(system_attributes["immunities"], enemy)
+
+    if "weaknesses" in system_attributes:
+        add_weaknesses(system_attributes["weaknesses"], enemy)
+
+    if "resistances" in system_attributes:
+        add_resistances(system_attributes["resistances"], enemy)
+
+    add_actions(raw_dict["items"], enemy)
 
     return enemy
 
 
-def add_traits(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
-    size = raw_dict["system"]["traits"]["size"]["value"]
+def add_traits(traits_dict: dict[str, any], enemy: dict[str, any]) -> None:
+    size = traits_dict["size"]["value"]
     match size:
         case "tiny":
             enemy["traits"].append("tiny")
@@ -212,9 +210,8 @@ def add_traits(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
             enemy["traits"].append("large")
         case _:
             raise Exception(f"Invalid size trait: {size}")
-    # enemy["traits"].append(raw_dict["system"]["traits"]["size"]["value"])
 
-    traits = raw_dict["system"]["traits"]["value"]
+    traits = traits_dict["value"]
     trait_exceptions = ["chaotic", "lawful", "good", "evil"]
     for trait in traits:
         if trait in trait_exceptions:
@@ -223,16 +220,14 @@ def add_traits(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
             enemy["traits"].append(trait)
 
 
-def add_skills(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
-    skills = raw_dict["system"]["skills"]
+def add_skills(skills: dict[str, any], enemy: dict[str, any]) -> None:
     for skill in skills:
         enemy["skills"][skill] = skills[skill]["base"]
 
 
 def add_attribute_modifiers(
-    raw_dict: dict[str, any], enemy: dict[str, any]
+    abilities: dict[str, any], enemy: dict[str, any]
 ) -> None:
-    abilities = raw_dict["system"]["abilities"]
     enemy["attribute_modifiers"]["strength"] = abilities["str"]["mod"]
     enemy["attribute_modifiers"]["dexterity"] = abilities["dex"]["mod"]
     enemy["attribute_modifiers"]["constitution"] = abilities["con"]["mod"]
@@ -241,38 +236,29 @@ def add_attribute_modifiers(
     enemy["attribute_modifiers"]["charisma"] = abilities["cha"]["mod"]
 
 
-def add_saves(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
-    saves = raw_dict["system"]["saves"]
+def add_saves(saves: dict[str, any], enemy: dict[str, any]) -> None:
     for save in saves:
         enemy["defenses"]["saves"][save] = saves[save]["value"]
 
 
-def add_immunities(
-    system_attributes: dict[str, any], enemy: dict[str, any]
-) -> None:
-    immunities = system_attributes["immunities"]
+def add_immunities(immunities: dict[str, any], enemy: dict[str, any]) -> None:
     for immunity in immunities:
         enemy["immunities"].append(immunity["type"])
 
 
-def add_weaknesses(
-    system_attributes: dict[str, any], enemy: dict[str, any]
-) -> None:
-    weaknesses = system_attributes["weaknesses"]
+def add_weaknesses(weaknesses: dict[str, any], enemy: dict[str, any]) -> None:
     for weakness in weaknesses:
         enemy["weaknesses"][weakness["type"]] = weakness["value"]
 
 
 def add_resistances(
-    system_attributes: dict[str, any], enemy: dict[str, any]
+    resistances: dict[str, any], enemy: dict[str, any]
 ) -> None:
-    resistances = system_attributes["resistances"]
     for resistance in resistances:
         enemy["resistances"][resistance["type"]] = resistance["value"]
 
 
-def add_actions(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
-    items = raw_dict["items"]
+def add_actions(items: dict[str, any], enemy: dict[str, any]) -> None:
     for item in items:
         if "attack" in item["system"]:
             add_attack(item, enemy)
@@ -287,9 +273,9 @@ def add_attack(item: dict[str, any], enemy: dict[str, any]) -> None:
     attack_dict = {}
     attack_dict["name"] = item["name"]
     attack_dict["attackBonus"] = item["system"]["bonus"]["value"]
-    # for some reason in the JSON files from foundryVTT there is a
-    # key with a random value between damageRolls and the values
-    # inside it that I need, thus the key variable
+    # In the JSON files from foundryVTT there is a key with a random
+    # value between damageRolls and the values inside it that I need,
+    # thus the key variable
     try:
         damage_rolls = item["system"]["damageRolls"]
         key = list(damage_rolls.keys())[0]
