@@ -113,6 +113,8 @@ class Character(Creature):
 class Enemy(Creature):
     traits: list[str]
     immunities: list[str]
+    weaknesses: dict[str, int]
+    resistances: dict[str, int]
 
 
 class CreatureCreate(BaseModel):

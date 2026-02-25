@@ -22,6 +22,8 @@ class Enemy(Creature):
         super().__init__(enemy, simulation)
         self.traits: list[str] = enemy["traits"]
         self.immunities: list[str] = enemy["immunities"]
+        self.weaknesses: list[str, int] = enemy.get("weaknesses", {})
+        self.resistances: list[str, int] = enemy.get("resistances", {})
         self.team = 2
 
         # Any skill not specified in enemy data is set to none
@@ -68,3 +70,29 @@ class Enemy(Creature):
             str: The long description of the enemy.
         """
         return f"{self}: Level {self.level}"
+
+    def take_damage(self, damage: int, damage_type: str) -> None:
+        if damage_type in self.immunities:
+            self.log(f"{self} is immune to {damage_type}. No damage taken!")
+            return
+
+        if damage_type in self.weaknesses.keys():
+            extra_damage = self.weaknesses[damage_type]
+            damage += extra_damage
+            self.log(
+                f"{self} is weak to {damage_type}, {extra_damage} extra damage taken, total {damage} damage."  # noqa
+            )
+        elif "all-damage" in self.resistances.keys():
+            damage_reduction = self.resistances["all-damage"]
+            damage -= damage_reduction
+            self.log(
+                f"{self} is resistant to all damage, {damage_reduction} damage resisted, total {damage} damage."  # noqa
+            )
+        elif damage_type in self.resistances.keys():
+            damage_reduction = self.resistances[damage_type]
+            damage -= damage_reduction
+            self.log(
+                f"{self} is resistant to {damage_type}, {damage_reduction} damage resisted, total {damage} damage."  # noqa
+            )
+
+        super().take_damage(damage, damage_type)

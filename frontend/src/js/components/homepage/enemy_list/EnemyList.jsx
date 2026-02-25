@@ -29,7 +29,7 @@ export default function EnemyList({ handleAdd }) {
       setDisplayEnemies(response.data.enemies);
       setLoading(false);
     } catch (error) {
-      errorAlert("Error fetching enemies", error)
+      errorAlert("Error fetching enemies", error);
       setLoading(false);
     }
   }
@@ -44,6 +44,12 @@ export default function EnemyList({ handleAdd }) {
   const maxLevel = Form.useWatch("maxLevel", form);
   const traits = Form.useWatch("traits", form);
   const traitFilterMode = Form.useWatch("traitFilterMode", form);
+  const immunities = Form.useWatch("immunities", form);
+  const immunitiesFilterMode = Form.useWatch("immunitiesFilterMode", form);
+  const weaknesses = Form.useWatch("weaknesses", form);
+  const weaknessesFilterMode = Form.useWatch("weaknessesFilterMode", form);
+  const resistances = Form.useWatch("resistances", form);
+  const resistancesFilterMode = Form.useWatch("resistancesFilterMode", form);
 
   useEffect(() => {
     let filteredEnemies = enemies.filter(
@@ -66,8 +72,71 @@ export default function EnemyList({ handleAdd }) {
         );
       }
     }
+    if (immunities && immunities.length > 0) {
+      if (immunitiesFilterMode) {
+        // enemy must have ALL selected immunities
+        filteredEnemies = filteredEnemies.filter((enemy) =>
+          immunities.every((trait) => enemy.immunities.includes(trait)),
+        );
+      } else {
+        // enemy must have ANY one of the selected immunities
+        filteredEnemies = filteredEnemies.filter((enemy) =>
+          immunities.some((trait) => enemy.immunities.includes(trait)),
+        );
+      }
+    }
+    if (weaknesses && weaknesses.length > 0) {
+      if (weaknessesFilterMode) {
+        // enemy must have ALL selected weaknesses
+        filteredEnemies = filteredEnemies.filter((enemy) =>
+          weaknesses.every((trait) =>
+            Object.keys(enemy.weaknesses).includes(trait),
+          ),
+        );
+      } else {
+        // enemy must have ANY one of the selected weaknesses
+        filteredEnemies = filteredEnemies.filter((enemy) =>
+          weaknesses.some((trait) =>
+            Object.keys(enemy.weaknesses).includes(trait),
+          ),
+        );
+      }
+    }
+    if (resistances && resistances.length > 0) {
+      if (resistancesFilterMode) {
+        // enemy must have ALL selected resistances
+        filteredEnemies = filteredEnemies.filter(
+          (enemy) =>
+            resistances.every((trait) =>
+              Object.keys(enemy.resistances).includes(trait),
+            ) || Object.keys(enemy.resistances).includes("all-damage"),
+        );
+      } else {
+        // enemy must have ANY one of the selected resistances
+        filteredEnemies = filteredEnemies.filter((enemy) =>
+          resistances.some(
+            (trait) =>
+              Object.keys(enemy.resistances).includes(trait) ||
+              Object.keys(enemy.resistances).includes("all-damage"),
+          ),
+        );
+      }
+    }
     setDisplayEnemies(filteredEnemies);
-  }, [enemies, minLevel, maxLevel, name, traits, traitFilterMode]);
+  }, [
+    enemies,
+    minLevel,
+    maxLevel,
+    name,
+    traits,
+    traitFilterMode,
+    immunities,
+    immunitiesFilterMode,
+    weaknesses,
+    weaknessesFilterMode,
+    resistances,
+    resistancesFilterMode,
+  ]);
 
   return (
     <div style={{ width: "100%" }}>
@@ -88,7 +157,7 @@ export default function EnemyList({ handleAdd }) {
                 md={8}
                 lg={6}
                 xl={4}
-                style={{ height: "300px" }}
+                style={{ height: "400px" }}
               >
                 <Enemy handleAdd={handleAdd} enemy={enemy} />
               </Col>

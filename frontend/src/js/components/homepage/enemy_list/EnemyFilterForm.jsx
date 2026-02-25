@@ -12,6 +12,7 @@ import {
 } from "antd";
 import { ClearOutlined } from "@ant-design/icons";
 import { traitOptions } from "./enemyHelpers";
+import { damageTypes } from "../../characters/characterHelpers";
 
 /**
  * A component to display a filter form for the enemy list
@@ -31,6 +32,8 @@ export default function EnemyFilterForm({ form }) {
     maxLevel: 5,
     traits: [],
     traitFilterMode: false, // false = ANY (OR), true = ALL (AND)
+    immunities: [],
+    immunitiesFilterMode: false,
   };
 
   return (
@@ -95,6 +98,90 @@ export default function EnemyFilterForm({ form }) {
             <Form.Item
               label="Match any/all?"
               name="traitFilterMode"
+              valuePropName="checked"
+              style={{ marginBottom: 0 }}
+            >
+              <Switch checkedChildren="All" unCheckedChildren="Any" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 0]} style={{ marginTop: 16 }}>
+          <Col xs={24} md={20}>
+            <Form.Item
+              label="Immunities"
+              name="immunities"
+              style={{ marginBottom: 0 }}
+            >
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Filter by immunities"
+                options={damageTypes}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={4}>
+            <Form.Item
+              label="Match any/all?"
+              name="immunitiesFilterMode"
+              valuePropName="checked"
+              style={{ marginBottom: 0 }}
+            >
+              <Switch checkedChildren="All" unCheckedChildren="Any" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 0]} style={{ marginTop: 16 }}>
+          <Col xs={24} md={20}>
+            <Form.Item
+              label="Weaknesses"
+              name="weaknesses"
+              style={{ marginBottom: 0 }}
+            >
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Filter by weaknesses"
+                options={damageTypes}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={4}>
+            <Form.Item
+              label="Match any/all?"
+              name="weaknessesFilterMode"
+              valuePropName="checked"
+              style={{ marginBottom: 0 }}
+            >
+              <Switch checkedChildren="All" unCheckedChildren="Any" />
+            </Form.Item>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 0]} style={{ marginTop: 16 }}>
+          <Col xs={24} md={20}>
+            <Form.Item
+              label="Resistances"
+              name="resistances"
+              style={{ marginBottom: 0 }}
+            >
+              <Select
+                mode="multiple"
+                allowClear
+                placeholder="Filter by resistances"
+                options={damageTypes}
+              />
+            </Form.Item>
+          </Col>
+
+          <Col xs={24} md={4}>
+            <Form.Item
+              label="Match any/all?"
+              name="resistancesFilterMode"
               valuePropName="checked"
               style={{ marginBottom: 0 }}
             >

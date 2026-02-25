@@ -161,6 +161,8 @@ def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
         "spell_dc": None,
         "spell_attack_bonus": None,
         "immunities": [],
+        "weaknesses": {},
+        "resistances": {},
         "speed": 0,
         "actions": {"attacks": [], "spells": []},
     }
@@ -183,6 +185,12 @@ def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
     enemy["max_hit_points"] = system_attributes["hp"]["max"]
     if "immunities" in system_attributes:
         add_immunities(system_attributes, enemy)
+
+    if "weaknesses" in system_attributes:
+        add_weaknesses(system_attributes, enemy)
+
+    if "resistances" in system_attributes:
+        add_resistances(system_attributes, enemy)
 
     enemy["speed"] = system_attributes["speed"]["value"]
 
@@ -245,6 +253,22 @@ def add_immunities(
     immunities = system_attributes["immunities"]
     for immunity in immunities:
         enemy["immunities"].append(immunity["type"])
+
+
+def add_weaknesses(
+    system_attributes: dict[str, any], enemy: dict[str, any]
+) -> None:
+    weaknesses = system_attributes["weaknesses"]
+    for weakness in weaknesses:
+        enemy["weaknesses"][weakness["type"]] = weakness["value"]
+
+
+def add_resistances(
+    system_attributes: dict[str, any], enemy: dict[str, any]
+) -> None:
+    resistances = system_attributes["resistances"]
+    for resistance in resistances:
+        enemy["resistances"][resistance["type"]] = resistance["value"]
 
 
 def add_actions(raw_dict: dict[str, any], enemy: dict[str, any]) -> None:
@@ -360,6 +384,8 @@ def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
         spell_dc=enemy["spell_dc"],
         spell_attack_bonus=enemy["spell_attack_bonus"],
         immunities=enemy["immunities"],
+        weaknesses=enemy["weaknesses"],
+        resistances=enemy["resistances"],
         speed=enemy["speed"],
         actions=actions_dict,
     )

@@ -30,6 +30,8 @@ class Enemy(Base):
     spell_attack_bonus = Column(Integer)
     spell_dc = Column(Integer)
     immunities = Column(ARRAY(String))
+    weaknesses = Column(JSON)
+    resistances = Column(JSON)
     speed = Column(Integer, nullable=False)
     actions = Column(JSON)
 
