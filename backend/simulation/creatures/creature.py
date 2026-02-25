@@ -2,6 +2,7 @@ import math
 from typing import Self
 
 from ..mechanics.actions import Action, Attack, Spell
+from ..mechanics.heal import Heal
 from ..mechanics.misc import Degree, calculate_dos, d20
 
 
@@ -105,11 +106,19 @@ class Creature:
         except KeyError:
             self.spells = None
 
+        try:
+            self.heals: int = creature["actions"].get("heals")
+        except KeyError:
+            self.heals: int = None
+
         self.actions: list[Action] = []
         if self.attacks:
             self.actions.extend(self.attacks)
         if self.spells:
             self.actions.extend(self.spells)
+        if self.heals:
+            heal = Heal(self.heals)
+            self.actions.append(heal)
 
         # Encounter Data
         self.encounter = None
@@ -150,6 +159,7 @@ class Creature:
             raise Exception("Turns cannot be taken outside of an encounter")
 
         self.log(f"{self}'s turn:")
+        self.log(f"{self}'s current hit points: {self.current_hit_points}")
         self.num_actions = 3
         self.map = 0
 
@@ -169,7 +179,7 @@ class Creature:
 
         weight = damage_taken * self.level
         if consider_distance:
-            distance = self._calculate_distance(attacker)
+            distance = self.calculate_distance(attacker)
             weight -= distance / 5
 
         return weight
@@ -185,7 +195,7 @@ class Creature:
 
         targets_in_range = []
         for target in targets:
-            if self._calculate_distance(target) <= attack_range:
+            if self.calculate_distance(target) <= attack_range:
                 targets_in_range.append(target)
 
         # If we're already in range of targets, only consider them
@@ -211,7 +221,7 @@ class Creature:
         # Outer loop for each Stride action (move up to speed)
         while self.num_actions >= 0:
             diagonal_moves = 1
-            distance = self._calculate_distance(target)
+            distance = self.calculate_distance(target)
 
             if distance <= attack_range:
                 return
@@ -247,6 +257,21 @@ class Creature:
             speed_remaining = self.speed
             self.num_actions -= 1
 
+    def calculate_distance(self, target: Self) -> int:
+        base_distance = math.dist(
+            [target.position_x, target.position_y],
+            [self.position_x, self.position_y],
+        )
+
+        # We have the distance in squares, but we want it in feet
+        distance_in_feet = 5 * base_distance
+
+        # Then round to the nearest multiple of five to account for needing to
+        # measure distance in 5-foot squares
+        rounded_distance = 5 * round(distance_in_feet / 5)
+
+        return rounded_distance
+
     def take_damage(self, damage: int, damage_type: str) -> None:
         """Subtracts the given damage from the creature's HP.
 
@@ -279,7 +304,7 @@ class Creature:
         roll = d20.roll()
         saving_throw = roll + save_bonus
         self.log(
-            f"{self} rolled a {saving_throw} {spell.save} save against {spell}!"  # noqa
+            f"{self} rolled a {saving_throw} {spell.save} save against {spell}!"  # noqa: E501
         )
 
         degree_of_success = calculate_dos(
@@ -304,6 +329,13 @@ class Creature:
 
         self.take_damage(damage_taken, spell.damage_type)
 
+    def heal(self, amount: int) -> None:
+        self.current_hit_points += amount
+        if self.current_hit_points > self.max_hit_points:
+            self.current_hit_points = self.max_hit_points
+
+        self.log(f"{self} is now at {self.current_hit_points} hit points!")
+
     def log(self, message: str) -> None:
         if self.simulation:
             self.simulation.log(message)
@@ -325,29 +357,29 @@ class Creature:
         in_melee = self._check_adjacent_creatures()
         best_action = self.actions[0]
         best_weight = best_action.calculate_weight(
-            self.map, self.num_actions, in_melee
+            self.map, self.num_actions, in_melee, self
         )
 
         # Just a simple linear search because number of actions should never
         # get too high (typically 3-5, 10-15 at most w/ spells)
         for action in self.actions[1:]:
             action_weight = action.calculate_weight(
-                self.map, self.num_actions, in_melee
+                self.map, self.num_actions, in_melee, self
             )
             if action_weight > best_weight:
                 best_action = action
                 best_weight = best_action.calculate_weight(
-                    self.map, self.num_actions, in_melee
+                    self.map, self.num_actions, in_melee, self
                 )
 
         if isinstance(best_action, Attack):
             target = self.pick_target(best_action.range)
-            if self._calculate_distance(target) > best_action.range:
+            if self.calculate_distance(target) > best_action.range:
                 self.move_to(target, best_action.range)
                 if self.num_actions <= 0:
                     return
             best_action.attack(self, target)
-        elif isinstance(best_action, Spell):
+        elif isinstance(best_action, Spell) or isinstance(best_action, Heal):
             best_action.cast(self)
 
         self.num_actions -= best_action.cost
@@ -360,25 +392,10 @@ class Creature:
         )
 
         for opponent in opponents:
-            if self._calculate_distance(opponent) <= 5:
+            if self.calculate_distance(opponent) <= 5:
                 return True
 
         return False
-
-    def _calculate_distance(self, target: Self) -> int:
-        base_distance = math.dist(
-            [target.position_x, target.position_y],
-            [self.position_x, self.position_y],
-        )
-
-        # We have the distance in squares, but we want it in feet
-        distance_in_feet = 5 * base_distance
-
-        # Then round to the nearest multiple of five to account for needing to
-        # measure distance in 5-foot squares
-        rounded_distance = 5 * round(distance_in_feet / 5)
-
-        return rounded_distance
 
     def _step_x(self, target):
         if self.position_x < target.position_x:

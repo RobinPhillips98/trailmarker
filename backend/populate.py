@@ -43,7 +43,7 @@ def fetch_enemies(raw_path: str) -> None:
     if not (Path(raw_path).exists()):
         Path(raw_path).mkdir()
 
-    base_url = "https://raw.githubusercontent.com/foundryvtt/pf2e/refs/heads/v13-dev/packs/pf2e/menace-under-otari-bestiary/"  # noqa
+    base_url = "https://raw.githubusercontent.com/foundryvtt/pf2e/refs/heads/v13-dev/packs/pf2e/menace-under-otari-bestiary/"  # noqa: E501
     # Getting the files with PyGithub directly takes too long and results in
     # being rate-limited, so just get the filenames with it
     filenames = get_filenames()
@@ -139,11 +139,12 @@ def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
     Returns:
         dict[str, any]: The reformatted data
     """
+    system_attributes = raw_dict["system"]["attributes"]
     enemy = {
-        "name": "",
-        "level": 0,
+        "name": raw_dict["prototypeToken"]["name"],
+        "level": raw_dict["system"]["details"]["level"]["value"],
         "traits": [],
-        "perception": 0,
+        "perception": raw_dict["system"]["perception"]["mod"],
         "skills": {},
         "attribute_modifiers": {
             "strength": 0,
@@ -154,26 +155,18 @@ def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
             "charisma": 0,
         },
         "defenses": {
-            "armor_class": 0,
+            "armor_class": system_attributes["ac"]["value"],
             "saves": {"fortitude": 0, "reflex": 0, "will": 0},
         },
-        "max_hit_points": 0,
+        "max_hit_points": system_attributes["hp"]["max"],
         "spell_dc": None,
         "spell_attack_bonus": None,
         "immunities": [],
         "weaknesses": {},
         "resistances": {},
-        "speed": 0,
-        "actions": {"attacks": [], "spells": []},
+        "speed": system_attributes["speed"]["value"],
+        "actions": {"attacks": [], "spells": [], "heals": 0},
     }
-
-    system_attributes = raw_dict["system"]["attributes"]
-    enemy["name"] = raw_dict["prototypeToken"]["name"]
-    enemy["level"] = raw_dict["system"]["details"]["level"]["value"]
-    enemy["perception"] = raw_dict["system"]["perception"]["mod"]
-    enemy["defenses"]["armor_class"] = system_attributes["ac"]["value"]
-    enemy["max_hit_points"] = system_attributes["hp"]["max"]
-    enemy["speed"] = system_attributes["speed"]["value"]
 
     add_traits(raw_dict["system"]["traits"], enemy)
 
@@ -265,8 +258,14 @@ def add_actions(items: dict[str, any], enemy: dict[str, any]) -> None:
         elif item["type"] == "spellcastingEntry" and enemy["spell_dc"] is None:
             enemy["spell_dc"] = item["system"]["spelldc"]["dc"]
             enemy["spell_attack_bonus"] = item["system"]["spelldc"]["value"]
-        elif item["type"] == "spell" and item["system"]["damage"]:
-            add_spell(item, enemy)
+        elif item["type"] == "spell":
+            if item["name"].lower() == "heal":
+                enemy["actions"]["heals"] += 1
+                print(
+                    f"Heal added. {enemy["name"]}'s heals now {enemy["actions"]["heals"]}"  # noqa: E501
+                )
+            elif item["system"]["damage"]:
+                add_spell(item, enemy)
 
 
 def add_attack(item: dict[str, any], enemy: dict[str, any]) -> None:
@@ -324,7 +323,7 @@ def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
     """Reformats a given enemy to match the model used by the database
 
     Args:
-        enemy (EnemyCreate): The enemy being converted
+        enemy (dict[str, any]): The enemy being converted
 
     Returns:
         models.Enemy: A representation of the enemy ready to be added to
@@ -338,7 +337,11 @@ def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
             "will": enemy["defenses"]["saves"]["will"],
         },
     }
-    actions_dict = {"attacks": [], "spells": []}
+    actions_dict = {
+        "attacks": [],
+        "spells": [],
+        "heals": enemy["actions"]["heals"],
+    }
     for attack in enemy["actions"]["attacks"]:
         attack_dict = {
             "name": attack["name"],
