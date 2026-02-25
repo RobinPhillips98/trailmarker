@@ -35,9 +35,11 @@ class Action:
         in_melee: bool = False,
         creature=None,
     ) -> int:
-        if self.cost > actions_remaining:
+        if self.cost > actions_remaining or (
+            self.name.lower() == "raise shield" and creature.shield_raised
+        ):
             return -math.inf
-
+        else:
             return self.weight
 
     def attack(self, attacker, target) -> bool:

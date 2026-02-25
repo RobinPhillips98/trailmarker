@@ -165,7 +165,12 @@ def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
         "weaknesses": {},
         "resistances": {},
         "speed": system_attributes["speed"]["value"],
-        "actions": {"attacks": [], "spells": [], "heals": 0},
+        "actions": {
+            "attacks": [],
+            "spells": [],
+            "heals": 0,
+            "shield": 0,
+        },
     }
 
     add_traits(raw_dict["system"]["traits"], enemy)
@@ -261,11 +266,16 @@ def add_actions(items: dict[str, any], enemy: dict[str, any]) -> None:
         elif item["type"] == "spell":
             if item["name"].lower() == "heal":
                 enemy["actions"]["heals"] += 1
-                print(
-                    f"Heal added. {enemy["name"]}'s heals now {enemy["actions"]["heals"]}"  # noqa: E501
-                )
             elif item["system"]["damage"]:
                 add_spell(item, enemy)
+        elif item["name"].lower() == "shield":
+            if (
+                item["type"] == "shield"
+                and item["system"]["acBonus"] > enemy["actions"]["shield"]
+            ):
+                enemy["actions"]["shield"] = item["system"]["acBonus"]
+            elif item["type"] == "spell" and enemy["actions"]["shield"] < 1:
+                enemy["actions"]["shield"] = 1
 
 
 def add_attack(item: dict[str, any], enemy: dict[str, any]) -> None:
@@ -341,6 +351,7 @@ def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
         "attacks": [],
         "spells": [],
         "heals": enemy["actions"]["heals"],
+        "shield": enemy["actions"]["shield"],
     }
     for attack in enemy["actions"]["attacks"]:
         attack_dict = {

@@ -10,6 +10,11 @@ const { Title } = Typography;
  * @returns {JSX.element}
  */
 export default function CoreStats({ character }) {
+  const armorClassDisplay =
+    character.actions?.shield > 0
+      ? `${character.defenses.armor_class} + 🛡${character.actions.shield}`
+      : character.defenses.armor_class;
+
   return (
     <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
       <Col xs={24} sm={12} md={6}>
@@ -22,7 +27,7 @@ export default function CoreStats({ character }) {
       <Col xs={24} sm={12} md={6}>
         <Card title="Armor Class" size="small">
           <div style={{ textAlign: "center" }}>
-            <Title level={3}>{character.defenses.armor_class}</Title>
+            <Title level={3}>{armorClassDisplay}</Title>
           </div>
         </Card>
       </Col>
