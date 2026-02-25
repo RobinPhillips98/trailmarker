@@ -67,8 +67,9 @@ export default function CharacterCreationForm() {
         speed: savedCharacter.speed,
         perception: savedCharacter.perception,
         actions: {
-          attacks: savedCharacter.attacks,
-          spells: savedCharacter.spells,
+          attacks: savedCharacter.actions?.attacks,
+          spells: savedCharacter.actions?.spells,
+          heals: savedCharacter.actions?.heals,
         },
       }
     : {
@@ -146,7 +147,9 @@ export default function CharacterCreationForm() {
             </Button>
           </Form.Item>
           <Form.Item label={null}>
-            <Button onClick={handleCancel} icon={<CloseOutlined />}>Cancel</Button>
+            <Button onClick={handleCancel} icon={<CloseOutlined />}>
+              Cancel
+            </Button>
           </Form.Item>
         </Space>
         <FloatButton.Group shape="square">
@@ -155,7 +158,7 @@ export default function CharacterCreationForm() {
             htmlType="submit"
             icon={<SaveOutlined />}
           />
-          <FloatButton onClick={handleCancel} icon={<CloseOutlined />}/>
+          <FloatButton onClick={handleCancel} icon={<CloseOutlined />} />
           <FloatButton.BackTop />
         </FloatButton.Group>
         <Row gutter={16} align="middle">

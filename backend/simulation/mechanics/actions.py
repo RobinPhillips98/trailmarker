@@ -29,7 +29,11 @@ class Action:
         return self.name.lower()
 
     def calculate_weight(
-        self, penalty: int, actions_remaining: int, in_melee: bool = False
+        self,
+        penalty: int,
+        actions_remaining: int,
+        in_melee: bool = False,
+        creature=None,
     ) -> int:
         if self.cost > actions_remaining:
             return -math.inf
@@ -57,7 +61,7 @@ class Action:
                 roll_display = (
                     f"{attack_roll} + {self.attack_bonus}"
                     if attacker.map <= 0
-                    else f"{attack_roll} + {self.attack_bonus} - {attacker.map}"  # noqa
+                    else f"{attack_roll} + {self.attack_bonus} - {attacker.map}"  # noqa: E501
                 )
                 if attacker.encounter:
                     attacker.map += 5
@@ -68,7 +72,7 @@ class Action:
                 attack_total = 1
 
             attacker.log(
-                f"{attacker} rolled {attack_total} ({roll_display}) to attack."
+                f"{attacker} rolled {attack_total} ({roll_display}) to attack against AC {target.armor_class}."  # noqa: E501
             )
 
             degree_of_success = calculate_dos(
@@ -76,10 +80,10 @@ class Action:
             )
 
             if degree_of_success <= Degree.FAILURE:
-                attacker.log(f"Miss! (AC {target.armor_class})")
+                attacker.log("Miss!")
                 return False
 
-            attacker.log(f"Hit! (AC {target.armor_class})")
+            attacker.log("Hit!")
 
         damage_type = self.damage_type
 
@@ -99,7 +103,7 @@ class Action:
             damage *= 2
 
         attacker.log(
-            f"{attacker} dealt {damage} ({damage_display}) {damage_type} damage to {target}!"  # noqa
+            f"{attacker} dealt {damage} ({damage_display}) {damage_type} damage to {target}!"  # noqa: #501
         )
         target.take_damage(damage, damage_type)
 
@@ -112,6 +116,8 @@ class Action:
             damage_rolls.append(damage_die.roll())
 
         return damage_rolls
+
+    # TODO: Complex actions.
 
 
 class Attack(Action):
@@ -153,7 +159,11 @@ class Attack(Action):
         )
 
     def calculate_weight(
-        self, penalty: int, actions_remaining: int, in_melee: bool = False
+        self,
+        penalty: int,
+        actions_remaining: int,
+        in_melee: bool = False,
+        creature=None,
     ) -> int:
         if self.cost > actions_remaining:
             return -math.inf
@@ -252,7 +262,11 @@ class Spell(Action):
             self.weight += self.range / 5
 
     def calculate_weight(
-        self, penalty: int, actions_remaining: int, in_melee: bool = False
+        self,
+        penalty: int,
+        actions_remaining: int,
+        in_melee: bool = False,
+        creature=None,
     ) -> int:
         if self.cost > actions_remaining or self.slots == 0:
             return -math.inf
@@ -330,6 +344,3 @@ class Spell(Action):
         caster.log(f"{caster} attacks {target_names} with {self}!")
         for target in targets:
             target.spell_save(damage, self, caster)
-
-
-# TODO: Healing

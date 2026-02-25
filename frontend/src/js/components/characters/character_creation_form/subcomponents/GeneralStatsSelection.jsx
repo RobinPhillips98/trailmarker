@@ -83,6 +83,13 @@ export default function GeneralStatsSelection() {
       >
         <InputNumber min={-10} max={20} />
       </Form.Item>
+      <Form.Item
+        label="Heal spells prepared"
+        labelCol={{ span: 12 }}
+        name={["actions", "heals"]}
+      >
+        <InputNumber min={0} max={5} />
+      </Form.Item>
     </Card>
   );
 }

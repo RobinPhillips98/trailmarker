@@ -41,6 +41,7 @@ class Spell(BaseModel):
 class Actions(BaseModel):
     attacks: Optional[list[Attack]] = None
     spells: Optional[list[Spell]] = None
+    heals: Optional[int] = None
 
 
 class Skills(BaseModel):
@@ -144,11 +145,6 @@ class CreatureUpdate(BaseModel):
     spell_dc: Optional[int] = None
     speed: int
     actions: Optional[Actions]
-
-
-class EnemyCreate(CreatureCreate):
-    traits: list[str]
-    immunities: list[str]
 
 
 class CharacterCreate(CreatureCreate):

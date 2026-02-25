@@ -77,7 +77,11 @@ def convert_to_player_dict(character: Character) -> dict[str, any]:
             "will": character.defenses.saves.will,
         },
     }
-    actions_dict = {"attacks": [], "spells": []}
+    actions_dict = {
+        "attacks": [],
+        "spells": [],
+        "heals": character.actions.heals,
+    }
     if character.actions.attacks:
         for attack in character.actions.attacks:
             attack_dict = {
