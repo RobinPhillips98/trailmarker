@@ -111,6 +111,11 @@ class Creature:
         except KeyError:
             self.heals: int = None
 
+        try:
+            self.shield_value: int = creature["actions"].get("shield")
+        except KeyError:
+            self.shield_value: int = None
+
         self.actions: list[Action] = []
         if self.attacks:
             self.actions.extend(self.attacks)
@@ -119,6 +124,9 @@ class Creature:
         if self.heals:
             heal = Heal(self.heals)
             self.actions.append(heal)
+        if self.shield_value:
+            raise_shield = Action(name="Raise Shield", weight=10)
+            self.actions.append(raise_shield)
 
         # Encounter Data
         self.encounter = None
@@ -127,6 +135,7 @@ class Creature:
         self.map: int = 0
         self.team: int = 0
         self.is_dead: bool = False
+        self.shield_raised: bool = False
 
         # Simulation Data
         self.simulation = simulation
@@ -162,6 +171,10 @@ class Creature:
         self.log(f"{self}'s current hit points: {self.current_hit_points}")
         self.num_actions = 3
         self.map = 0
+
+        if self.shield_raised:
+            self.shield_raised = False
+            self.armor_class -= self.shield_value
 
         while self.num_actions > 0:
             if self.encounter.players and self.encounter.enemies:
@@ -381,6 +394,10 @@ class Creature:
             best_action.attack(self, target)
         elif isinstance(best_action, Spell) or isinstance(best_action, Heal):
             best_action.cast(self)
+        elif best_action.name.lower() == "raise shield":
+            self.log(f"{self} raises their shield!")
+            self.armor_class += self.shield_value
+            self.shield_raised = True
 
         self.num_actions -= best_action.cost
 

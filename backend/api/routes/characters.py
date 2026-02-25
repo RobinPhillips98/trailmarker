@@ -107,6 +107,7 @@ def convert_to_db_character(
         "attacks": [],
         "spells": [],
         "heals": character.actions.heals,
+        "shield": character.actions.shield,
     }
     if character.actions.attacks:
         for attack in character.actions.attacks:

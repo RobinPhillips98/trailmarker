@@ -68,6 +68,13 @@ export default function GeneralStatsSelection() {
         <InputNumber min={0} max={30} />
       </Form.Item>
       <Form.Item
+        label="Shield Value"
+        labelCol={{ span: 12 }}
+        name={["actions", "shield"]}
+      >
+        <InputNumber min={0} max={5} />
+      </Form.Item>
+      <Form.Item
         label="Speed"
         labelCol={{ span: 12 }}
         name="speed"
@@ -84,7 +91,7 @@ export default function GeneralStatsSelection() {
         <InputNumber min={-10} max={20} />
       </Form.Item>
       <Form.Item
-        label="Heal spells prepared"
+        label="Heals Prepared"
         labelCol={{ span: 12 }}
         name={["actions", "heals"]}
       >

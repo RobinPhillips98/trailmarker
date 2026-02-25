@@ -42,6 +42,7 @@ class Actions(BaseModel):
     attacks: Optional[list[Attack]] = None
     spells: Optional[list[Spell]] = None
     heals: Optional[int] = None
+    shield: Optional[int] = False
 
 
 class Skills(BaseModel):

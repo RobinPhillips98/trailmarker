@@ -70,6 +70,7 @@ export default function CharacterCreationForm() {
           attacks: savedCharacter.actions?.attacks,
           spells: savedCharacter.actions?.spells,
           heals: savedCharacter.actions?.heals,
+          shield: savedCharacter.actions?.shield,
         },
       }
     : {
