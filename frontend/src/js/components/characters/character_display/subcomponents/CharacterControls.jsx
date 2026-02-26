@@ -32,7 +32,12 @@ export default function CharacterControls({ character, deleteCharacter }) {
         Edit Character
       </Button>
 
-      <Button type="primary" danger onClick={showModal} icon={<DeleteOutlined />}>
+      <Button
+        type="primary"
+        danger
+        onClick={showModal}
+        icon={<DeleteOutlined />}
+      >
         Delete Character
       </Button>
       <Modal

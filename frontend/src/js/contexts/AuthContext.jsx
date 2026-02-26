@@ -50,7 +50,7 @@ function AuthProvider({ children }) {
         navigate("/");
       }
     } catch (error) {
-      errorAlert("Error logging in", error)
+      errorAlert("Error logging in", error);
     }
   }
 
@@ -66,7 +66,7 @@ function AuthProvider({ children }) {
       await registerUser({ username, password });
       navigate("/login");
     } catch (error) {
-      errorAlert("Error registering", error)
+      errorAlert("Error registering", error);
     }
   }
 

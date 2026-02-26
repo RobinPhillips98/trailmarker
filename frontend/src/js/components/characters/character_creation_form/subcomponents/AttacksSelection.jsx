@@ -30,8 +30,8 @@ export default function AttacksSelection({ editing, savedCharacter }) {
       <Form.List name={["actions", "attacks"]} initialValue={initialAttacks}>
         {(fields, { add, remove }) => (
           <>
-            {fields.map(({ name, ...restField }) => (
-              <Card key={name} size="small" style={{ marginBottom: 12 }}>
+            {fields.map(({ key, name, ...restField }) => (
+              <Card key={key} size="small" style={{ marginBottom: 12 }}>
                 <Form.Item
                   {...restField}
                   name={[name, "name"]}

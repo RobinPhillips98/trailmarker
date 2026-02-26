@@ -34,8 +34,8 @@ export default function SpellsSelection({ editing, savedCharacter }) {
       <Form.List name={["actions", "spells"]} initialValue={initialSpells}>
         {(fields, { add, remove }) => (
           <>
-            {fields.map(({ name, ...restField }) => (
-              <Card key={name} size="small" style={{ marginBottom: 12 }}>
+            {fields.map(({ key, name, ...restField }) => (
+              <Card key={key} size="small" style={{ marginBottom: 12 }}>
                 <Form.Item
                   {...restField}
                   name={[name, "name"]}
@@ -123,7 +123,6 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       rules={[
                         { required: true, message: "Please input a range" },
                       ]}
-                      initialValue={5}
                     >
                       <InputNumber min={5} max={1000} />
                     </Form.Item>

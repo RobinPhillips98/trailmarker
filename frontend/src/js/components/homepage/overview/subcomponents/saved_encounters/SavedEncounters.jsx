@@ -91,6 +91,7 @@ export default function SavedEncounters({ handleLoad }) {
             size="small"
             title={encounter.name}
             style={{ marginBottom: 10 }}
+            key={encounter.name}
           >
             <Encounter
               encounter={encounter}

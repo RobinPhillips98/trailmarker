@@ -16,7 +16,7 @@ export default function AttributeSelection({ editing, savedCharacter }) {
     <Card title="Attribute Modifiers" style={{ width: "100%" }}>
       <Row>
         {attributes.slice(0, 3).map((attribute) => (
-          <Col span={8}>
+          <Col key={`${attribute}_col`} span={8}>
             <Form.Item
               key={attribute}
               label={toTitleCase(attribute)}
@@ -38,7 +38,7 @@ export default function AttributeSelection({ editing, savedCharacter }) {
       </Row>
       <Row>
         {attributes.slice(3, 6).map((attribute) => (
-          <Col span={8}>
+          <Col key={`${attribute}_col`} span={8}>
             <Form.Item
               key={attribute}
               label={toTitleCase(attribute)}

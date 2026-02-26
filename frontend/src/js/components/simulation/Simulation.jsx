@@ -126,7 +126,7 @@ export default function Simulation() {
 
     const simDataDisplay = simDataToUse.map((sim, i) => {
       return {
-        key: i + 1,
+        key: `sim_${i + 1}`,
         label: `Simulation ${sim.sim_num} - Winner: ${toTitleCase(
           sim.winner,
         )}!`,
@@ -143,26 +143,49 @@ export default function Simulation() {
             </Paragraph>
             <Paragraph>Rounds taken: {sim.rounds}</Paragraph>
             <Title level={2}>Combat Log:</Title>
-            {sim.log.map((message) => {
+            {sim.log.map((message, index) => {
               if (message.includes("won")) {
-                return <Title level={2}>{message}</Title>;
+                return (
+                  <Title key={`log_message_${index}`} level={2}>
+                    {message}
+                  </Title>
+                );
               } else if (
                 message.includes("Party") ||
                 message.includes("Enemies") ||
                 message.includes("Initiative") ||
                 message.includes("Round")
               ) {
-                return <Title level={3}>{message}</Title>;
+                return (
+                  <Title key={`log_message_${index}`} level={3}>
+                    {message}
+                  </Title>
+                );
               } else if (message.includes("turn")) {
-                return <Title level={4}>{message}</Title>;
+                return (
+                  <Title key={`log_message_${index}`} level={4}>
+                    {message}
+                  </Title>
+                );
               } else if (message.includes("Hit") || message.includes("Miss")) {
-                return <Paragraph italic>{message}</Paragraph>;
+                return (
+                  <Paragraph key={`log_message_${index}`} italic>
+                    {message}
+                  </Paragraph>
+                );
               } else if (
                 message.includes("died") ||
                 message.includes("critical")
               ) {
-                return <Paragraph strong>{message}</Paragraph>;
-              } else return <Paragraph>{message}</Paragraph>;
+                return (
+                  <Paragraph key={`log_message_${index}`} strong>
+                    {message}
+                  </Paragraph>
+                );
+              } else
+                return (
+                  <Paragraph key={`log_message_${index}`}>{message}</Paragraph>
+                );
             })}
           </div>
         ),
@@ -208,6 +231,6 @@ export default function Simulation() {
       </>
     );
   } else {
-    return <Spin tip="Loading..." size="large" />;
+    return <Spin size="large" />;
   }
 }

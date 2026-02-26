@@ -9,7 +9,7 @@ export default function PolicyNotice() {
       <Title>Community use Policy Notice</Title>
       <Text>
         <strong>Trailmarker</strong> uses trademarks and/or copyrights owned by
-        Paizo Inc., used under Paizo's Community Use Policy (
+        Paizo Inc., used under Paizo&apos;s Community Use Policy (
         <Link to="https://paizo.com/licenses/communityuse">
           paizo.com/licenses/communityuse
         </Link>
