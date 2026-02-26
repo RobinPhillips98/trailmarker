@@ -32,10 +32,10 @@ class Spell(BaseModel):
     level: int
     damage_roll: str
     damage_type: str
-    range_: str = Field(..., alias="range")
+    range_: int = Field(..., alias="range")
     area: Optional[dict[str, str | int]] = None
     save: Optional[str] = "none"
-    target: Optional[str] = "none"
+    targets: Optional[int] = 0
     actions: str
 
 
@@ -110,6 +110,7 @@ class Character(Creature):
     player: Optional[str] = ""
     xp: Optional[int] = 0
     ancestry: str
+    heritage: str
     background: str
     class_: str = Field(..., alias="class")
 
@@ -156,6 +157,7 @@ class CharacterCreate(CreatureCreate):
     player: Optional[str] = ""
     xp: Optional[int] = 0
     ancestry: str
+    heritage: str
     background: str
     class_: str = Field(..., alias="class")
 
@@ -166,6 +168,7 @@ class CharacterUpdate(CreatureUpdate):
     player: Optional[str] = ""
     xp: Optional[int] = 0
     ancestry: str
+    heritage: str
     background: str
     class_: str = Field(..., alias="class")
 

@@ -50,6 +50,7 @@ export default function CharacterCreationForm() {
         player: savedCharacter.player,
         xp: savedCharacter.xp,
         ancestry: savedCharacter.ancestry,
+        heritage: savedCharacter.heritage,
         background: savedCharacter.background,
         class: savedCharacter.class,
         level: savedCharacter.level,
@@ -164,7 +165,10 @@ export default function CharacterCreationForm() {
         </FloatButton.Group>
         <Row gutter={16} align="middle">
           <Col xs={24} md={12}>
-            <GeneralInfoSelection />
+            <GeneralInfoSelection
+              editing={editing}
+              savedCharacter={savedCharacter}
+            />
           </Col>
           <Col xs={24} md={12}>
             <GeneralStatsSelection />

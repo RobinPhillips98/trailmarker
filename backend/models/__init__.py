@@ -46,6 +46,7 @@ class Character(Base):
     player = Column(String)
     xp = Column(Integer)
     ancestry = Column(String, nullable=False)
+    heritage = Column(String, nullable=False)
     background = Column(String, nullable=False)
     class_ = Column("class", String, nullable=False)
     level = Column(Integer, nullable=False)

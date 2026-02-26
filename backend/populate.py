@@ -318,9 +318,15 @@ def add_spell(item: dict[str, any], enemy: dict[str, any]) -> None:
 
     spell_dict["damage_roll"] = raw_spell_dict["damage"]["0"]["formula"]
     spell_dict["damage_type"] = raw_spell_dict["damage"]["0"]["type"]
-    spell_dict["range"] = raw_spell_dict["range"]["value"]
+    try:
+        spell_dict["range"] = raw_spell_dict["range"]["value"].split()[0]
+    except IndexError:
+        spell_dict["range"] = 0
     spell_dict["area"] = raw_spell_dict["area"]
-    spell_dict["target"] = raw_spell_dict["target"]["value"]
+    try:
+        spell_dict["targets"] = raw_spell_dict["target"]["value"].split()[0]
+    except IndexError:
+        spell_dict["targets"] = 0
 
     try:
         if "save" in raw_spell_dict["defense"]:

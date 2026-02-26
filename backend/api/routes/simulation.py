@@ -105,7 +105,7 @@ def convert_to_player_dict(character: Character) -> dict[str, any]:
                 "range": spell.range_,
                 "area": spell.area,
                 "save": spell.save,
-                "target": spell.target,
+                "targets": spell.targets,
                 "actions": spell.actions,
             }
             actions_dict["spells"].append(spell_dict)
@@ -123,6 +123,7 @@ def convert_to_player_dict(character: Character) -> dict[str, any]:
         "defenses": defense_dict,
         "actions": actions_dict,
         "ancestry": character.ancestry,
+        "heritage": character.heritage,
         "class": character.class_,
     }
 

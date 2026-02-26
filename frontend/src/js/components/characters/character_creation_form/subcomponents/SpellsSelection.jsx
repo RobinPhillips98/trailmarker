@@ -21,14 +21,14 @@ export default function SpellsSelection({ editing, savedCharacter }) {
         damage_type: spell.damage_type,
         range: spell.range,
         area: spell.area,
-        target: spell.target,
+        targets: spell.targets,
         actions: spell.actions,
         save: spell.save,
       }))
-    : [{}];
+    : [];
 
   return (
-    <Card title="Spells" style={{ width: "100%" }}>
+    <Card title="Offensive Spells" style={{ width: "100%" }}>
       {/* Allow user to add as many spells as they want, with each spell
       having the same style of input */}
       <Form.List name={["actions", "spells"]} initialValue={initialSpells}>
@@ -123,17 +123,18 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       rules={[
                         { required: true, message: "Please input a range" },
                       ]}
+                      initialValue={5}
                     >
-                      <Input placeholder="120 feet" />
+                      <InputNumber min={5} max={1000} />
                     </Form.Item>
                   </Col>
                   <Col span={12}>
                     <Form.Item
                       {...restField}
-                      name={[name, "target"]}
-                      label="Target"
+                      name={[name, "targets"]}
+                      label="Targets"
                     >
-                      <Input placeholder="1 creature" />
+                      <InputNumber min={0} max={10} />
                     </Form.Item>
                   </Col>
                 </Row>
@@ -154,7 +155,7 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       name={[name, "area", "value"]}
                       label="Area value"
                     >
-                      <Input placeholder="15 feet" />
+                      <InputNumber min={0} max={500} />
                     </Form.Item>
                   </Col>
                 </Row>

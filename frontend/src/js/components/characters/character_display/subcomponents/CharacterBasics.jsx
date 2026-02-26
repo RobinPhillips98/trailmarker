@@ -15,7 +15,9 @@ export default function CharacterBasics({ character }) {
     <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
       <Col xs={24} sm={12} md={6}>
         <Card title="Ancestry" size="small">
-          <Text>{toTitleCase(character.ancestry)}</Text>
+          <Text>
+            {toTitleCase(character.heritage)} {toTitleCase(character.ancestry)}
+          </Text>
         </Card>
       </Col>
       <Col xs={24} sm={12} md={6}>
