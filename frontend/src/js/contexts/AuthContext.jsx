@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -7,21 +7,44 @@ import {
   fetchUserProfile,
 } from "../services/AuthHelpers";
 import { errorAlert } from "../services/helpers";
+import api, { setupAuthInterceptor } from "../api";
 
 const AuthContext = createContext({});
 
-/**
- * A provider to allow components to use authentication methods
- *
- * @param {object} props
- * @param {JSX.Element} props.children The child components of the AuthProvider
- * @returns {JSX.Element}
- */
+function decodeTokenPayload(token) {
+  try {
+    const payload = token.split(".")[1];
+    return JSON.parse(atob(payload));
+  } catch {
+    return null;
+  }
+}
+
+function isTokenExpired(token) {
+  const payload = decodeTokenPayload(token);
+  if (!payload?.exp) return true;
+  return Date.now() >= payload.exp * 1000;
+}
+
 function AuthProvider({ children }) {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const storedToken = localStorage.getItem("token");
+  const [token, setToken] = useState(
+    storedToken && !isTokenExpired(storedToken) ? storedToken : null,
+  );
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const interceptorIdRef = useRef(null);
 
+  // If there was a stored token but it's already expired on load, clear it
+  useEffect(() => {
+    if (storedToken && isTokenExpired(storedToken)) {
+      localStorage.removeItem("token");
+      alert("Your session has expired. Please log in again.");
+      navigate("/login");
+    }
+  }, []);
+
+  // Fetch user profile whenever the token changes
   useEffect(() => {
     if (token) {
       const getUser = async () => {
@@ -32,13 +55,45 @@ function AuthProvider({ children }) {
     }
   }, [token]);
 
-  /**
-   * A wrapper function for loginUser that saves a JSON Web Token to local storage
-   * if the login is successful, and alerts if it is not
-   *
-   * @param {string} username The username entered by the user
-   * @param {string} password The password entered by the user
-   */
+  // Set up the Axios interceptor to catch 401s (e.g. token expired mid-session)
+  useEffect(() => {
+    interceptorIdRef.current = setupAuthInterceptor(() => {
+      setToken(null);
+      setUser(null);
+      localStorage.removeItem("token");
+      alert("Your session has expired. Please log in again.");
+      navigate("/login");
+    });
+
+    return () => {
+      if (interceptorIdRef.current !== null) {
+        api.interceptors.response.eject(interceptorIdRef.current);
+      }
+    };
+  }, [navigate]);
+
+  // Proactively log the user out when the token's expiration time is reached
+  useEffect(() => {
+    if (!token) return;
+
+    const payload = decodeTokenPayload(token);
+    if (!payload?.exp) return;
+
+    const msUntilExpiry = payload.exp * 1000 - Date.now();
+    if (msUntilExpiry <= 0) return; // Already expired — handled elsewhere
+
+    const timer = setTimeout(() => {
+      setToken(null);
+      setUser(null);
+      localStorage.removeItem("token");
+      alert("Your session has expired. Please log in again.");
+      navigate("/login");
+    }, msUntilExpiry);
+
+    // Clear the timer if the token changes before it fires (e.g. logout)
+    return () => clearTimeout(timer);
+  }, [token, navigate]);
+
   async function login(username, password) {
     try {
       const response = await loginUser({ username, password });
@@ -54,13 +109,6 @@ function AuthProvider({ children }) {
     }
   }
 
-  /**
-   * A wrapper function for registerUser that navigates to /login if the
-   * registration is successful, and alerts if it is not.
-   *
-   * @param {string} username The username entered by the user
-   * @param {string} password The password entered by the user
-   */
   async function register(username, password) {
     try {
       await registerUser({ username, password });
@@ -70,10 +118,6 @@ function AuthProvider({ children }) {
     }
   }
 
-  /**
-   * Logs the user out by deleting the JSON Web Token from local storage and
-   * setting token and user to null
-   */
   function logout() {
     setToken(null);
     setUser(null);
