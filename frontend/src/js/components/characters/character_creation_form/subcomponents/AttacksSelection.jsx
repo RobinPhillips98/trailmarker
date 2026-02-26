@@ -1,7 +1,7 @@
 import { Button, Card, Form, Input, InputNumber, Select } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 
-import { damageTypes } from "../../characterHelpers";
+import { damageTypes, weaponTraits } from "../../characterHelpers";
 
 /**
  * A component to allow a user to add attacks to a player character
@@ -19,6 +19,7 @@ export default function AttacksSelection({ editing, savedCharacter }) {
         attackBonus: attack.attackBonus,
         damage: attack.damage,
         damageType: attack.damageType,
+        traits: attack.traits,
       }))
     : [{}];
 
@@ -77,12 +78,16 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                 >
                   <Select options={damageTypes.slice(0, 3)} />
                 </Form.Item>
+
+                <Form.Item {...restField} name={[name, "range"]} label="Range">
+                  <InputNumber min={5} max={500} />
+                </Form.Item>
                 <Form.Item
                   {...restField}
-                  name={[name, "range"]}
-                  label="Range"
+                  name={[name, "traits"]}
+                  label="Traits"
                 >
-                  <InputNumber min={5} max={500}/>
+                  <Select mode="multiple" allowClear options={weaponTraits} />
                 </Form.Item>
                 <Button
                   type="dashed"

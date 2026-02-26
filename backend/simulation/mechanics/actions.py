@@ -2,7 +2,7 @@ import math
 import random
 import re
 
-from ..mechanics.misc import Degree, Die, calculate_dos, d20
+from ..mechanics.misc import Degree, Die, calculate_dos, d6, d8, d10, d20
 
 
 class Action:
@@ -12,18 +12,32 @@ class Action:
         name: The name of the action
         cost: An integer indicating the cost of the action from 1 to 3
         weight: An integer indicating how likely the action is to be selected
+        traits: The list of traits the action has, ex. agile or finesse
         range: The distance at which the action can target a creature
         ranged: Whether the action can be used at a distance
+        damage_type: The type of damage the action deals
+        num_dice: The number of dice rolled for damage
+        die_size: The number of faces on the die rolled for damage
+        damage_bonus: The bonus added to the damage roll for the action
     """
 
     def __init__(
-        self, name: str = "Undefined", cost: int = 1, weight: int = 0
+        self,
+        name: str = "Undefined",
+        cost: int = 1,
+        weight: int = 0,
+        traits: list[str] = [],
     ):
         self.name: str = name
         self.cost: int = cost
         self.weight: int = weight
+        self.traits: list[str] = traits
         self.range: int = 5
         self.ranged: bool = False
+        self.damage_type: str = ""
+        self.num_dice: int = 0
+        self.die_size: int = 0
+        self.damage_bonus: int = 0
 
     def __repr__(self):
         return self.name.lower()
@@ -35,8 +49,11 @@ class Action:
         in_melee: bool = False,
         creature=None,
     ) -> int:
-        if self.cost > actions_remaining or (
-            self.name.lower() == "raise shield" and creature.shield_raised
+        if (
+            self.cost > actions_remaining
+            or (self.name.lower() == "raise shield" and creature.shield_raised)
+            or (isinstance(self, Spell) and self.slots <= 0)
+            or not self.check_valid_damage(creature)
         ):
             return -math.inf
         else:
@@ -58,15 +75,17 @@ class Action:
             # Calculate attack roll and check for hit before calculating damage
             attack_roll = d20.roll()
             roll_display = ""
+            penalty_per_attack = 4 if "agile" in self.traits else 5
+            total_penalty = penalty_per_attack * attacker.multi_attack
             if isinstance(self, Attack):
-                attack_total = attack_roll + self.attack_bonus - attacker.map
+                attack_total = attack_roll + self.attack_bonus - total_penalty
                 roll_display = (
                     f"{attack_roll} + {self.attack_bonus}"
-                    if attacker.map <= 0
-                    else f"{attack_roll} + {self.attack_bonus} - {attacker.map}"  # noqa: E501
+                    if total_penalty <= 0
+                    else f"{attack_roll} + {self.attack_bonus} - {total_penalty}"  # noqa: E501
                 )
                 if attacker.encounter:
-                    attacker.map += 5
+                    attacker.multi_attack += 1
             elif isinstance(self, Spell):
                 attack_total = attack_roll + attacker.spell_attack_bonus
                 roll_display = f"{attack_roll} + {attacker.spell_attack_bonus}"
@@ -92,24 +111,103 @@ class Action:
         damage_rolls = self._roll_for_damage()
         damage = sum(damage_rolls) + self.damage_bonus
 
-        rolls_str = " + ".join(str(roll) for roll in damage_rolls)
+        damage_display = " + ".join(str(roll) for roll in damage_rolls)
 
-        damage_display = (
-            f"{rolls_str} + {self.damage_bonus}"
-            if self.damage_bonus
-            else f"{rolls_str}"
-        )
+        if self.damage_bonus:
+            damage_display += f" + {self.damage_bonus}"
+
+        if attacker.sneak_attack and "finesse" in self.traits:
+            sneak_attack_roll = d6.roll()
+            damage += sneak_attack_roll
+            attacker.log(
+                f"{attacker} sneak attacks for {sneak_attack_roll} extra damage."  # noqa: E501
+            )
+            damage_display += f" + {sneak_attack_roll}"
 
         if degree_of_success == Degree.CRITICAL_SUCCESS:
             attacker.log(f"{attacker} dealt a critical hit to {target}!")
             damage *= 2
+            damage_display += " doubled"
+            if "deadly-6" in self.traits:
+                deadly_roll = d6.roll()
+                damage += deadly_roll
+                damage_display += f" + {deadly_roll}"
+            elif "deadly-8" in self.traits:
+                deadly_roll = d8.roll()
+                damage += deadly_roll
+                damage_display += f" + {deadly_roll}"
+            elif "deadly-10" in self.traits:
+                deadly_roll = d10.roll()
+                damage += deadly_roll
+                damage_display += f" + {deadly_roll}"
 
         attacker.log(
-            f"{attacker} dealt {damage} ({damage_display}) {damage_type} damage to {target}!"  # noqa: #501
+            f"{attacker} dealt {damage} ({damage_display}) {damage_type} damage to {target}!"  # noqa: E501
         )
         target.take_damage(damage, damage_type)
 
         return True
+
+    def check_valid_damage(self, creature, target=None) -> bool:
+        """Checks if the action is using an invalid damage type.
+
+        This primarily applies to vitality damage which only works against
+        undead creatures. Basically, if an attack or spell does vitality damage
+        and no potential targets are undead, we don't want to pick it.
+
+        First, check if all targets are immune to the damage type. If so,
+        damage is invalid. If not, proceed to vitality check.
+
+        Doing the checks backwards like this is a bit more difficult to read
+        and understand, but is far more efficient at runtime. This way, the
+        function will return at the soonest opportunity.
+
+        Optionally, a target can be specified, in which case the function
+        checks if that specific target is immune.
+
+        Args:
+            creature (Creature): The creature using the action
+            target (Creatyre, optional): The target being attacked.
+                Defaults to None.
+
+        Returns:
+            bool: True if the damage is a valid type, false if not
+        """
+        # Not an attack or spell, don't need to worry about damage type
+        if not isinstance(self, Attack) and not isinstance(self, Spell):
+            return True
+        # First, check if all targets are immune to the damage type:
+        if creature.team == 1:  # Only enemies have immunities
+            if target:
+                if self.damage_type in target.immunities:
+                    return False
+            all_targets_immune = True
+            for enemy in creature.encounter.enemies:
+                if self.damage_type not in enemy.immunities:
+                    all_targets_immune = False
+                    break
+            if all_targets_immune:
+                return False
+
+        # Doesn't deal vitality damage, no need to continue the checks
+        if self.damage_type != "vitality":
+            return True
+        # Players can't be undead, and it is vitality damage
+        if creature.team == 2:
+            return False
+
+        if target:
+            if "undead" in target.traits:
+                return True
+            else:
+                return False
+
+        for enemy in creature.encounter.enemies:
+            # We found an undead enemy, vitality damage can work
+            if "undead" in enemy.traits:
+                return True
+
+        return False
 
     def _roll_for_damage(self) -> list[int]:
         damage_die = Die(self.die_size)
@@ -119,26 +217,23 @@ class Action:
 
         return damage_rolls
 
-    # TODO: Complex actions.
-
 
 class Attack(Action):
     """A representation of an attack
 
     Attributes:
         attack_bonus: The bonus added to the attack roll for the attack
-        damage_type: The type of damage the attack deals
-        num_dice: The number of dice rolled for damage
-        die_size: The number of faces on the die rolled for damage
-        damage_bonus: The bonus added to the damage roll for the attack
     """
 
     def __init__(self, attack_dict: dict[str, str | int]):
         self.name: str = attack_dict["name"].strip()
         self.range: int = attack_dict.get("range", 5)
+        if not self.range:
+            self.range = 5
         self.ranged: bool = self.range > 5
         self.attack_bonus: int = attack_dict["attackBonus"]
         self.damage_type: str = attack_dict["damageType"]
+        self.traits = attack_dict.get("traits", [])
 
         # Due to regex verification on frontend, damage will always be listed
         # in the form "XdY" or "XdY±Z", so split on d, +, and - in order to
@@ -167,13 +262,19 @@ class Attack(Action):
         in_melee: bool = False,
         creature=None,
     ) -> int:
-        if self.cost > actions_remaining:
-            return -math.inf
+        base_weight = super().calculate_weight(
+            penalty, actions_remaining, in_melee, creature
+        )
+        if math.isinf(base_weight):
+            return base_weight
         if in_melee and self.ranged:
             return 0
 
-        effective_weight = self.weight - penalty
-        if penalty >= 8:  # a third attack is almost always a bad option
+        penalty_per_attack = 4 if "agile" in self.traits else 5
+        total_penalty = penalty_per_attack * penalty
+
+        effective_weight = base_weight - total_penalty
+        if total_penalty >= 8:  # a third attack is almost always a bad option
             effective_weight *= 0.5
 
         return effective_weight
@@ -185,10 +286,6 @@ class Spell(Action):
     Attributes:
         slots: The number of slots the spell is prepared in
         level: The level of the spell
-        num_dice: The number of dice rolled for damage
-        die_size: The number of faces on the die rolled for damage
-        damage_bonus: The bonus added to the damage roll for the spell
-        damage_type: The type of damage the spell deals
         area_type: The type of area the spell has, such as a burst, if any
         area_size: The size of the spell's area, such as a radius, if any
         save: The saving throw used to defend against the spell, if any
@@ -196,12 +293,13 @@ class Spell(Action):
     """
 
     def __init__(
-        self, spell_dict: dict[str, str | int | dict[str, str]], bonus: int
+        self, spell_dict: dict[str, str | int | dict[str, str]], bonus: int = 0
     ):
         self.name: str = spell_dict["name"].strip()
         self.slots: int = spell_dict["slots"]
         self.level: int = spell_dict["level"]
-        self.bonus = bonus
+        self.bonus: int = bonus
+        self.traits: list[str] = []
 
         damage_roll_string = spell_dict["damage_roll"]
         split_string = re.split(r"d|\+|-", damage_roll_string)
@@ -270,12 +368,16 @@ class Spell(Action):
         in_melee: bool = False,
         creature=None,
     ) -> int:
-        if self.cost > actions_remaining or self.slots == 0:
-            return -math.inf
+        base_weight = super().calculate_weight(
+            penalty, actions_remaining, in_melee, creature
+        )
+        if math.isinf(base_weight):
+            return base_weight
+
         if self.level == 0:
-            weight = self.weight * 1.5
+            weight = base_weight * 1.5
         else:
-            weight = self.weight * self.slots
+            weight = base_weight * self.slots
 
         auto_hit = (
             self.name.lower() == "force barrage"
@@ -293,7 +395,7 @@ class Spell(Action):
             targets = []
 
             # Pick best target and move to them
-            first_target = caster.pick_target(self.range)
+            first_target = caster.pick_target(self)
             targets.append(first_target)
             caster.move_to(first_target, self.range)
             if caster.num_actions <= self.cost:
@@ -302,7 +404,7 @@ class Spell(Action):
             caster.log(f"{caster} casts {self}!")
             # Pick remaining targets
             for i in range(self.targets - 1):
-                target = caster.pick_target(self.range)
+                target = caster.pick_target(self)
                 targets.append(target)
             for target in targets:
                 self.attack(caster, target)

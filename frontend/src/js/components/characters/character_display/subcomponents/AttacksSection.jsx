@@ -1,4 +1,4 @@
-import { Card, Row, Col, List } from "antd";
+import { Card, Row, Col, List, Tag } from "antd";
 import { toTitleCase } from "../../../../services/helpers";
 
 /**
@@ -29,8 +29,40 @@ export default function AttacksSection({ character }) {
                   <strong>Type:</strong> {toTitleCase(attack.damageType)}
                 </List.Item>
                 <List.Item>
-                  <strong>Range: </strong> {attack.range ? attack.range : "5"}
-                  {" "} feet
+                  <strong>Range: </strong> {attack.range ? attack.range : "5"}{" "}
+                  feet
+                </List.Item>
+                <List.Item>
+                  {attack.traits ? (
+                    <div style={{ minHeight: 0, flex: 1 }}>
+                      <strong>Traits:</strong>
+                      <div
+                        style={{
+                          marginTop: 4,
+                          display: "flex",
+                          flexWrap: "wrap",
+                          gap: 4,
+                          maxHeight: "100%",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {attack.traits.map((trait) => (
+                          <Tag
+                            key={trait}
+                            color="blue"
+                            style={{
+                              margin: 0,
+                              maxWidth: "100%",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            {trait}
+                          </Tag>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
                 </List.Item>
               </List>
             </Card>

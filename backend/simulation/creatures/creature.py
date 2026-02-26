@@ -117,22 +117,25 @@ class Creature:
             self.shield_value: int = None
 
         self.actions: list[Action] = []
-        if self.attacks:
-            self.actions.extend(self.attacks)
-        if self.spells:
-            self.actions.extend(self.spells)
-        if self.heals:
-            heal = Heal(self.heals)
-            self.actions.append(heal)
-        if self.shield_value:
-            raise_shield = Action(name="Raise Shield", weight=10)
-            self.actions.append(raise_shield)
+        if "actions" in creature.keys():
+            if self.attacks:
+                self.actions.extend(self.attacks)
+            if self.spells:
+                self.actions.extend(self.spells)
+            if self.heals:
+                heal = Heal(self.heals)
+                self.actions.append(heal)
+            if self.shield_value:
+                raise_shield = Action(name="Raise Shield", weight=10)
+                self.actions.append(raise_shield)
+
+        self.sneak_attack = False
 
         # Encounter Data
         self.encounter = None
         self.initiative: int = 0
         self.num_actions: int = 0
-        self.map: int = 0
+        self.multi_attack: int = 0
         self.team: int = 0
         self.is_dead: bool = False
         self.shield_raised: bool = False
@@ -170,7 +173,7 @@ class Creature:
         self.log(f"{self}'s turn:")
         self.log(f"{self}'s current hit points: {self.current_hit_points}")
         self.num_actions = 3
-        self.map = 0
+        self.multi_attack = 0
 
         if self.shield_raised:
             self.shield_raised = False
@@ -182,12 +185,17 @@ class Creature:
             else:
                 break
 
-    def calculate_weight(self, attacker: Self, consider_distance: bool) -> int:
+    def calculate_weight(
+        self, attacker: Self, attack: Attack, consider_distance: bool
+    ) -> int:
         """Calculates how valuable a target the creature is.
 
         Returns:
             int: A number representing how valuable the target is.
         """
+        if not attack.check_valid_damage(attacker, self):
+            return -math.inf
+
         damage_taken = self.max_hit_points - self.current_hit_points
 
         weight = damage_taken * self.level
@@ -195,11 +203,20 @@ class Creature:
             distance = self.calculate_distance(attacker)
             weight -= distance / 5
 
+        if self.team == 2:
+            if attack.damage_type in self.immunities:
+                weight = -100
+            if attack.damage_type in self.resistances.keys():
+                weight /= 2
+            if attack.damage_type in self.weaknesses.keys():
+                weight *= 2
+
         return weight
 
-    def pick_target(self, attack_range) -> Self:
+    def pick_target(self, attack: Attack) -> Self:
         targets = []
         consider_distance = True
+        attack_range = attack.range
         targets = (
             self.encounter.enemies
             if self.team == 1
@@ -217,13 +234,18 @@ class Creature:
             consider_distance = False
 
         best_target = targets[0]
-        best_weight = best_target.calculate_weight(self, consider_distance)
+        best_weight = best_target.calculate_weight(
+            self, attack, consider_distance
+        )
 
         for target in targets[1:]:
-            if target.calculate_weight(self, consider_distance) > best_weight:
+            if (
+                target.calculate_weight(self, attack, consider_distance)
+                > best_weight
+            ):
                 best_target = target
                 best_weight = best_target.calculate_weight(
-                    self, consider_distance
+                    self, attack, consider_distance
                 )
 
         return best_target
@@ -297,6 +319,14 @@ class Creature:
         """
         self.current_hit_points -= damage
 
+        # Non-undead targets shouldn't be chosen for vitality attacks, but just
+        # in case, vitality attacks cannot damage them
+        if damage_type == "vitality":
+            undead = hasattr(self, "traits") and "undead" in self.traits
+            if not undead:
+                self.log(f"{self} is not undead, vitality damage invalid")
+                return
+
         if self.current_hit_points <= 0:
             self._die()
         else:
@@ -326,8 +356,8 @@ class Creature:
 
         match degree_of_success:
             case Degree.CRITICAL_SUCCESS:
-                damage_taken = 0
                 self.log(f"{self} critically succeeded. No damage taken!")
+                return
             case Degree.SUCCESS:
                 damage_taken = math.floor(damage / 2)
                 self.log(f"{self} succeeded and takes {damage_taken} damage")
@@ -370,23 +400,23 @@ class Creature:
         in_melee = self._check_adjacent_creatures()
         best_action = self.actions[0]
         best_weight = best_action.calculate_weight(
-            self.map, self.num_actions, in_melee, self
+            self.multi_attack, self.num_actions, in_melee, self
         )
 
         # Just a simple linear search because number of actions should never
         # get too high (typically 3-5, 10-15 at most w/ spells)
         for action in self.actions[1:]:
             action_weight = action.calculate_weight(
-                self.map, self.num_actions, in_melee, self
+                self.multi_attack, self.num_actions, in_melee, self
             )
             if action_weight > best_weight:
                 best_action = action
                 best_weight = best_action.calculate_weight(
-                    self.map, self.num_actions, in_melee, self
+                    self.multi_attack, self.num_actions, in_melee, self
                 )
 
         if isinstance(best_action, Attack):
-            target = self.pick_target(best_action.range)
+            target = self.pick_target(best_action)
             if self.calculate_distance(target) > best_action.range:
                 self.move_to(target, best_action.range)
                 if self.num_actions <= 0:

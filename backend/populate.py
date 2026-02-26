@@ -170,6 +170,7 @@ def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
             "spells": [],
             "heals": 0,
             "shield": 0,
+            "sneak_attack": False,
         },
     }
 
@@ -276,6 +277,8 @@ def add_actions(items: dict[str, any], enemy: dict[str, any]) -> None:
                 enemy["actions"]["shield"] = item["system"]["acBonus"]
             elif item["type"] == "spell" and enemy["actions"]["shield"] < 1:
                 enemy["actions"]["shield"] = 1
+        elif item["name"].lower() == "sneak attack":
+            enemy["actions"]["sneak_attack"] = True
 
 
 def add_attack(item: dict[str, any], enemy: dict[str, any]) -> None:
@@ -294,6 +297,7 @@ def add_attack(item: dict[str, any], enemy: dict[str, any]) -> None:
         pass  # Some attacks don't do damage, so don't add them
     if item["system"]["range"]:
         attack_dict["range"] = item["system"]["range"]["increment"]
+    attack_dict["traits"] = item["system"]["traits"]["value"]
     enemy["actions"]["attacks"].append(attack_dict)
 
 
@@ -352,6 +356,7 @@ def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
         "spells": [],
         "heals": enemy["actions"]["heals"],
         "shield": enemy["actions"]["shield"],
+        "sneak_attack": enemy["actions"]["sneak_attack"],
     }
     for attack in enemy["actions"]["attacks"]:
         attack_dict = {
@@ -367,6 +372,7 @@ def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
             attack_dict["range"] = attack["range"]
         except KeyError:
             pass
+        attack_dict["traits"] = attack["traits"]
         actions_dict["attacks"].append(attack_dict)
 
     for spell in enemy["actions"]["spells"]:

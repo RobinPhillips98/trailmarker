@@ -23,6 +23,8 @@ class Player(Creature):
         self.team = 1
         self.ancestry: str = player["ancestry"]
         self.class_: str = player["class"]
+        if self.class_.lower() == "rogue":
+            self.sneak_attack = True
 
     # Public Methods
 
@@ -38,6 +40,5 @@ class Player(Creature):
 
     def _die(self) -> None:
         super()._die()
-        # TODO: Implement proper dying for players (after healing)
         if self.simulation:
             self.simulation.players_killed += 1

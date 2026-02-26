@@ -134,6 +134,8 @@ test_enemy = {
         "saves": {"fortitude": 5, "reflex": 7, "will": 3},
     },
     "max_hit_points": 6,
+    "spell_attack_bonus": None,
+    "spell_dc": None,
     "speed": 25,
     "actions": {
         "attacks": [
@@ -142,6 +144,8 @@ test_enemy = {
                 "attackBonus": 7,
                 "damage": "1d6",
                 "damageType": "slashing",
+                "range": None,
+                "traits": ["agile", "finesse", "versatile-p"],
             },
             {
                 "name": "Shortbow",
@@ -149,11 +153,18 @@ test_enemy = {
                 "damage": "1d6",
                 "damageType": "piercing",
                 "range": 60,
+                "traits": ["deadly-d10", "reload-0"],
             },
-        ]
+        ],
+        "spells": [],
+        "heals": 0,
+        "shield": 0,
+        "sneak_attack": False,
     },
-    "traits": ["common", "sm", "goblin", "humanoid"],
+    "traits": ["small", "goblin", "humanoid"],
     "immunities": [],
+    "weaknesses": {},
+    "resistances": {},
 }
 
 test_player_2 = {
@@ -468,7 +479,8 @@ test_enemy_2 = {
                 "damageType": "piercing",
                 "range": 60,
             },
-        ]
+        ],
+        "sneak_attack": False,
     },
     "traits": ["common", "sm", "goblin", "humanoid"],
     "immunities": [],
@@ -549,9 +561,80 @@ test_enemy_3 = {
                 "actions": "2",
             },
         ],
+        "sneak_attack": False,
     },
     "traits": ["common", "sm", "goblin", "humanoid"],
     "immunities": [],
+}
+
+test_enemy_sneak = {
+    "id": 12,
+    "name": "Drow Sneak",
+    "level": 2,
+    "perception": 6,
+    "skills": {
+        "acrobatics": 8,
+        "arcana": None,
+        "athletics": None,
+        "crafting": None,
+        "deception": 7,
+        "diplomacy": None,
+        "intimidation": None,
+        "lore": None,
+        "medicine": None,
+        "nature": None,
+        "occultism": None,
+        "performance": None,
+        "religion": None,
+        "society": 4,
+        "stealth": 10,
+        "survival": None,
+        "thievery": 8,
+    },
+    "attribute_modifiers": {
+        "strength": 2,
+        "constitution": 2,
+        "dexterity": 4,
+        "intelligence": 0,
+        "wisdom": 0,
+        "charisma": 1,
+    },
+    "defenses": {
+        "armor_class": 19,
+        "saves": {"fortitude": 6, "reflex": 10, "will": 6},
+    },
+    "max_hit_points": 26,
+    "spell_attack_bonus": None,
+    "spell_dc": None,
+    "speed": 30,
+    "actions": {
+        "attacks": [
+            {
+                "name": "Shortsword",
+                "attackBonus": 10,
+                "damage": "1d6+4",
+                "damageType": "piercing",
+                "range": None,
+                "traits": ["agile", "finesse", "versatile-s"],
+            },
+            {
+                "name": "Hand Crossbow",
+                "attackBonus": 10,
+                "damage": "1d6",
+                "damageType": "piercing",
+                "range": 60,
+                "traits": ["reload-1"],
+            },
+        ],
+        "spells": [],
+        "heals": 0,
+        "shield": 0,
+        "sneak_attack": True,
+    },
+    "traits": ["medium", "drow", "elf", "humanoid"],
+    "immunities": ["sleep"],
+    "weaknesses": {},
+    "resistances": {},
 }
 
 test_party = [test_player, test_player_2, test_player_3, test_player_4]
