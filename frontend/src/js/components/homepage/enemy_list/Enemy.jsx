@@ -113,7 +113,8 @@ export default function Enemy({ handleAdd, enemy }) {
                 ))}
               </div>
             </div>
-            {(enemy.immunities === undefined || enemy.immunities.length == 0) ? null : (
+            {enemy.immunities === undefined ||
+            enemy.immunities.length == 0 ? null : (
               <div style={{ minHeight: 0, flex: 1 }}>
                 <Text
                   type="secondary"
@@ -148,7 +149,7 @@ export default function Enemy({ handleAdd, enemy }) {
                 </div>
               </div>
             )}
-            {(isEmpty(enemy.weaknesses)) ? null : (
+            {isEmpty(enemy.weaknesses) ? null : (
               <div style={{ minHeight: 0, flex: 1 }}>
                 <Text
                   type="secondary"
@@ -183,7 +184,7 @@ export default function Enemy({ handleAdd, enemy }) {
                 </div>
               </div>
             )}
-            {(isEmpty(enemy.resistances)) ? null : (
+            {isEmpty(enemy.resistances) ? null : (
               <div style={{ minHeight: 0, flex: 1 }}>
                 <Text
                   type="secondary"

@@ -7,7 +7,6 @@ import {
   Row,
   Col,
   Switch,
-  Typography,
   Card,
 } from "antd";
 import { ClearOutlined } from "@ant-design/icons";

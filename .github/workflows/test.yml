@@ -1,4 +1,4 @@
-name: Pull Request Check
+name: Static Analysis Check
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - "*"
 
 jobs:
-  pull-request-check:
+  static-analysis-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,6 +15,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
             python-version: '3.13' 
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -29,7 +33,7 @@ jobs:
             cd backend
             poetry install
 
-      - name: Check code quality using black, isort, and flake8
+      - name: Check backend code quality using black, isort, and flake8
         run: |
             # bash scripts/check.sh
             cd backend
@@ -44,7 +48,23 @@ jobs:
 
             echo 'Completed checks'
 
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Check frontend code quality using ESLint and Prettier
+        run: |
+          cd frontend
+          echo 'Running ESLint...'
+          npm run lint
+
+          echo 'Running Prettier...'
+          npm run format:check
+
+          echo 'Completed checks'
+
       - name: Run automated tests
         run: |
           cd backend
-          poetry run pytest -v 
+          poetry run pytest -v

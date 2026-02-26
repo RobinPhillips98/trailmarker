@@ -1,4 +1,4 @@
-import { Card, Form, Input, InputNumber, Select } from "antd";
+import { Card, Form, Input, Select } from "antd";
 
 import {
   ancestries,

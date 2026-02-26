@@ -1,4 +1,4 @@
-import { Card, Row, Col, Typography, Empty } from "antd";
+import { Card, Row, Col, Typography } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
 import { toTitleCase } from "../../../../services/helpers";
 
