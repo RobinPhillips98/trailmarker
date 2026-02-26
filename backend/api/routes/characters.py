@@ -131,7 +131,7 @@ def convert_to_db_character(
                 "range": spell.range_,
                 "area": spell.area,
                 "save": spell.save,
-                "target": spell.target,
+                "targets": spell.targets,
                 "actions": spell.actions,
             }
             actions_dict["spells"].append(spell_dict)
@@ -142,6 +142,7 @@ def convert_to_db_character(
         player=character.player,
         xp=character.xp,
         ancestry=character.ancestry,
+        heritage=character.heritage,
         background=character.background,
         class_=character.class_,
         level=character.level,

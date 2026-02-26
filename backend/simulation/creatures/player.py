@@ -22,6 +22,7 @@ class Player(Creature):
         super().__init__(player, simulation)
         self.team = 1
         self.ancestry: str = player["ancestry"]
+        self.heritage: str = player["heritage"]
         self.class_: str = player["class"]
         if self.class_.lower() == "rogue":
             self.sneak_attack = True

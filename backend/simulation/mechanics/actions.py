@@ -312,23 +312,14 @@ class Spell(Action):
 
         self.damage_type: str = spell_dict["damage_type"]
 
-        range_ = spell_dict["range"].lower().strip()
-        if not range_ or range_ == "none" or range_ == "melee":
-            self.range: int = 5
-        else:
-            self.range: int = int(range_.split()[0])
-
+        self.range = spell_dict["range"]
         self.ranged: bool = self.range > 5
 
         try:
             area_dict = spell_dict["area"]
             if area_dict:
                 self.area_type: str = area_dict["type"]
-                area_value = area_dict["value"]
-                if isinstance(area_value, str):
-                    self.area_size: int = int(area_value.split()[0])
-                else:
-                    self.area_size: int = area_value
+                self.area_size: int = int(area_dict["value"])
             else:
                 self.area_type: str = None
                 self.area_size: int = 0
@@ -342,11 +333,12 @@ class Spell(Action):
             self.save: str = None
 
         try:
-            target = spell_dict["target"].lower().strip()
-            if not target or target == "none" or target == "n/a":
-                self.targets: int = 0
-            else:
-                self.targets: int = int(target.split()[0])
+            self.targets: int = spell_dict["targets"]
+            # target = spell_dict["targets"].lower().strip()
+            # if not target or target == "none" or target == "n/a":
+            #     self.targets: int = 0
+            # else:
+            #     self.targets: int = int(target.split()[0])
         except KeyError:
             self.targets: int = 0
 

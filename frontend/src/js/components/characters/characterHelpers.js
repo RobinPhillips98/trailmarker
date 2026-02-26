@@ -19,6 +19,51 @@ export const ancestries = [
   },
 ];
 
+export const dwarfHeritages = [
+  {
+    value: "death_warden",
+    label: "Death Warden Dwarf",
+  },
+  {
+    value: "forge",
+    label: "Forge Dwarf",
+  },
+  {
+    value: "rock",
+    label: "Rock Dwarf",
+  },
+];
+
+export const elfHeritages = [
+  {
+    value: "Cavern",
+    label: "Cavern Elf",
+  },
+  {
+    value: "whisper",
+    label: "Whisper Elf",
+  },
+  {
+    value: "woodland",
+    label: "Woodland Elf",
+  },
+];
+
+export const humanHeritages = [
+  {
+    value: "battle_trained",
+    label: "Battle Trained",
+  },
+  {
+    value: "skilled",
+    label: "Skilled",
+  },
+  {
+    value: "warden",
+    label: "Warden",
+  },
+];
+
 /**
  * A list with the available background options, formatted to be the options of a
  * select component
@@ -184,7 +229,7 @@ export const weaponTraits = [
     value: "agile",
     label: "Agile",
   },
-    {
+  {
     value: "deadly-6",
     label: "Deadly d6",
   },

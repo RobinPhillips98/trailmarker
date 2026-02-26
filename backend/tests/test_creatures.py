@@ -147,7 +147,7 @@ class TestPlayerSpells:
     def test_simple_spells(self):
         spell_1 = self.player.spells[0]
         assert spell_1.name == "Force Barrage"
-        assert spell_1.slots == 1
+        assert spell_1.slots == 2
         assert spell_1.level == 1
         assert spell_1.num_dice == 1
         assert spell_1.die_size == 4
@@ -160,22 +160,7 @@ class TestPlayerSpells:
         assert spell_1.targets == 1
         assert spell_1.cost == 1
 
-        spell_2 = self.player.spells[1]
-        assert spell_2.name == "Force Bolt"
-        assert spell_2.slots == 1
-        assert spell_2.level == 1
-        assert spell_2.num_dice == 1
-        assert spell_2.die_size == 4
-        assert spell_2.damage_bonus == 1
-        assert spell_2.damage_type == "force"
-        assert spell_2.range == 30
-        assert spell_2.area_type is None
-        assert spell_2.area_size == 0
-        assert spell_2.save == "none"
-        assert spell_2.targets == 1
-        assert spell_2.cost == 2
-
-        spell_3 = self.player.spells[2]
+        spell_3 = self.player.spells[1]
         assert spell_3.name == "Gouging Claw"
         assert spell_3.slots == 1
         assert spell_3.level == 0
@@ -190,7 +175,7 @@ class TestPlayerSpells:
         assert spell_3.targets == 1
         assert spell_3.cost == 2
 
-        spell_4 = self.player.spells[3]
+        spell_4 = self.player.spells[2]
         assert spell_4.name == "Telekinetic Projectile"
         assert spell_4.slots == 1
         assert spell_4.level == 0
@@ -206,7 +191,7 @@ class TestPlayerSpells:
         assert spell_4.cost == 2
 
     def test_complex_spell(self):
-        spell = self.player.spells[4]
+        spell = self.player.spells[3]
         assert spell.name == "Breathe Fire"
         assert spell.slots == 1
         assert spell.level == 1

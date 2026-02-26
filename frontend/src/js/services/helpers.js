@@ -11,7 +11,7 @@ export function toTitleCase(str) {
 
   return str
     .toLowerCase()
-    .split(" ")
+    .split(/[\s-_]/)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 }
@@ -40,7 +40,7 @@ export function isEmpty(obj) {
 
 export function errorAlert(message, error) {
   console.error(message, error);
-  alert(`${message}: ${error.response.data.detail}`)
+  alert(`${message}: ${error.response.data.detail}`);
 }
 
 // Source - https://stackoverflow.com/a/19270021
