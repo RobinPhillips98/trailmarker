@@ -22,8 +22,8 @@ class Enemy(Creature):
         super().__init__(enemy, simulation)
         self.traits: list[str] = enemy["traits"]
         self.immunities: list[str] = enemy["immunities"]
-        self.weaknesses: list[str, int] = enemy.get("weaknesses", {})
-        self.resistances: list[str, int] = enemy.get("resistances", {})
+        self.weaknesses: dict[str, int] = enemy.get("weaknesses", {})
+        self.resistances: dict[str, int] = enemy.get("resistances", {})
         self.team = 2
 
         # Any skill not specified in enemy data is set to none
@@ -61,6 +61,9 @@ class Enemy(Creature):
         if self.thievery is None:
             self.thievery = self.dexterity
 
+        if enemy["actions"]["sneak_attack"]:
+            self.sneak_attack = True
+
     # Public Methods
 
     def long_description(self) -> str:
@@ -85,12 +88,16 @@ class Enemy(Creature):
         elif "all-damage" in self.resistances.keys():
             damage_reduction = self.resistances["all-damage"]
             damage -= damage_reduction
+            if damage <= 0:
+                damage = 1
             self.log(
                 f"{self} is resistant to all damage, {damage_reduction} damage resisted, total {damage} damage."  # noqa
             )
         elif damage_type in self.resistances.keys():
             damage_reduction = self.resistances[damage_type]
             damage -= damage_reduction
+            if damage <= 0:
+                damage = 1
             self.log(
                 f"{self} is resistant to {damage_type}, {damage_reduction} damage resisted, total {damage} damage."  # noqa
             )

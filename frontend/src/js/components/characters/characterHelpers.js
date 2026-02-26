@@ -179,6 +179,59 @@ export const damageTypes = [
   },
 ];
 
+export const weaponTraits = [
+  {
+    value: "agile",
+    label: "Agile",
+  },
+    {
+    value: "deadly-6",
+    label: "Deadly d6",
+  },
+  {
+    value: "deadly-8",
+    label: "Deadly d8",
+  },
+  {
+    value: "deadly-10",
+    label: "Deadly d10",
+  },
+  {
+    value: "finesse",
+    label: "Finesse",
+  },
+  {
+    value: "forceful",
+    label: "Forceful",
+  },
+  {
+    value: "shove",
+    label: "Shove",
+  },
+
+  {
+    value: "sweep",
+    label: "Sweep",
+  },
+
+  {
+    value: "thrown",
+    label: "Thrown",
+  },
+  {
+    value: "versatile-s",
+    label: "Versatile S",
+  },
+  {
+    value: "versatile-p",
+    label: "Versatile P",
+  },
+  {
+    value: "volley",
+    label: "Volley",
+  },
+];
+
 /**
  * A list of the saving throws in Pathfinder
  */

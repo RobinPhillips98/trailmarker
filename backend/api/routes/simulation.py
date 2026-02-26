@@ -90,6 +90,8 @@ def convert_to_player_dict(character: Character) -> dict[str, any]:
                 "attackBonus": attack.attackBonus,
                 "damage": attack.damage,
                 "damageType": attack.damageType,
+                "range": attack.range,
+                "traits": attack.traits,
             }
             actions_dict["attacks"].append(attack_dict)
     if character.actions.spells:

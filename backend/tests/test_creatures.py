@@ -5,7 +5,9 @@ from .sample_data import (
     test_creature,
     test_enemy,
     test_enemy_3,
+    test_enemy_sneak,
     test_player,
+    test_player_3,
     test_player_4,
 )
 
@@ -269,7 +271,7 @@ class TestEnemy:
         assert self.enemy.will == 3
 
     def test_enemy_stats(self):
-        assert self.enemy.traits == ["common", "sm", "goblin", "humanoid"]
+        assert self.enemy.traits == ["small", "goblin", "humanoid"]
         assert self.enemy.immunities == []
 
     def test_attacks(self):
@@ -373,3 +375,15 @@ class TestCreatureMethods:
                 assert self.enemy.current_hit_points < prev_hp
 
         assert self.enemy.is_dead
+
+
+def TestSneakAttack():
+    rogue = Player(test_player_3)
+    drow_sneak = Enemy(test_enemy_sneak)
+    fighter = Player(test_player)
+    goblin = Enemy(test_enemy)
+
+    assert rogue.sneak_attack
+    assert drow_sneak.sneak_attack
+    assert not fighter.sneak_attack
+    assert not goblin.sneak_attack

@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { ConfigProvider, Flex, Layout, theme } from "antd";
+import { Alert, ConfigProvider, Flex, Layout, theme } from "antd";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import Register from "./components/user_authentication/Register.jsx";
@@ -13,6 +13,7 @@ import PolicyNotice from "./components/PolicyNotice.jsx";
 
 export default function App() {
   const { Header, Content, Footer } = Layout;
+  const { ErrorBoundary } = Alert;
   const themeConfig = {
     token: {
       colorBgLayout: "#0f1418",
@@ -37,42 +38,44 @@ export default function App() {
 
   return (
     <Router>
-      <AuthProvider>
-        <ConfigProvider theme={themeConfig}>
-          <Flex>
-            <Layout>
-              <Header
-                style={{
-                  background: themeConfig.token.colorBgContainer,
-                  marginBottom: 10,
-                }}
-              >
-                <NavBar />
-              </Header>
-              <Content>
-                <Routes>
-                  <Route path="/" element={<Homepage />} />
-                  <Route path="/characters" element={<Characters />} />
-                  <Route
-                    path="/characters/create"
-                    element={<CharacterCreationForm />}
-                  />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/simulation" element={<Simulation />} />
-                  <Route path="/copyright" element={<PolicyNotice />} />
-                </Routes>
-              </Content>
-              <Footer>
-                This website is not published, endorsed, or specifically
-                approved by Paizo Inc. We are expressly prohibited from charging
-                you to use or access this content.{" "}
-                <Link to="/copyright">See more.</Link>
-              </Footer>
-            </Layout>
-          </Flex>
-        </ConfigProvider>
-      </AuthProvider>
+      <ErrorBoundary>
+        <AuthProvider>
+          <ConfigProvider theme={themeConfig}>
+            <Flex>
+              <Layout>
+                <Header
+                  style={{
+                    background: themeConfig.token.colorBgContainer,
+                    marginBottom: 10,
+                  }}
+                >
+                  <NavBar />
+                </Header>
+                <Content>
+                  <Routes>
+                    <Route path="/" element={<Homepage />} />
+                    <Route path="/characters" element={<Characters />} />
+                    <Route
+                      path="/characters/create"
+                      element={<CharacterCreationForm />}
+                    />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/simulation" element={<Simulation />} />
+                    <Route path="/copyright" element={<PolicyNotice />} />
+                  </Routes>
+                </Content>
+                <Footer>
+                  This website is not published, endorsed, or specifically
+                  approved by Paizo Inc. We are expressly prohibited from
+                  charging you to use or access this content.{" "}
+                  <Link to="/copyright">See more.</Link>
+                </Footer>
+              </Layout>
+            </Flex>
+          </ConfigProvider>
+        </AuthProvider>
+      </ErrorBoundary>
     </Router>
   );
 }

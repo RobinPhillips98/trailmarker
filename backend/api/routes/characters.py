@@ -116,6 +116,8 @@ def convert_to_db_character(
                 "attackBonus": attack.attackBonus,
                 "damage": attack.damage,
                 "damageType": attack.damageType,
+                "range": attack.range,
+                "traits": attack.traits,
             }
             actions_dict["attacks"].append(attack_dict)
     if character.actions.spells:

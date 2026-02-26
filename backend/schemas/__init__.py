@@ -21,6 +21,7 @@ class Attack(BaseModel):
     damage: Optional[str] = None
     damageType: Optional[str] = None
     range: Optional[int] = None
+    traits: Optional[list[str]] = []
 
 
 class Spell(BaseModel):
@@ -34,7 +35,7 @@ class Spell(BaseModel):
     range_: str = Field(..., alias="range")
     area: Optional[dict[str, str | int]] = None
     save: Optional[str] = "none"
-    target: str
+    target: Optional[str] = "none"
     actions: str
 
 
@@ -42,7 +43,8 @@ class Actions(BaseModel):
     attacks: Optional[list[Attack]] = None
     spells: Optional[list[Spell]] = None
     heals: Optional[int] = None
-    shield: Optional[int] = False
+    shield: Optional[int] = 0
+    sneak_attack: Optional[bool] = False
 
 
 class Skills(BaseModel):
