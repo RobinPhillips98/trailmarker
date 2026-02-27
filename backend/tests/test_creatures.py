@@ -9,6 +9,7 @@ from .sample_data import (
     test_player,
     test_player_3,
     test_player_4,
+    test_spider,
 )
 
 
@@ -362,7 +363,7 @@ class TestCreatureMethods:
         assert self.enemy.is_dead
 
 
-def TestSneakAttack():
+def test_sneak_attack():
     rogue = Player(test_player_3)
     drow_sneak = Enemy(test_enemy_sneak)
     fighter = Player(test_player)
@@ -372,3 +373,8 @@ def TestSneakAttack():
     assert drow_sneak.sneak_attack
     assert not fighter.sneak_attack
     assert not goblin.sneak_attack
+
+
+def test_no_damage_action_initialization():
+    spider = Enemy(test_spider)
+    assert spider.actions

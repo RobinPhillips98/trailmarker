@@ -312,7 +312,7 @@ class Spell(Action):
 
         self.damage_type: str = spell_dict["damage_type"]
 
-        self.range = spell_dict["range"]
+        self.range = int(spell_dict["range"])
         self.ranged: bool = self.range > 5
 
         try:
@@ -333,12 +333,7 @@ class Spell(Action):
             self.save: str = None
 
         try:
-            self.targets: int = spell_dict["targets"]
-            # target = spell_dict["targets"].lower().strip()
-            # if not target or target == "none" or target == "n/a":
-            #     self.targets: int = 0
-            # else:
-            #     self.targets: int = int(target.split()[0])
+            self.targets: int = int(spell_dict["targets"])
         except KeyError:
             self.targets: int = 0
 

@@ -92,19 +92,27 @@ class Creature:
         # Actions
         self.attacks: list[Attack] = []
         try:
-            for attack_dict in creature["actions"]["attacks"]:
-                attack = Attack(attack_dict)
-                self.attacks.append(attack)
+            attack_dicts = creature["actions"]["attacks"]
         except KeyError:
             self.attacks = None
+        else:
+            for attack_dict in attack_dicts:
+                try:
+                    attack = Attack(attack_dict)
+                    self.attacks.append(attack)
+                except KeyError as e:
+                    print(f"Invalid attack: {attack_dict}, {e}")
+                    continue
 
         self.spells: list[Spell] = []
         try:
-            for spell_dict in creature["actions"]["spells"]:
-                spell = Spell(spell_dict, self.spell_attack_bonus)
-                self.spells.append(spell)
+            spell_dicts = creature["actions"]["spells"]
         except KeyError:
             self.spells = None
+        else:
+            for spell_dict in spell_dicts:
+                spell = Spell(spell_dict, self.spell_attack_bonus)
+                self.spells.append(spell)
 
         try:
             self.heals: int = creature["actions"].get("heals")
@@ -170,8 +178,14 @@ class Creature:
         if not self.encounter:
             raise Exception("Turns cannot be taken outside of an encounter")
 
+        if self.is_dead:
+            return
+
         self.log(f"{self}'s turn:")
         self.log(f"{self}'s current hit points: {self.current_hit_points}")
+        if not self.actions:
+            self.log(f"{self} has no valid actions. Skipping turn")
+            return
         self.num_actions = 3
         self.multi_attack = 0
 
@@ -254,7 +268,7 @@ class Creature:
         speed_remaining = self.speed
 
         # Outer loop for each Stride action (move up to speed)
-        while self.num_actions >= 0:
+        while self.num_actions > 0:
             diagonal_moves = 1
             distance = self.calculate_distance(target)
 
@@ -405,15 +419,16 @@ class Creature:
 
         # Just a simple linear search because number of actions should never
         # get too high (typically 3-5, 10-15 at most w/ spells)
-        for action in self.actions[1:]:
-            action_weight = action.calculate_weight(
-                self.multi_attack, self.num_actions, in_melee, self
-            )
-            if action_weight > best_weight:
-                best_action = action
-                best_weight = best_action.calculate_weight(
+        if len(self.actions) > 1:
+            for action in self.actions[1:]:
+                action_weight = action.calculate_weight(
                     self.multi_attack, self.num_actions, in_melee, self
                 )
+                if action_weight > best_weight:
+                    best_action = action
+                    best_weight = best_action.calculate_weight(
+                        self.multi_attack, self.num_actions, in_melee, self
+                    )
 
         if isinstance(best_action, Attack):
             target = self.pick_target(best_action)

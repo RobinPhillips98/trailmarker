@@ -690,5 +690,67 @@ test_enemy_sneak = {
     "resistances": {},
 }
 
+test_spider = {
+    "id": 21,
+    "name": "Giant Spider",
+    "level": 1,
+    "perception": 7,
+    "skills": {
+        "acrobatics": 7,
+        "arcana": None,
+        "athletics": 5,
+        "crafting": None,
+        "deception": None,
+        "diplomacy": None,
+        "intimidation": None,
+        "lore": None,
+        "medicine": None,
+        "nature": None,
+        "occultism": None,
+        "performance": None,
+        "religion": None,
+        "society": None,
+        "stealth": 7,
+        "survival": None,
+        "thievery": None,
+    },
+    "attribute_modifiers": {
+        "strength": 2,
+        "constitution": 1,
+        "dexterity": 4,
+        "intelligence": -5,
+        "wisdom": 2,
+        "charisma": -4,
+    },
+    "defenses": {
+        "armor_class": 17,
+        "saves": {"fortitude": 6, "reflex": 9, "will": 5},
+    },
+    "max_hit_points": 16,
+    "spell_attack_bonus": None,
+    "spell_dc": None,
+    "speed": 25,
+    "actions": {
+        "attacks": [
+            {
+                "name": "Fangs",
+                "attackBonus": 9,
+                "damage": "1d6+2",
+                "damageType": "piercing",
+                "range": None,
+                "traits": [],
+            }
+        ],
+        "spells": [],
+        "heals": 0,
+        "shield": 0,
+        "sneak_attack": False,
+    },
+    "traits": ["medium", "animal"],
+    "immunities": [],
+    "weaknesses": {},
+    "resistances": {},
+}
+
 test_party = [test_player, test_player_2, test_player_3, test_player_4]
 test_enemies = [test_enemy, test_enemy, test_enemy_2]

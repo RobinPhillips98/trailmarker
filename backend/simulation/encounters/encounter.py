@@ -95,8 +95,8 @@ class Encounter:
         while not self._check_winner():
             rounds += 1
             self._log(f"Round {rounds}:")
-            for creature in self.creatures:
-                if not self._check_winner():
+            for creature in list(self.creatures):
+                if not self._check_winner() and not creature.is_dead:
                     creature.take_turn()
 
         self._log(f"{self.winner.capitalize()} won in {rounds} rounds!")

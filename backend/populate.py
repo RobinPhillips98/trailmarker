@@ -293,8 +293,8 @@ def add_attack(item: dict[str, any], enemy: dict[str, any]) -> None:
         key = list(damage_rolls.keys())[0]
         attack_dict["damage"] = damage_rolls[key]["damage"]
         attack_dict["damageType"] = damage_rolls[key]["damageType"]
-    except IndexError:
-        pass  # Some attacks don't do damage, so don't add them
+    except IndexError or KeyError:
+        return  # Some attacks don't do damage, so don't add them
     if item["system"]["range"]:
         attack_dict["range"] = item["system"]["range"]["increment"]
     attack_dict["traits"] = item["system"]["traits"]["value"]
