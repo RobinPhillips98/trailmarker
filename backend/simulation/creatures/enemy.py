@@ -1,3 +1,7 @@
+"""Defines the Enemy subclass extending Creature, and its methods."""
+
+from typing import Any
+
 from .creature import Creature
 
 
@@ -7,15 +11,19 @@ class Enemy(Creature):
     Attributes:
         traits: The traits the enemy has, such as rarity and size
         immunities: The enemy's immunities to damage types and conditions
+        weaknesses: A dictionary containing each weakness the enemy has to a
+            damage type, and the value of that weakness
+        resistances: A dictionary containing each resistance the enemy has to a
+            damage type, and the value of that resistance
     """
 
     # Built-in Methods
 
-    def __init__(self, enemy: dict[str, any], simulation=None):
+    def __init__(self, enemy: dict[str, Any], simulation=None):
         """Initializes the enemy based on the passed in dictionary.
 
         Args:
-            enemy (dict[str, any]): The data used to build the enemy
+            enemy (dict[str, Any]): The data used to build the enemy
             simulation (Simulation, optional): The simulation the creature is
                 in. Defaults to None.
         """
@@ -75,6 +83,18 @@ class Enemy(Creature):
         return f"{self}: Level {self.level}"
 
     def take_damage(self, damage: int, damage_type: str) -> None:
+        """Subtracts `damage` from the creature's HP after modifying it.
+
+        First, checks if the target is immune, weak, or resistant to
+        `damage_type` and if so, modifies `damage` accordingly. Then, the
+        modified `damage` is subtracted from the creature's current hit points,
+        and if their hit points fall below 0, the creature dies and is removed
+        from the encounter.
+
+        Args:
+            damage (int): The damage the creature is to take.
+            damage_type (str): The type of damage being dealt, ex. fire
+        """
         if damage_type in self.immunities:
             self.log(f"{self} is immune to {damage_type}. No damage taken!")
             return
@@ -83,7 +103,7 @@ class Enemy(Creature):
             extra_damage = self.weaknesses[damage_type]
             damage += extra_damage
             self.log(
-                f"{self} is weak to {damage_type}, {extra_damage} extra damage taken, total {damage} damage."  # noqa
+                f"{self} is weak to {damage_type}, {extra_damage} extra damage taken, total {damage} damage."  # noqa: E501
             )
         elif "all-damage" in self.resistances.keys():
             damage_reduction = self.resistances["all-damage"]
@@ -91,7 +111,7 @@ class Enemy(Creature):
             if damage <= 0:
                 damage = 1
             self.log(
-                f"{self} is resistant to all damage, {damage_reduction} damage resisted, total {damage} damage."  # noqa
+                f"{self} is resistant to all damage, {damage_reduction} damage resisted, total {damage} damage."  # noqa: E501
             )
         elif damage_type in self.resistances.keys():
             damage_reduction = self.resistances[damage_type]
@@ -99,7 +119,7 @@ class Enemy(Creature):
             if damage <= 0:
                 damage = 1
             self.log(
-                f"{self} is resistant to {damage_type}, {damage_reduction} damage resisted, total {damage} damage."  # noqa
+                f"{self} is resistant to {damage_type}, {damage_reduction} damage resisted, total {damage} damage."  # noqa: E501
             )
 
         super().take_damage(damage, damage_type)

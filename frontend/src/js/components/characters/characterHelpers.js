@@ -230,15 +230,15 @@ export const weaponTraits = [
     label: "Agile",
   },
   {
-    value: "deadly-6",
+    value: "deadly-d6",
     label: "Deadly d6",
   },
   {
-    value: "deadly-8",
+    value: "deadly-d8",
     label: "Deadly d8",
   },
   {
-    value: "deadly-10",
+    value: "deadly-d10",
     label: "Deadly d10",
   },
   {

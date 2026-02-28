@@ -1,3 +1,5 @@
+"""Initializes and launches the server itself."""
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,7 +30,6 @@ app.include_router(user.router)
 app.include_router(auth.router, prefix="/auth")
 
 
-# models.Base.metadata.create_all(bind=engine)
 @app.on_event("startup")
 async def startup():
     async with engine.begin() as conn:

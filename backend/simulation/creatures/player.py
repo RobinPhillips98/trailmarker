@@ -1,3 +1,7 @@
+"""Defines the Player subclass extending Creature, and its methods."""
+
+from typing import Any
+
 from .creature import Creature
 
 
@@ -6,16 +10,17 @@ class Player(Creature):
 
     Attributes:
         ancestry: The character's ancestry, ex. elf or human
+        heritage: The character's heritage, ex. cavern elf
         class_: The character's class, ex. fighter or wizard
     """
 
     # Built-in Methods
 
-    def __init__(self, player: dict[str, any], simulation=None):
+    def __init__(self, player: dict[str, Any], simulation=None):
         """Initializes the player based on the passed in dictionary.
 
         Args:
-            player (dict[str, any]): The data used to build the player
+            player (dict[str, Any]): The data used to build the player
             simulation (Simulation, optional): The simulation the creature is
                 in. Defaults to None.
         """
@@ -35,7 +40,7 @@ class Player(Creature):
         Returns:
             str: The long description of the player.
         """
-        return f"{self}: Level {self.level} {self.ancestry.capitalize()} {self.class_.capitalize()}"  # noqa
+        return f"{self}: Level {self.level} {self.ancestry.capitalize()} {self.class_.capitalize()}"  # noqa: E501
 
     # Private Methods
 

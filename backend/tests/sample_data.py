@@ -89,7 +89,7 @@ test_player = {
                 "damage": "1d6",
                 "damageType": "piercing",
                 "range": 60,
-                "traits": ["deadly-10"],
+                "traits": ["deadly-d10"],
             },
         ],
         "spells": [],
@@ -315,7 +315,7 @@ test_player_3 = {
                 "damage": "1d6+4",
                 "damageType": "piercing",
                 "range": None,
-                "traits": ["deadly-8", "finesse"],
+                "traits": ["deadly-d8", "finesse"],
             },
             {
                 "name": "Shortsword",

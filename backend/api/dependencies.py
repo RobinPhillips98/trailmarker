@@ -1,3 +1,5 @@
+"""Creates and imports dependencies used in the API"""
+
 from typing import Annotated
 
 from fastapi import Depends

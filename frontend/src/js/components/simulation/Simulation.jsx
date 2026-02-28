@@ -85,19 +85,9 @@ export default function Simulation() {
         setSimData(response.data.sim_data);
         setWins(response.data.wins);
         setTotalSims(response.data.total_sims);
-        setWinsRatio((response.data.wins / response.data.total_sims) * 100);
-        setAvgDeaths(
-          response.data.sim_data.reduce(
-            (acc, current) => acc + current.players_killed,
-            0,
-          ) / response.data.total_sims,
-        );
-        setAvgRounds(
-          response.data.sim_data.reduce(
-            (acc, current) => acc + current.rounds,
-            0,
-          ) / response.data.total_sims,
-        );
+        setWinsRatio(response.data.wins_ratio);
+        setAvgDeaths(response.data.average_deaths);
+        setAvgRounds(response.data.average_rounds);
         setTotalPlayers(response.data.sim_data[0].total_players);
         setLoaded(true);
       } catch (error) {

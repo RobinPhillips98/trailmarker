@@ -1,3 +1,5 @@
+"""Defines the encounter class and its methods."""
+
 from operator import attrgetter
 
 from ..creatures.creature import Creature
@@ -18,6 +20,7 @@ class Encounter:
         creatures: A combined list of all Players and Enemies in the encounter.
         simulation: The simulation running the encounter, if any, primarily
             used for adding to the simulation's combat log.
+        winner: String showing whether enemies or players won the encounter.
     """
 
     # Built-in Methods
@@ -72,7 +75,7 @@ class Encounter:
     # Public Methods
 
     def run_encounter(self) -> str:
-        """Runs rounds of combat until one side is defeated.
+        """Repeatedly runs rounds of combat until one side is defeated.
 
         Returns:
             str: The winner of the encounter.
@@ -124,6 +127,15 @@ class Encounter:
     # Private Methods
 
     def _check_winner(self) -> bool:
+        """Checks if either side has won the encounter.
+
+        Checks if either all players or enemies have been defeated. If so, sets
+        `self.winner` to the opposite team and returns True. If not, returns
+        False.
+
+        Returns:
+            bool: True if there is a winner, False if not.
+        """
         if not self.players:
             self.winner = "enemies"
             return True
@@ -134,6 +146,11 @@ class Encounter:
             return False
 
     def _log(self, message: str = "") -> None:
+        """Adds `message` to the simulation log, or prints it to the console.
+
+        Args:
+            message (str): The message to be printed.
+        """
         if self.simulation:
             self.simulation.log(message)
         else:
