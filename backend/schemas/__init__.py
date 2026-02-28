@@ -1,3 +1,5 @@
+"""Defines the pydantic models used throughout the API."""
+
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -201,8 +203,11 @@ class SimData(BaseModel):
 
 
 class SimResponse(BaseModel):
-    wins: int
     total_sims: int
+    wins: int
+    wins_ratio: float
+    average_deaths: float
+    average_rounds: float
     sim_data: list[SimData]
 
 

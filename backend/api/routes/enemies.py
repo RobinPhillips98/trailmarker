@@ -37,14 +37,14 @@ async def get_enemies(db: db_dependency) -> Enemies:
     "/enemies/{enemy_id}", response_model=Enemy, status_code=status.HTTP_200_OK
 )
 async def get_enemy(enemy_id: int, db: db_dependency) -> Enemy:
-    """Fetches a specific enemy from the database
+    """Fetches the enemy with ID `enemy_id` from the database
 
     Args:
         enemy_id (int): The ID of the enemy to be fetched
         db (db_dependency): A SQLAlchemy database session
 
     Returns:
-        Enemy: A dictionary representing an enemy
+        Enemy: An ORM model representing an enemy
     """
     query = select(models.Enemy)
     query = query.where(models.Enemy.id == enemy_id)

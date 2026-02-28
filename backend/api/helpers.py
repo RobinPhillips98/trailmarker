@@ -1,3 +1,5 @@
+"""Defines helper functions used by multiple modules in the API."""
+
 from sqlalchemy.future import select
 
 import models

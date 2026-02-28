@@ -1,8 +1,17 @@
+"""Contains functions for fetching enemy data and adding them to the database.
+
+Fetches JSON files from the FoundryVTT GitHub detailing the stats of each
+enemy, converts them into a format that matches the format needed by the
+database, then adds the enemy to the database and deletes the raw JSON file.
+
+"""
+
 import argparse
 import json
 import os
 import shutil
 from pathlib import Path
+from typing import Any
 
 import requests
 from github import Github
@@ -38,7 +47,7 @@ def fetch_enemies(raw_path: str) -> None:
 
     Args:
         raw_path (str): The path of the directory in which the raw data files
-        should be saved.
+            should be saved.
     """
     if not (Path(raw_path).exists()):
         Path(raw_path).mkdir()
@@ -59,10 +68,15 @@ def fetch_enemies(raw_path: str) -> None:
         path.write_text(r.text)
         print(f"{filename} saved\n")
 
-    print("Raw files downloaded\n")
+    print("Raw files downloaded\n\n")
 
 
 def get_filenames() -> list[str]:
+    """Uses PyGithub to retrieve all of the filenames from GitHub
+
+    Returns:
+        list[str]: The list of filenames.
+    """
     repo = Github().get_repo("foundryvtt/pf2e")
     files = repo.get_contents("packs/pf2e/menace-under-otari-bestiary")
     exclusions = [
@@ -80,7 +94,14 @@ def get_filenames() -> list[str]:
 
 
 def add_enemies(raw_path: str, db: Session) -> None:
-    """Iterates through the saved enemies and adds them all to the database
+    """Iterates through the saved enemies and adds them all to the database.
+
+    Goes through each file in `raw_path` and reads that file to build a
+    reformatted dictionary with the data needed by Trailmarker for that enemy,
+    then uses that dictionary to add the enemy to the database.
+
+    If any errors occur, they are caught and printed, and that file is
+    discarded. Then that file is added to a list of files to be printed.
 
     Args:
         raw_path (str): The path where the enemy files are saved
@@ -130,14 +151,19 @@ def add_enemies(raw_path: str, db: Session) -> None:
     print("Enemies added to database!")
 
 
-def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
-    """Converts the json file into a reformatted dictionary
+def build_enemy_dict(raw_dict: dict[str, Any]) -> dict[str, Any]:
+    """Converts the json file into a reformatted dictionary.
+
+    Retrieves the name, level, perception, armor class, maximum hit points, and
+    speed from the raw dictionary. Then walks the dictionary, retrieving and
+    adding traits, skills, attribute modifiers, saves, immunities, weaknesses,
+    resistances, and actions. Including attacks, spells, and more.
 
     Args:
-        raw_dict (dict[str, any]): The raw data retrieved from GitHub
+        raw_dict (dict[str, Any]): The raw data retrieved from GitHub
 
     Returns:
-        dict[str, any]: The reformatted data
+        dict[str, Any]: The reformatted data
     """
     system_attributes = raw_dict["system"]["attributes"]
     enemy = {
@@ -196,7 +222,17 @@ def build_enemy_dict(raw_dict: dict[str, any]) -> dict[str, any]:
     return enemy
 
 
-def add_traits(traits_dict: dict[str, any], enemy: dict[str, any]) -> None:
+def add_traits(traits_dict: dict[str, Any], enemy: dict[str, Any]) -> None:
+    """Finds all traits in `traits_dict` and adds them to `enemy`
+
+    Args:
+        traits_dict (dict[str, Any]): The trait dictionary from the raw JSON
+            file.
+        enemy (dict[str, Any]): The enemy dictionary being built
+
+    Raises:
+        Exception: If an invalid size trait is passed in.
+    """
     size = traits_dict["size"]["value"]
     match size:
         case "tiny":
@@ -211,6 +247,8 @@ def add_traits(traits_dict: dict[str, any], enemy: dict[str, any]) -> None:
             raise Exception(f"Invalid size trait: {size}")
 
     traits = traits_dict["value"]
+
+    # Alignments are not used post-remaster, but the raw data includes them.
     trait_exceptions = ["chaotic", "lawful", "good", "evil"]
     for trait in traits:
         if trait in trait_exceptions:
@@ -219,14 +257,27 @@ def add_traits(traits_dict: dict[str, any], enemy: dict[str, any]) -> None:
             enemy["traits"].append(trait)
 
 
-def add_skills(skills: dict[str, any], enemy: dict[str, any]) -> None:
+def add_skills(skills: dict[str, Any], enemy: dict[str, Any]) -> None:
+    """Populates all of the enemy's skill values
+
+    Args:
+        skills (dict[str, Any]): The skills dictionary from the raw JSON file.
+        enemy (dict[str, Any]): The enemy dictionary being built
+    """
     for skill in skills:
         enemy["skills"][skill] = skills[skill]["base"]
 
 
 def add_attribute_modifiers(
-    abilities: dict[str, any], enemy: dict[str, any]
+    abilities: dict[str, Any], enemy: dict[str, Any]
 ) -> None:
+    """Populates all of the enemy's attribute values.
+
+    Args:
+        abilities (dict[str, Any]): The attributes dictionary from the raw
+            JSON file.
+        enemy (dict[str, Any]): The enemy dictionary being built
+    """
     enemy["attribute_modifiers"]["strength"] = abilities["str"]["mod"]
     enemy["attribute_modifiers"]["dexterity"] = abilities["dex"]["mod"]
     enemy["attribute_modifiers"]["constitution"] = abilities["con"]["mod"]
@@ -235,29 +286,64 @@ def add_attribute_modifiers(
     enemy["attribute_modifiers"]["charisma"] = abilities["cha"]["mod"]
 
 
-def add_saves(saves: dict[str, any], enemy: dict[str, any]) -> None:
+def add_saves(saves: dict[str, Any], enemy: dict[str, Any]) -> None:
+    """Populates all of the enemy's saving throw values.
+
+    Args:
+        saves (dict[str, Any]): The saving throws dictionary from the raw JSON
+            file.
+        enemy (dict[str, Any]): The enemy dictionary being built
+    """
     for save in saves:
         enemy["defenses"]["saves"][save] = saves[save]["value"]
 
 
-def add_immunities(immunities: dict[str, any], enemy: dict[str, any]) -> None:
+def add_immunities(immunities: dict[str, Any], enemy: dict[str, Any]) -> None:
+    """Populates all of the enemy's immunity values
+
+    Args:
+        immunities (dict[str, Any]): The immunities dictionary from the raw
+            JSON file.
+        enemy (dict[str, Any]): The enemy dictionary being built.
+    """
     for immunity in immunities:
         enemy["immunities"].append(immunity["type"])
 
 
-def add_weaknesses(weaknesses: dict[str, any], enemy: dict[str, any]) -> None:
+def add_weaknesses(weaknesses: dict[str, Any], enemy: dict[str, Any]) -> None:
+    """Populates all of the enemy's weakness values.
+
+    Args:
+        weaknesses (dict[str, Any]): The weakness dictionary from the raw JSON
+            file.
+        enemy (dict[str, Any]): The enemy dictionary being built.
+    """
     for weakness in weaknesses:
         enemy["weaknesses"][weakness["type"]] = weakness["value"]
 
 
 def add_resistances(
-    resistances: dict[str, any], enemy: dict[str, any]
+    resistances: dict[str, Any], enemy: dict[str, Any]
 ) -> None:
+    """Populates all of the enemy's resistance values.
+
+    Args:
+        resistances (dict[str, Any]): The resistance dictionary from the raw
+            JSON file.
+        enemy (dict[str, Any]): The enemy dictionary being built.
+    """
     for resistance in resistances:
         enemy["resistances"][resistance["type"]] = resistance["value"]
 
 
-def add_actions(items: dict[str, any], enemy: dict[str, any]) -> None:
+def add_actions(items: dict[str, Any], enemy: dict[str, Any]) -> None:
+    """Builds the dictionary of actions for the enemy
+
+    Args:
+        items (dict[str, Any]): The `items` dictionary from the raw JSON file,
+            despite the name this contains all actions, not just items.
+        enemy (dict[str, Any]): The enemy dictionary being built.
+    """
     for item in items:
         if "attack" in item["system"]:
             add_attack(item, enemy)
@@ -281,48 +367,65 @@ def add_actions(items: dict[str, any], enemy: dict[str, any]) -> None:
             enemy["actions"]["sneak_attack"] = True
 
 
-def add_attack(item: dict[str, any], enemy: dict[str, any]) -> None:
-    attack_dict = {}
-    attack_dict["name"] = item["name"]
-    attack_dict["attackBonus"] = item["system"]["bonus"]["value"]
-    # In the JSON files from foundryVTT there is a key with a random
+def add_attack(raw_attack: dict[str, Any], enemy: dict[str, Any]) -> None:
+    """Adds an individual attack to the enemy's actions.attacks dictionary.
+
+    Args:
+        raw_attack (dict[str, Any]): The individual attack dictionary from the
+            raw JSON file.
+        enemy (dict[str, Any]): The enemy dictionary being built
+    """
+    attack_dict = {
+        "name": raw_attack["name"],
+        "attackBonus": raw_attack["system"]["bonus"]["value"],
+        "traits": raw_attack["system"]["traits"]["value"],
+    }
+    # In the JSON files from foundryVTT there is a key with a seemingly hashed
     # value between damageRolls and the values inside it that I need,
     # thus the key variable
     try:
-        damage_rolls = item["system"]["damageRolls"]
+        damage_rolls = raw_attack["system"]["damageRolls"]
         key = list(damage_rolls.keys())[0]
         attack_dict["damage"] = damage_rolls[key]["damage"]
         attack_dict["damageType"] = damage_rolls[key]["damageType"]
-    except IndexError or KeyError:
+    except (IndexError, KeyError):
         return  # Some attacks don't do damage, so don't add them
-    if item["system"]["range"]:
-        attack_dict["range"] = item["system"]["range"]["increment"]
-    attack_dict["traits"] = item["system"]["traits"]["value"]
+    if raw_attack["system"]["range"]:
+        attack_dict["range"] = raw_attack["system"]["range"]["increment"]
     enemy["actions"]["attacks"].append(attack_dict)
 
 
-def add_spell(item: dict[str, any], enemy: dict[str, any]) -> None:
-    spell_dict = {}
-    raw_spell_dict = item["system"]
-    spell_dict["name"] = item["name"]
+def add_spell(raw_spell: dict[str, Any], enemy: dict[str, Any]) -> None:
+    """Adds an individual spell to the enemy's actions.spells dictionary.
 
+    Args:
+        raw_spell (dict[str, Any]): The individual spell dictionary from the
+            raw JSON file.
+        enemy (dict[str, Any]): The enemy dictionary being built
+    """
     for spell in enemy["actions"]["spells"]:
-        if spell["name"] == spell_dict["name"]:
+        if spell["name"] == raw_spell["name"]:
             spell["slots"] += 1
             return
 
-    spell_dict["slots"] = 1
-    spell_dict["level"] = raw_spell_dict["level"]["value"]
-    if "cantrip" in raw_spell_dict["traits"]["value"]:
-        spell_dict["level"] = 0
+    raw_spell_dict = raw_spell["system"]
+    is_cantrip = "cantrip" in raw_spell_dict["traits"]["value"]
+    spell_dict = {
+        "name": raw_spell["name"],
+        "slots": 1,
+        "level": 0 if is_cantrip else raw_spell_dict["level"]["value"],
+        "damage_roll": raw_spell_dict["damage"]["0"]["formula"],
+        "damage_type": raw_spell_dict["damage"]["0"]["type"],
+        "actions": raw_spell_dict["time"]["value"],
+    }
 
-    spell_dict["damage_roll"] = raw_spell_dict["damage"]["0"]["formula"]
-    spell_dict["damage_type"] = raw_spell_dict["damage"]["0"]["type"]
     try:
         spell_dict["range"] = raw_spell_dict["range"]["value"].split()[0]
     except IndexError:
         spell_dict["range"] = 0
+
     spell_dict["area"] = raw_spell_dict["area"]
+
     try:
         spell_dict["targets"] = raw_spell_dict["target"]["value"].split()[0]
     except IndexError:
@@ -334,16 +437,14 @@ def add_spell(item: dict[str, any], enemy: dict[str, any]) -> None:
     except TypeError:
         pass  # No save, don't need to add it if it doesn't exist
 
-    spell_dict["actions"] = raw_spell_dict["time"]["value"]
-
     enemy["actions"]["spells"].append(spell_dict)
 
 
-def convert_to_db_enemy(enemy: dict[str, any]) -> Enemy:
+def convert_to_db_enemy(enemy: dict[str, Any]) -> Enemy:
     """Reformats a given enemy to match the model used by the database
 
     Args:
-        enemy (dict[str, any]): The enemy being converted
+        enemy (dict[str, Any]): The enemy being converted
 
     Returns:
         models.Enemy: A representation of the enemy ready to be added to
@@ -424,11 +525,33 @@ def drop_all_tables(engine=engine_sync):
         raise
 
 
+def drop_enemies_table(engine=engine_sync):
+    """Drop and recreate only the enemies table in the database."""
+    print("Starting enemies table operation...")
+    try:
+        print("Dropping enemies table...")
+        Enemy.__table__.drop(engine)
+        print("Disposing engine...")
+        engine.dispose()
+        print("Recreating enemies table...")
+        Enemy.__table__.create(engine)
+        print("Enemies table recreated successfully")
+    except Exception as e:
+        print(f"Error in drop_enemies_table: {str(e)}")
+        raise
+
+
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--rebuild", action="store_true", help="Rebuild the database"
+        "-r", "--rebuild", action="store_true", help="Rebuild the database"
+    )
+    parser.add_argument(
+        "-e",
+        "--rebuild_enemies",
+        action="store_true",
+        help="Rebuild the enemies table in the database",
     )
     args = parser.parse_args()
 
@@ -457,6 +580,24 @@ from scratch.
         except Exception as e:
             print(f"Error dropping tables: {e}")
             raise
+    if args.rebuild_enemies:
+        print(
+            """
+###############################################
+# Enemies Table Rebuild                       #
+###############################################
+--rebuild_enemies flag detected.
+Dropping and recreating the enemies table only.
+###############################################
+            """
+        )
+        try:
+            print("Dropping enemies table...")
+            drop_enemies_table()
+            print("Enemies table dropped and recreated successfully")
+        except Exception as e:
+            print(f"Error dropping enemies table: {e}")
+            raise
 
     print("Creating database tables...")
     try:
@@ -471,6 +612,7 @@ from scratch.
             # Check if we already have data
             if (
                 args.rebuild
+                or args.rebuild_enemies
                 or db.execute(select(Enemy).limit(1)).first() is None
             ):
                 print("Populating enemy data...")

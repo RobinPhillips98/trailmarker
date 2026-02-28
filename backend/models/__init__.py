@@ -1,3 +1,5 @@
+"""Defines the tables in the PostgreSQL database."""
+
 from sqlalchemy import ARRAY, JSON, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import declarative_base, relationship
 

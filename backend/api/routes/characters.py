@@ -37,7 +37,15 @@ async def get_characters(
     Returns:
         Characters: A list of Character objects
     """
-    return await fetch_characters_from_db(current_user, db)
+    try:
+        return await fetch_characters_from_db(current_user, db)
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in get_characters: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Internal server error: {str(e)}"
+        )
 
 
 @router.post(
@@ -50,7 +58,7 @@ async def add_character(
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
 ) -> Character:
-    """Adds the given character to the database
+    """Adds `character` to the database, attached to `current_user`
 
     Args:
         character (CharacterCreate): The character to be added to the database
@@ -82,10 +90,117 @@ async def add_character(
     return db_character
 
 
+@router.patch(
+    "/characters", response_model=Character, status_code=status.HTTP_200_OK
+)
+async def update_character(
+    character_update: CharacterUpdate,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_user),
+) -> Character:
+    """Updates a given character in the database.
+
+    Uses the ID contained in `character_update` to fetch a character from the
+    database and then uses the rest of `character_update` to overwrite that
+    character's data with the data in `character_update`.
+
+    Args:
+        character_update (CharacterUpdate): A dictionary containing the data to
+            be added or changes for the character.
+        db (db_dependency): A SQLAlchemy database session
+        current_user (models.User, optional): The currently logged in user.
+             Defaults to Depends(get_current_user).
+
+    Raises:
+        NotFoundException: A 404 exception if the character is not found.
+        NotAuthorizedException: A 403 exception if the character does not
+            belong to the current user
+        http_err: A caught HTTP error
+        HTTPException: A non-HTTP exception caught and raised as an HTTP 500
+            exception
+
+    Returns:
+        Character: The updated character's data
+    """
+    try:
+        db_character = await db.get(models.Character, character_update.id)
+
+        if db_character is None:
+            raise NotFoundException(route="character")
+
+        if db_character.user_id != current_user.id:
+            raise NotAuthorizedException(action="update", route="character")
+
+        update_data = character_update.dict(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_character, key, value)
+
+        await db.commit()
+        await db.refresh(db_character)
+
+        updated_character = Character.from_orm(db_character)
+        return updated_character
+
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in update_character: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Internal server error: {str(e)}"
+        )
+
+
+@router.delete(
+    "/characters/{character_id}",
+    response_model=object,
+    status_code=status.HTTP_200_OK,
+)
+async def delete_character(
+    character_id: int,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_user),
+) -> object:
+    """Fetches a character by ID and deletes it from the database
+
+    Args:
+        character_id (int): The ID of the character to be deleted
+        db (db_dependency): A SQLAlchemy database session
+        current_user (models.User, optional): The currently logged in user.
+             Defaults to Depends(get_current_user).
+
+    Raises:
+        NotFoundException: A 404 exception if the character is not found.
+        NotAuthorizedException: A 403 exception if the character does not
+            belong to the current user
+
+    Returns:
+        object: A response object confirming the character was deleted.
+    """
+    stmt = (
+        select(models.Character)
+        .options(selectinload(models.Character.user))
+        .where(models.Character.id == character_id)
+    )
+
+    result = await db.execute(stmt)
+    character = result.scalar_one_or_none()
+
+    if not character:
+        raise NotFoundException(route="character")
+
+    if character.user_id != current_user.id:
+        raise NotAuthorizedException(action="delete", route="character")
+
+    await db.delete(character)
+    await db.commit()
+
+    return {"message": "Character deleted"}
+
+
 def convert_to_db_character(
     character: CharacterCreate, user: models.User
 ) -> models.Character:
-    """Reformats a given character to match the model used by the database
+    """Reformats `character` to match the model used by the database
 
     Args:
         character (CharacterCreate): The character being converted
@@ -158,110 +273,3 @@ def convert_to_db_character(
     )
 
     return db_character
-
-
-@router.patch(
-    "/characters", response_model=Character, status_code=status.HTTP_200_OK
-)
-async def update_character(
-    character_update: CharacterUpdate,
-    db: db_dependency,
-    current_user: models.User = Depends(get_current_user),
-) -> Character:
-    """Updates a given character in the database.
-
-    Uses the ID contained in character_update to fetch a character from the
-    database and then uses the rest of character_update to overwrite that
-    character's data with the data in character_update.
-
-    Args:
-        character_update (CharacterUpdate): A dictionary containing the data to
-            be added or changes for the character.
-        db (db_dependency): A SQLAlchemy database session
-        current_user (models.User, optional): The currently logged in user.
-             Defaults to Depends(get_current_user).
-
-    Raises:
-        NotFoundException: A 404 exception if the character is not found.
-        NotAuthorizedException: A 403 exception if the character does not
-            belong to the current user
-        http_err: A caught HTTP error
-        HTTPException: A non-HTTP exception caught and raised as an HTTP 500
-            exception
-
-    Returns:
-        Character: The updated character's data
-    """
-    try:
-        db_character = await db.get(models.Character, character_update.id)
-
-        if db_character is None:
-            raise NotFoundException(route="character")
-
-        if db_character.user_id != current_user.id:
-            raise NotAuthorizedException(action="update", route="character")
-
-        update_data = character_update.dict(exclude_unset=True)
-        for key, value in update_data.items():
-            setattr(db_character, key, value)
-
-        await db.commit()
-        await db.refresh(db_character)
-
-        updated_character = Character.from_orm(db_character)
-        return updated_character
-
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in add_character: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Internal server error: {str(e)}"
-        )
-
-
-@router.delete(
-    "/characters/{character_id}",
-    response_model=object,
-    status_code=status.HTTP_200_OK,
-)
-async def delete_character(
-    character_id: int,
-    db: db_dependency,
-    current_user: models.User = Depends(get_current_user),
-) -> object:
-    """Fetches a character by ID and deletes it from the database
-
-    Args:
-        character_id (int): The ID of the character to be deleted
-        db (db_dependency): A SQLAlchemy database session
-        current_user (models.User, optional): The currently logged in user.
-             Defaults to Depends(get_current_user).
-
-    Raises:
-        NotFoundException: A 404 exception if the character is not found.
-        NotAuthorizedException: A 403 exception if the character does not
-            belong to the current user
-
-    Returns:
-        object: A response object confirming the character was deleted.
-    """
-    stmt = (
-        select(models.Character)
-        .options(selectinload(models.Character.user))
-        .where(models.Character.id == character_id)
-    )
-
-    result = await db.execute(stmt)
-    character = result.scalar_one_or_none()
-
-    if not character:
-        raise NotFoundException(route="character")
-
-    if character.user_id != current_user.id:
-        raise NotAuthorizedException(action="delete", route="character")
-
-    await db.delete(character)
-    await db.commit()
-
-    return {"message": "Character deleted"}

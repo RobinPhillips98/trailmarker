@@ -1,4 +1,4 @@
-"""Functions for API calls related to encounters
+"""Functions for API calls related to saved encounters
 
 Defines functions that are called when a request is made to the /encounters
 route of the API, including creating, reading, and deleting encounters.
@@ -36,13 +36,21 @@ async def get_encounters(
     Returns:
         Encounters: A list of encounter objects
     """
-    query = select(models.Encounter).options(
-        selectinload(models.Encounter.user)
-    )
-    query = query.where(models.Encounter.user_id == current_user.id)
-    result = await db.execute(query)
-    encounters = result.scalars().all()
-    encounter_list = [e.__dict__ for e in encounters]
+    try:
+        query = select(models.Encounter).options(
+            selectinload(models.Encounter.user)
+        )
+        query = query.where(models.Encounter.user_id == current_user.id)
+        result = await db.execute(query)
+        encounters = result.scalars().all()
+        encounter_list = [e.__dict__ for e in encounters]
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in get_encounters: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Internal server error: {str(e)}"
+        )
     return Encounters(encounters=encounter_list)
 
 
@@ -56,10 +64,10 @@ async def add_encounter(
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
 ) -> Encounter:
-    """Adds the given encounter to the database
+    """Adds `encounter` to the database
 
     Args:
-        encounter (EncounterCreate): The encounter to be added to the database
+        encounter (Encounter): The encounter to be added to the database
         db (db_dependency): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
@@ -82,7 +90,7 @@ async def add_encounter(
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
-        print(f"Error in add_enemy: {str(e)}")
+        print(f"Error in add_encounters: {str(e)}")
         raise HTTPException(
             status_code=500, detail=f"Internal server error: {str(e)}"
         )

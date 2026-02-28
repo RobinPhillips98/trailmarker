@@ -1,3 +1,5 @@
+"""Initializes the PostgreSQL database, creating sync and async engines"""
+
 import os
 
 from dotenv import load_dotenv

@@ -1,4 +1,16 @@
-from fastapi import APIRouter, Depends, status
+"""Functions for the API call that runs the simulation.
+
+Defines functions used to run the simulation. Namely, a POST request with the
+enemies for the simulation that gets the current user's characters, fetches the
+enemies from the database, and creates a number of simulation objects, runs a
+simulation for each, and returns data from each simulation as well as overall
+stats about the simulations.
+
+"""
+
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException, status
 
 import models
 from schemas import Character, Enemy, SimRequest, SimResponse
@@ -33,41 +45,65 @@ async def run_simulations(
              Defaults to Depends(get_current_user).
 
     Returns:
-        SimResponse: Number of simulations won and data from each simulation.
+        SimResponse: Overall data and data from each simulation.
     """
-    total_sims = 100
-    response = {"wins": 0, "total_sims": total_sims, "sim_data": []}
-    players = []
-    result = await fetch_characters_from_db(current_user, db)
-    characters = result.characters
-    for character in characters:
-        players.append(convert_to_player_dict(character))
+    try:
+        total_sims = 100
+        response = {
+            "total_sims": total_sims,
+            "wins": 0,
+            "wins_ratio": 0.0,
+            "average_deaths": 0.0,
+            "average_rounds": 0.0,
+            "sim_data": [],
+        }
+        players = []
+        result = await fetch_characters_from_db(current_user, db)
+        characters = result.characters
+        for character in characters:
+            players.append(convert_to_player_dict(character))
 
-    enemies = []
-    for enemy in request.enemies:
-        db_enemy = await get_enemy(enemy.id, db)
-        enemy_dict = convert_to_enemy_dict(db_enemy)
-        for i in range(enemy.quantity):
-            enemies.append(enemy_dict)
+        enemies = []
+        for enemy in request.enemies:
+            db_enemy = await get_enemy(enemy.id, db)
+            enemy_dict = convert_to_enemy_dict(db_enemy)
+            for i in range(enemy.quantity):
+                enemies.append(enemy_dict)
 
-    for i in range(total_sims):
-        sim_data = run_simulation(players, enemies)
-        sim_data["sim_num"] = i + 1
-        if sim_data["winner"] == "players":
-            response["wins"] += 1
-        response["sim_data"].append(sim_data)
+        for i in range(total_sims):
+            sim_data = run_simulation(players, enemies)
+            sim_data["sim_num"] = i + 1
+            if sim_data["winner"] == "players":
+                response["wins"] += 1
+            response["sim_data"].append(sim_data)
+
+        response["wins_ratio"] = (response["wins"] / total_sims) * 100
+
+        deaths = sum(data["players_killed"] for data in response["sim_data"])
+        response["average_deaths"] = deaths / total_sims
+
+        total_rounds = sum(data["rounds"] for data in response["sim_data"])
+        response["average_rounds"] = total_rounds / total_sims
+
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in run_simulations: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Internal server error: {str(e)}"
+        )
 
     return response
 
 
-def convert_to_player_dict(character: Character) -> dict[str, any]:
-    """Returns a reformatted dictionary using the given character object.
+def convert_to_player_dict(character: Character) -> dict[str, Any]:
+    """Returns a reformatted dictionary using `character`.
 
     Args:
         character (Character): The Character object to be converted.
 
     Returns:
-        dict[str, any]: Dictionary formatted for use by the simulation.
+        dict[str, Any]: Dictionary formatted for use by the simulation.
     """
     defense_dict = {
         "armor_class": character.defenses.armor_class,
@@ -130,14 +166,14 @@ def convert_to_player_dict(character: Character) -> dict[str, any]:
     return player_dict
 
 
-def convert_to_enemy_dict(enemy: Enemy) -> dict[str, any]:
-    """Returns a reformatted dictionary using the given enemy object.
+def convert_to_enemy_dict(enemy: Enemy) -> dict[str, Any]:
+    """Returns a reformatted dictionary using `enemy`.
 
     Args:
         enemy (Enemy): The Enemy object to be converted.
 
     Returns:
-        dict[str, any]: Dictionary formatted for use by the simulation.
+        dict[str, Any]: Dictionary formatted for use by the simulation.
     """
     enemy_dict = {
         "name": enemy.name,

@@ -1,7 +1,7 @@
 """Functions for API calls related to authentication.
 
 Defines functions for when requests are made to either the /register or /token
-route in the API, including registering and logging in useres.
+route in the API, including registering and logging in users.
 
 """
 
@@ -29,8 +29,8 @@ router = APIRouter()
 async def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
     """Adds a given user to the database.
 
-    Takes in a user andchecks that its username doesn't already exist in the
-    datebase. If not, it hashes the given password and saves the username and
+    Takes in a `user` and checks that its username doesn't already exist in the
+    database. If not, it hashes the given password and saves the username and
     password in the database
 
     Args:

@@ -45,7 +45,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_password_hash(password: str) -> str:
-    """Hashes the given password using bcrypt
+    """Hashes `password` using bcrypt
 
     Args:
         password (str): The password to be hashed
@@ -57,7 +57,7 @@ def get_password_hash(password: str) -> str:
 
 
 async def get_user(db: db_dependency, username: str) -> User:
-    """Fetches a given user from the database using their username
+    """Fetches the user from the database whose username matches `username`
 
     Args:
         db (db_dependency): A SQLAlchemy database session
@@ -73,8 +73,8 @@ async def get_user(db: db_dependency, username: str) -> User:
 
 async def authenticate_user(
     db: db_dependency, username: str, password: str
-) -> bool:
-    """Checks whether a given username and password matches a saved user
+) -> User:
+    """Checks whether `username` and `password` matches a saved user
 
     Attempts to fetch the user from the database using the given username,
     then hashes the user's password and checks it against the saved hash
@@ -85,14 +85,14 @@ async def authenticate_user(
         password (str): The password to be authenticated
 
     Returns:
-        bool: True if the authentication is successful, false otherwise
+        User: The desired user if the authentication is successful, or None
     """
     user = await get_user(db, username)
 
     if not user:
-        return False
+        return None
     if not verify_password(password, user.hashed_password):
-        return False
+        return None
     return user
 
 
