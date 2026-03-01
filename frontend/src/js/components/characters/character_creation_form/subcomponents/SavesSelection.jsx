@@ -6,7 +6,7 @@ import { toTitleCase } from "../../../../services/helpers";
 /**
  * A component to allow a user to set a player character's saving throws
  *
- * @returns {JSX.element}
+ * @returns {React.ReactElement}
  */
 export default function SavesSelection() {
   return (

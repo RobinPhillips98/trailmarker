@@ -1,18 +1,23 @@
-import { Button, Space, Row, Col, Typography } from "antd";
+import { Button, Col, Row, Space, Typography } from "antd";
 import { MinusOutlined, PlusOutlined, DeleteOutlined } from "@ant-design/icons";
+
+import { MAX_ENEMY_QUANTITY } from "../../../services/helpers";
 
 /**
  *
- * A component to display an enemy that has been selected in the current encounter
+ * A component to display an enemy that has been selected in the current
+ * encounter
  *
  * @typedef {object} SelectedEnemyProps
  * @property {object} enemy The enemy to be displayed
  * @property {function} handleRemove The function called when remove is clicked
- * @property {function} handleDecrement The function called when the minus button is clicked
- * @property {function} handleAdd The function called when the plus button is clicked
+ * @property {function} handleDecrement The function called when the minus
+ *  button is clicked
+ * @property {function} handleAdd The function called when the plus button is
+ *  clicked
  *
  * @param {SelectedEnemyProps} props
- * @returns {JSX.Element}
+ * @returns {React.ReactElement}
  */
 export default function SelectedEnemy(props) {
   const { enemy, handleRemove, handleDecrement, handleAdd } = props;
@@ -50,9 +55,9 @@ export default function SelectedEnemy(props) {
         >
           <Button
             size="large"
+            type="primary"
+            danger
             icon={<MinusOutlined />}
-            style={{ backgroundColor: "#c74a4a", color: "#fff" }}
-            variant="solid"
             onClick={handleClickDecrement}
           />
           <Text
@@ -65,6 +70,7 @@ export default function SelectedEnemy(props) {
             type="primary"
             icon={<PlusOutlined />}
             onClick={handleClickAdd}
+            disabled={enemy.quantity >= MAX_ENEMY_QUANTITY}
           />
           <Button
             size="large"

@@ -1,15 +1,21 @@
 import { Button, Card, Col, Form, Input, InputNumber, Row, Select } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { areaTypes, damageTypes, saveOptions } from "../../characterHelpers";
+
+import {
+  areaTypes,
+  damagePattern,
+  damageTypes,
+  saveOptions,
+} from "../../characterHelpers";
 
 /**
  * A component to allow a user to add spells to a player character
  *
  * @param {object} props
  * @param {boolean} props.editing True if this is a saved character being
- *  edited, false if this is a new character
- * @param {object} props.savedCharacter The character being edited
- * @returns {JSX.element}
+ *  edited, false if this is a new character.
+ * @param {object} props.savedCharacter The character being edited, if any.
+ * @returns {React.ReactElement}
  */
 export default function SpellsSelection({ editing, savedCharacter }) {
   const initialSpells = editing
@@ -85,7 +91,7 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       rules={[
                         { required: true, message: "Please input a damage" },
                         {
-                          pattern: /^\dd(4|6|8|10|12)([+-]\d{1,2})?$/i,
+                          pattern: damagePattern,
                           message:
                             "Input must be a valid damage roll (ex. 1d4 or 1d8+4)",
                         },
@@ -144,7 +150,6 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                       name={[name, "area", "type"]}
                       label="Area type"
                     >
-                      {/* <Input placeholder="emanation" /> */}
                       <Select options={areaTypes} allowClear />
                     </Form.Item>
                   </Col>

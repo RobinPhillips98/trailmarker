@@ -1,15 +1,15 @@
-import { Card, Row, Col, Typography } from "antd";
-
-const { Title } = Typography;
+import { Card, Col, Row, Typography } from "antd";
 
 /**
- * A component to display core character stats (HP, AC, speed, perception)
+ * A component to display core character stats such as hit points or speed.
  *
  * @param {object} props
  * @param {object} props.character The character being displayed
- * @returns {JSX.element}
+ * @returns {React.ReactElement}
  */
 export default function CoreStats({ character }) {
+  const { Title } = Typography;
+
   const armorClassDisplay =
     character.actions?.shield > 0
       ? `${character.defenses.armor_class} + 🛡${character.actions.shield}`
@@ -18,12 +18,13 @@ export default function CoreStats({ character }) {
   return (
     <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
       <Col xs={24} sm={12} md={6}>
-        <Card title="Hit Points" size="small">
+        <Card title="Maximum Hit Points" size="small">
           <div style={{ textAlign: "center" }}>
             <Title level={3}>{character.max_hit_points}</Title>
           </div>
         </Card>
       </Col>
+
       <Col xs={24} sm={12} md={6}>
         <Card title="Armor Class" size="small">
           <div style={{ textAlign: "center" }}>
@@ -31,6 +32,7 @@ export default function CoreStats({ character }) {
           </div>
         </Card>
       </Col>
+
       <Col xs={24} sm={12} md={6}>
         <Card title="Speed" size="small">
           <div style={{ textAlign: "center" }}>
@@ -38,6 +40,7 @@ export default function CoreStats({ character }) {
           </div>
         </Card>
       </Col>
+
       <Col xs={24} sm={12} md={6}>
         <Card title="Perception" size="small">
           <div style={{ textAlign: "center" }}>

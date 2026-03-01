@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Card, Form, Input, Select } from "antd";
 
 import {
@@ -8,13 +9,14 @@ import {
   elfHeritages,
   humanHeritages,
 } from "../../characterHelpers";
-import { useEffect, useState } from "react";
 
 /**
  * A component to allow a user to set general information about a player
- * character, such as their name, player name, and class
+ * character, such as their name, player name, ancestry, heritage, and class
  *
- * @returns {JSX.element}
+ * @param {object} props
+ * @param {object} props.savedCharacter The character being edited, if any.
+ * @returns {React.ReactElement}
  */
 export default function GeneralInfoSelection({ savedCharacter }) {
   const [ancestry, setAncestry] = useState(savedCharacter?.ancestry);

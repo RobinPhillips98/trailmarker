@@ -6,12 +6,11 @@ import { AuthContext } from "../../contexts/AuthContext.jsx";
 /**
  * The page for the user to log into their account
  *
- * @returns {JSX.Element}
+ * @returns {React.ReactElement}
  */
 export default function Login() {
   const { login } = useContext(AuthContext);
-  const { useBreakpoint } = Grid;
-  const screens = useBreakpoint();
+  const screens = Grid.useBreakpoint();
 
   const { Title } = Typography;
 

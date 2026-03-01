@@ -12,9 +12,6 @@ import {
 } from "antd";
 import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
 
-import api from "../../../api";
-import { AuthContext } from "../../../contexts/AuthContext";
-
 import AttributeSelection from "./subcomponents/AttributeSelection";
 import SkillSelection from "./subcomponents/SkillSelection";
 import SavesSelection from "./subcomponents/SavesSelection";
@@ -22,12 +19,15 @@ import AttacksSelection from "./subcomponents/AttacksSelection";
 import GeneralInfoSelection from "./subcomponents/GeneralInfoSelection";
 import GeneralStatsSelection from "./subcomponents/GeneralStatsSelection";
 import SpellsSelection from "./subcomponents/SpellsSelection";
+
+import api from "../../../api";
+import { AuthContext } from "../../../contexts/AuthContext";
 import { errorAlert } from "../../../services/helpers";
 
 /**
  * A component to allow a user to create or edit a player character
  *
- * @returns {JSX.element}
+ * @returns {React.ReactElement}
  */
 export default function CharacterCreationForm() {
   const { state } = useLocation();
@@ -159,8 +159,13 @@ export default function CharacterCreationForm() {
             type="primary"
             htmlType="submit"
             icon={<SaveOutlined />}
+            tooltip="Save Character"
           />
-          <FloatButton onClick={handleCancel} icon={<CloseOutlined />} />
+          <FloatButton
+            onClick={handleCancel}
+            icon={<CloseOutlined />}
+            tooltip="Cancel"
+          />
           <FloatButton.BackTop />
         </FloatButton.Group>
         <Row gutter={16} align="middle">

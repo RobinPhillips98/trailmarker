@@ -1,34 +1,42 @@
+// Third-party libraries
 import { useContext, useState } from "react";
-import { Button, Input, Space, Row, Col, Grid } from "antd";
+import { Button, Col, Grid, Input, Row, Space } from "antd";
 import { ClearOutlined, LockOutlined, SaveOutlined } from "@ant-design/icons";
 
+// Personal helpers
 import api from "../../../../api";
-import { AuthContext } from "../../../../contexts/AuthContext";
-import SavedEncounters from "./saved_encounters/SavedEncounters";
 import { errorAlert } from "../../../../services/helpers";
+
+// Contexts
+import { AuthContext } from "../../../../contexts/AuthContext";
+
+// Components
+import SavedEncounters from "./saved_encounters/SavedEncounters";
 
 /**
  * A component to display controls for saving, loading, and clearing encounters
  *
- * @param {object} props
- * @param {object} props.enemies The currently selected enemies in the encounter
- * @param {function} props.clearEncounter The function to clear all enemies from the encounter
- * @param {function} props.handleLoad The function to select an encounter's enemies
- * @returns {JSX.Element}
+ * @typedef {object} EncounterControlsProps
+ * @property {object} enemies The currently selected enemies in the encounter
+ * @property {function} clearEncounter The function to clear all enemies
+ *  from the encounter
+ * @property {function} handleLoad The function to select an encounter's
+ *  enemies
+ *
+ * @param {EncounterControlsProps} props
+ * @returns {React.ReactElement}
  */
-export default function EncounterControls({
-  enemies,
-  clearEncounter,
-  handleLoad,
-}) {
-  const screens = Grid.useBreakpoint();
+export default function EncounterControls(props) {
+  const { enemies, clearEncounter, handleLoad } = props;
   const [encounterName, setEncounterName] = useState("");
-
-  const handleChange = (event) => {
-    setEncounterName(event.target.value);
-  };
+  const screens = Grid.useBreakpoint();
+  const encounterEmpty = enemies.length === 0;
 
   const { user, token } = useContext(AuthContext);
+
+  function handleChange(event) {
+    setEncounterName(event.target.value);
+  }
 
   /**
    * Saves the given encounter to the database
@@ -36,7 +44,7 @@ export default function EncounterControls({
    * @returns {void}
    */
   async function save() {
-    if (enemies.length === 0) {
+    if (encounterEmpty) {
       alert("Encounter is empty, please add enemies.");
       return;
     }
@@ -100,7 +108,7 @@ export default function EncounterControls({
             <Button
               type="primary"
               onClick={save}
-              disabled={!user}
+              disabled={!user || encounterEmpty}
               style={{ width: "auto" }}
               icon={user ? <SaveOutlined /> : <LockOutlined />}
             >

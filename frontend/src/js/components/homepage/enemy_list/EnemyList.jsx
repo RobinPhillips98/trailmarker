@@ -1,23 +1,41 @@
+// Third-party libraries
 import { useEffect, useState } from "react";
-import { Typography, Empty, Spin, Row, Col, Form } from "antd";
+import { Col, Empty, Form, Row, Spin, Typography } from "antd";
 
+// Personal helpers
 import api from "../../../api";
+import { errorAlert } from "../../../services/helpers";
+
+// Components
 import Enemy from "./Enemy";
 import EnemyFilterForm from "./EnemyFilterForm";
-import { errorAlert } from "../../../services/helpers";
 
 /**
  * A component to display a list of all enemies from the database
  *
  * @param {object} props
- * @param {function} props.handleAdd The function to add an enemy to the encounter
- * @returns {JSX.Element}
+ * @param {function} props.handleAdd The function to add an enemy to the
+ *  encounter
+ * @returns {React.ReactElement}
  */
 export default function EnemyList({ handleAdd }) {
   const [enemies, setEnemies] = useState([]);
   const [displayEnemies, setDisplayEnemies] = useState([]);
   const [loading, setLoading] = useState(true);
   const { Title } = Typography;
+
+  const [form] = Form.useForm();
+  const name = Form.useWatch("name", form);
+  const minLevel = Form.useWatch("minLevel", form);
+  const maxLevel = Form.useWatch("maxLevel", form);
+  const traits = Form.useWatch("traits", form);
+  const traitFilterMode = Form.useWatch("traitFilterMode", form);
+  const immunities = Form.useWatch("immunities", form);
+  const immunitiesFilterMode = Form.useWatch("immunitiesFilterMode", form);
+  const weaknesses = Form.useWatch("weaknesses", form);
+  const weaknessesFilterMode = Form.useWatch("weaknessesFilterMode", form);
+  const resistances = Form.useWatch("resistances", form);
+  const resistancesFilterMode = Form.useWatch("resistancesFilterMode", form);
 
   /**
    * Fetches all enemies from the database
@@ -38,19 +56,9 @@ export default function EnemyList({ handleAdd }) {
     fetchEnemies();
   }, []);
 
-  const [form] = Form.useForm();
-  const name = Form.useWatch("name", form);
-  const minLevel = Form.useWatch("minLevel", form);
-  const maxLevel = Form.useWatch("maxLevel", form);
-  const traits = Form.useWatch("traits", form);
-  const traitFilterMode = Form.useWatch("traitFilterMode", form);
-  const immunities = Form.useWatch("immunities", form);
-  const immunitiesFilterMode = Form.useWatch("immunitiesFilterMode", form);
-  const weaknesses = Form.useWatch("weaknesses", form);
-  const weaknessesFilterMode = Form.useWatch("weaknessesFilterMode", form);
-  const resistances = Form.useWatch("resistances", form);
-  const resistancesFilterMode = Form.useWatch("resistancesFilterMode", form);
-
+  /**
+   * Filters enemies based on the filters entered in EnemyFilterForm
+   */
   useEffect(() => {
     let filteredEnemies = enemies.filter(
       (enemy) =>

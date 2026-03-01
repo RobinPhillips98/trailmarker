@@ -1,7 +1,11 @@
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+// Third-party libraries
 import { Alert, ConfigProvider, Flex, Layout, theme } from "antd";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
+// Contexts
 import { AuthProvider } from "./contexts/AuthContext.jsx";
+
+// Components
 import Register from "./components/user_authentication/Register.jsx";
 import Login from "./components/user_authentication/Login.jsx";
 import Homepage from "./components/homepage/Homepage.jsx";
@@ -11,6 +15,11 @@ import CharacterCreationForm from "./components/characters/character_creation_fo
 import Simulation from "./components/simulation/Simulation.jsx";
 import PolicyNotice from "./components/PolicyNotice.jsx";
 
+/**
+ * The core app component, orchestrating all other components.
+ *
+ * @returns {React.ReactElement}
+ */
 export default function App() {
   const { Header, Content, Footer } = Layout;
   const { ErrorBoundary } = Alert;
@@ -26,7 +35,7 @@ export default function App() {
       colorBorder: "#26292d",
       colorSplit: "#1d2124",
 
-      colorInfo: "#00c3ffff",
+      colorInfo: "#00c3ff",
       colorWarning: "#D17E1A",
       colorError: "#E65353",
       colorSuccess: "#2F9D7E",

@@ -11,6 +11,12 @@ import api, { setupAuthInterceptor } from "../api";
 
 const AuthContext = createContext({});
 
+/**
+ * Decodes a JSON web token and returns it as a parsed object
+ *
+ * @param {string} token
+ * @returns {object}
+ */
 function decodeTokenPayload(token) {
   try {
     const payload = token.split(".")[1];
@@ -20,12 +26,24 @@ function decodeTokenPayload(token) {
   }
 }
 
+/**
+ * Returns true if the token is expired, false if not
+ *
+ * @param {string} token
+ * @returns {boolean}
+ */
 function isTokenExpired(token) {
   const payload = decodeTokenPayload(token);
   if (!payload?.exp) return true;
   return Date.now() >= payload.exp * 1000;
 }
 
+/**
+ * A context provider to let all child components access the AuthContext
+ *
+ * @param {React.ReactElement} children The components this context is wrapping
+ * @returns
+ */
 function AuthProvider({ children }) {
   const storedToken = localStorage.getItem("token");
   const [token, setToken] = useState(
@@ -39,8 +57,6 @@ function AuthProvider({ children }) {
   useEffect(() => {
     if (storedToken && isTokenExpired(storedToken)) {
       localStorage.removeItem("token");
-      alert("Your session has expired. Please log in again.");
-      navigate("/login");
     }
   }, []);
 
@@ -94,6 +110,12 @@ function AuthProvider({ children }) {
     return () => clearTimeout(timer);
   }, [token, navigate]);
 
+  /**
+   * Attempts to log the user in and saves their JWT in local storage
+   *
+   * @param {string} username The username entered by the user
+   * @param {string} password The password entered by the user
+   */
   async function login(username, password) {
     try {
       const response = await loginUser({ username, password });
@@ -109,6 +131,12 @@ function AuthProvider({ children }) {
     }
   }
 
+  /**
+   * Attempts to register a new user with the given username and password
+   *
+   * @param {string} username The username entered by the user
+   * @param {string} password The password entered by the user
+   */
   async function register(username, password) {
     try {
       await registerUser({ username, password });
@@ -118,6 +146,9 @@ function AuthProvider({ children }) {
     }
   }
 
+  /**
+   * Logs the user out, removing their token and setting user to null
+   */
   function logout() {
     setToken(null);
     setUser(null);

@@ -1,29 +1,64 @@
+// Third-party libraries
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button, FloatButton, Tabs, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
-import { AuthContext } from "../../contexts/AuthContext";
+// Personal helpers
 import api from "../../api";
-import CharacterDisplay from "./character_display/CharacterDisplay";
 import { errorAlert } from "../../services/helpers";
 
+// Contexts
+import { AuthContext } from "../../contexts/AuthContext";
+
+// Components
+import CharacterDisplay from "./character_display/CharacterDisplay";
+
 /**
- * The page for displaying saved characters, with options to edit saved characters
- * and create new characters
+ * The page for displaying saved characters, with options to edit saved
+ * characters and create new characters
  *
- * @returns {JSX.element}
+ * @returns {React.ReactElement}
  */
 export default function Characters() {
+  // State variables
   const [characters, setCharacters] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
+
+  // Other variables
   const navigate = useNavigate();
   const location = useLocation();
-
   const { token } = useContext(AuthContext);
 
   const { Title } = Typography;
 
+  const characterTabs = characters.map((character) => ({
+    key: character.name,
+    label: character.name,
+    children: (
+      <CharacterDisplay
+        character={character}
+        deleteCharacter={deleteCharacter}
+      />
+    ),
+  }));
+
+  // Functions
+
+  /**
+   * Opens character creation page when the create character button is clicked
+   */
+  function handleClick() {
+    navigate("/characters/create", {
+      state: { editing: false, savedCharacter: null },
+    });
+  }
+
+  /**
+   * Deletes a character from the database and from the character list.
+   *
+   * @param {object} character
+   */
   async function deleteCharacter(character) {
     try {
       await api.delete(`characters/${character.id}`, {
@@ -70,24 +105,7 @@ export default function Characters() {
       alert("Sorry: You must be logged in to access this page");
       navigate("/login");
     }
-  }, [token, navigate, location.state]);
-
-  function handleClick() {
-    navigate("/characters/create", {
-      state: { editing: false, savedCharacter: null },
-    });
-  }
-
-  const characterTabs = characters.map((character) => ({
-    key: character.name,
-    label: character.name,
-    children: (
-      <CharacterDisplay
-        character={character}
-        deleteCharacter={deleteCharacter}
-      />
-    ),
-  }));
+  }, [location.state, token, navigate]);
 
   if (token)
     return (
@@ -112,4 +130,7 @@ export default function Characters() {
         <FloatButton.BackTop />
       </>
     );
+  else {
+    return null;
+  }
 }

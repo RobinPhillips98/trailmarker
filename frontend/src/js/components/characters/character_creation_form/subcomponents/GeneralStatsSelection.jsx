@@ -1,10 +1,12 @@
 import { Card, Form, InputNumber, Select } from "antd";
 
+import { levelOptions } from "../../../../services/helpers";
+
 /**
  * A component to allow a user to set general numerical stats for a player
  * character, such as their level, hit point maximum, or armor class
  *
- * @returns {JSX.element}
+ * @returns {React.ReactElement}
  */
 export default function GeneralStatsSelection() {
   return (
@@ -16,23 +18,7 @@ export default function GeneralStatsSelection() {
         rules={[{ required: true, message: "Please input a level" }]}
         style={{ marginTop: 20 }}
       >
-        <Select
-          style={{ width: 100 }}
-          options={[
-            {
-              value: 1,
-              label: "1",
-            },
-            {
-              value: 2,
-              label: "2",
-            },
-            {
-              value: 3,
-              label: "3",
-            },
-          ]}
-        />
+        <Select style={{ width: 100 }} options={levelOptions} />
       </Form.Item>
       <Form.Item label="XP" labelCol={{ span: 12 }} name="xp">
         <InputNumber min={0} max={1000} style={{ width: 120 }} />

@@ -1,4 +1,5 @@
-import { Card, Row, Col, List, Tag } from "antd";
+import { Card, Col, List, Row, Tag, Typography } from "antd";
+
 import { toTitleCase } from "../../../../services/helpers";
 
 /**
@@ -6,9 +7,10 @@ import { toTitleCase } from "../../../../services/helpers";
  *
  * @param {object} props
  * @param {object} props.character The character being displayed
- * @returns {JSX.element}
+ * @returns {React.ReactElement}
  */
 export default function AttacksSection({ character }) {
+  const { Text } = Typography;
   const attacks = character.actions?.attacks || [];
   if (attacks.length === 0) return null;
 
@@ -20,22 +22,22 @@ export default function AttacksSection({ character }) {
             <Card title={attack.name} size="small" style={{ height: "100%" }}>
               <List size="small">
                 <List.Item>
-                  <strong>Attack Bonus:</strong> {attack.attackBonus}
+                  <Text strong>Attack Bonus:</Text> {attack.attackBonus}
                 </List.Item>
                 <List.Item>
-                  <strong>Damage:</strong> {attack.damage}
+                  <Text strong>Damage:</Text> {attack.damage}
                 </List.Item>
                 <List.Item>
-                  <strong>Type:</strong> {toTitleCase(attack.damageType)}
+                  <Text strong>Type:</Text> {toTitleCase(attack.damageType)}
                 </List.Item>
                 <List.Item>
-                  <strong>Range: </strong> {attack.range ? attack.range : "5"}{" "}
-                  feet
+                  <Text strong>Range: </Text>{" "}
+                  {attack.range ? attack.range : "5"} feet
                 </List.Item>
                 <List.Item>
-                  {attack.traits ? (
+                  {attack.traits.length > 0 && (
                     <div style={{ minHeight: 0, flex: 1 }}>
-                      <strong>Traits:</strong>
+                      <Text strong>Traits:</Text>
                       <div
                         style={{
                           marginTop: 4,
@@ -62,7 +64,7 @@ export default function AttacksSection({ character }) {
                         ))}
                       </div>
                     </div>
-                  ) : null}
+                  )}
                 </List.Item>
               </List>
             </Card>

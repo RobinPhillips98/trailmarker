@@ -1,15 +1,14 @@
-import { Card, Row, Col, Typography } from "antd";
-
-const { Title, Text } = Typography;
-
+import { Card, Col, Row, Typography } from "antd";
 /**
  * A component to display character attribute modifiers
  *
  * @param {object} props
  * @param {object} props.character The character being displayed
- * @returns {JSX.element}
+ * @returns {React.ReactElement}
  */
 export default function AttributeModifiers({ character }) {
+  const { Title, Text } = Typography;
+
   return (
     <Card title="Attribute Modifiers" style={{ marginBottom: 16 }}>
       <Row gutter={[16, 16]}>

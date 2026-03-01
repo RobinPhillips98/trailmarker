@@ -488,8 +488,9 @@ class Creature:
 
         roll = d20.roll()
         saving_throw = roll + save_bonus
+        save_display = f"{roll} + {save_bonus}"
         self.log(
-            f"{self} rolled a {saving_throw} {spell.save} save against {spell}!"  # noqa: E501
+            f"{self} rolled a {saving_throw} ({save_display}) {spell.save} save against {spell}!"  # noqa: E501
         )
 
         degree_of_success = calculate_dos(
