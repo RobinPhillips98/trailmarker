@@ -182,6 +182,10 @@ const otherOptions = [
   },
 ];
 
+/**
+ * A list of all enemy traits in the Pathfinder 2E beginner box, formatted into
+ * options groups for a Select component.
+ */
 export const traitOptions = [
   {
     label: "Size",

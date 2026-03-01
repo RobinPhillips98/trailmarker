@@ -1,17 +1,18 @@
-import { Card, Row, Col, Typography } from "antd";
+import { Card, Col, Row, Typography } from "antd";
 import { EllipsisOutlined } from "@ant-design/icons";
-import { toTitleCase } from "../../../../services/helpers";
 
-const { Title, Text } = Typography;
+import { toTitleCase } from "../../../../services/helpers";
 
 /**
  * A component to display the character header with name, player, and level
  *
  * @param {object} props
  * @param {object} props.character The character being displayed
- * @returns {JSX.element}
+ * @returns {React.ReactElement}
  */
 export default function CharacterHeader({ character }) {
+  const { Title, Text } = Typography;
+
   return (
     <Card style={{ marginBottom: 16 }}>
       <Row gutter={[24, 16]}>
@@ -32,6 +33,7 @@ export default function CharacterHeader({ character }) {
             </Title>
           </div>
         </Col>
+
         <Col xs={24} sm={12} md={8}>
           <div>
             <Text
@@ -49,6 +51,7 @@ export default function CharacterHeader({ character }) {
             </Title>
           </div>
         </Col>
+
         <Col xs={24} sm={12} md={8}>
           <div>
             <Text

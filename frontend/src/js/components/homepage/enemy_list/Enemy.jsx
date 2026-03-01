@@ -1,14 +1,16 @@
-import { Button, Card, Tag, Space, Typography } from "antd";
+import { Button, Card, Space, Tag, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { isEmpty } from "../../../services/helpers";
+
+import { isEmpty, MAX_ENEMY_QUANTITY } from "../../../services/helpers";
 
 /**
  * A component to display an enemy that can be added to the encounter
  *
  * @param {object} props
- * @param {function} props.handleAdd The function to add the given enemy to the encounter
+ * @param {function} props.handleAdd The function to add the given enemy to the
+ *  encounter
  * @param {object} props.enemy The enemy to be displayed
- * @returns {JSX.Element}
+ * @returns {React.ReactElement}
  */
 export default function Enemy({ handleAdd, enemy }) {
   const { Text } = Typography;
@@ -72,7 +74,7 @@ export default function Enemy({ handleAdd, enemy }) {
             style={{ width: "100%", flex: 1 }}
           >
             <div>
-              <Text type="secondary" style={{ fontSize: "12px" }}>
+              <Text strong style={{ fontSize: "12px" }}>
                 Level
               </Text>
               <div style={{ fontSize: "18px", fontWeight: "bold" }}>
@@ -81,10 +83,7 @@ export default function Enemy({ handleAdd, enemy }) {
             </div>
 
             <div style={{ minHeight: 0, flex: 1 }}>
-              <Text
-                type="secondary"
-                style={{ fontSize: "12px", display: "block" }}
-              >
+              <Text strong style={{ fontSize: "12px", display: "block" }}>
                 Traits
               </Text>
               <div
@@ -113,13 +112,10 @@ export default function Enemy({ handleAdd, enemy }) {
                 ))}
               </div>
             </div>
-            {enemy.immunities === undefined ||
-            enemy.immunities.length == 0 ? null : (
+
+            {enemy.immunities?.length > 0 && (
               <div style={{ minHeight: 0, flex: 1 }}>
-                <Text
-                  type="secondary"
-                  style={{ fontSize: "12px", display: "block" }}
-                >
+                <Text strong style={{ fontSize: "12px", display: "block" }}>
                   Immunities
                 </Text>
                 <div
@@ -149,12 +145,10 @@ export default function Enemy({ handleAdd, enemy }) {
                 </div>
               </div>
             )}
-            {isEmpty(enemy.weaknesses) ? null : (
+
+            {!isEmpty(enemy.weaknesses) && (
               <div style={{ minHeight: 0, flex: 1 }}>
-                <Text
-                  type="secondary"
-                  style={{ fontSize: "12px", display: "block" }}
-                >
+                <Text strong style={{ fontSize: "12px", display: "block" }}>
                   Weaknesses
                 </Text>
                 <div
@@ -184,12 +178,10 @@ export default function Enemy({ handleAdd, enemy }) {
                 </div>
               </div>
             )}
-            {isEmpty(enemy.resistances) ? null : (
+
+            {!isEmpty(enemy.resistances) && (
               <div style={{ minHeight: 0, flex: 1 }}>
-                <Text
-                  type="secondary"
-                  style={{ fontSize: "12px", display: "block" }}
-                >
+                <Text strong style={{ fontSize: "12px", display: "block" }}>
                   Resistances
                 </Text>
                 <div
@@ -228,6 +220,7 @@ export default function Enemy({ handleAdd, enemy }) {
         icon={<PlusOutlined />}
         onClick={handleClick}
         block
+        disabled={enemy.quantity >= MAX_ENEMY_QUANTITY}
         style={{ marginTop: 12, flexShrink: 0 }}
       >
         Add

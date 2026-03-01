@@ -1,15 +1,16 @@
 import {
+  Button,
+  Card,
+  Col,
   Form,
   Input,
   InputNumber,
-  Select,
-  Button,
   Row,
-  Col,
+  Select,
   Switch,
-  Card,
 } from "antd";
 import { ClearOutlined } from "@ant-design/icons";
+
 import { traitOptions } from "./enemyHelpers";
 import { damageTypes } from "../../characters/characterHelpers";
 
@@ -18,13 +19,9 @@ import { damageTypes } from "../../characters/characterHelpers";
  *
  * @param {object} props
  * @param {object} props.form The Ant Design form instance
- * @returns {JSX.Element}
+ * @returns {React.ReactElement}
  */
 export default function EnemyFilterForm({ form }) {
-  const handleClear = () => {
-    form.resetFields();
-  };
-
   const initialValues = {
     name: "",
     minLevel: -1,
@@ -34,6 +31,13 @@ export default function EnemyFilterForm({ form }) {
     immunities: [],
     immunitiesFilterMode: false,
   };
+
+  const currentMinLevel = Form.useWatch("minLevel", form);
+  const currentMaxLevel = Form.useWatch("maxLevel", form);
+
+  function handleClear() {
+    form.resetFields();
+  }
 
   return (
     <Card style={{ marginBottom: 16 }}>
@@ -58,7 +62,7 @@ export default function EnemyFilterForm({ form }) {
             >
               <InputNumber
                 min={-1}
-                max={5}
+                max={currentMaxLevel}
                 style={{ width: "100%" }}
                 placeholder="Min"
               />
@@ -72,7 +76,7 @@ export default function EnemyFilterForm({ form }) {
               style={{ marginBottom: 0 }}
             >
               <InputNumber
-                min={-1}
+                min={currentMinLevel}
                 max={5}
                 style={{ width: "100%" }}
                 placeholder="Max"

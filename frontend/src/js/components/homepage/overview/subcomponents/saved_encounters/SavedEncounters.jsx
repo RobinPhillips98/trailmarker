@@ -1,24 +1,38 @@
+// Third-party libraries
 import { useContext, useEffect, useState } from "react";
-import { Button, Modal, Card } from "antd";
+import { Button, Card, Modal } from "antd";
 import { FolderOpenOutlined, LockOutlined } from "@ant-design/icons";
 
+// Personal helpers
 import api from "../../../../../api";
+import { errorAlert } from "../../../../../services/helpers";
+
+// Contexts
 import { AuthContext } from "../../../../../contexts/AuthContext";
 
+// Components
 import Encounter from "./Encounter";
-import { errorAlert } from "../../../../../services/helpers";
 
 /**
  * A component that displays a list of saved encounters
  *
  * @param {object} props
  * @param {function} props.handleLoad The function to select this encounter's enemies
- * @returns {JSX.Element}
+ * @returns {React.ReactElement}
  */
 export default function SavedEncounters({ handleLoad }) {
   const [encounters, setEncounters] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { user, token } = useContext(AuthContext);
+
+  function showModal() {
+    setIsModalOpen(true);
+  }
+
+  function handleClose() {
+    setIsModalOpen(false);
+  }
 
   /**
    * Deletes the given encounter from the database and removes it from the list
@@ -33,15 +47,6 @@ export default function SavedEncounters({ handleLoad }) {
     setEncounters((prev) =>
       prev.filter((currentEncounter) => currentEncounter !== encounter),
     );
-  }
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  function showModal() {
-    setIsModalOpen(true);
-  }
-
-  function handleClose() {
-    setIsModalOpen(false);
   }
 
   useEffect(() => {
@@ -91,7 +96,7 @@ export default function SavedEncounters({ handleLoad }) {
             size="small"
             title={encounter.name}
             style={{ marginBottom: 10 }}
-            key={encounter.name}
+            key={encounter.id}
           >
             <Encounter
               encounter={encounter}

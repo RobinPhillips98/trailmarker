@@ -1,13 +1,20 @@
-import { Typography, Card, Space, Tag, Switch } from "antd";
+import { Card, Space, Switch, Tag, Typography } from "antd";
 
 /**
  * A component to display the XP budget for the current party size
  *
- * @param {object} props
- * @param {object} props.budget The XP budget for the current party size
- * @returns {JSX.Element}
+ * @typedef {object} XPBudgetProps
+ * @property {object} budget The XP budget for the current party size
+ * @property {boolean} switched State of the colorblind switch
+ * @property {function} handleChange The function for handling when the color
+ *  blind friendly switch is switched
+ * @property {object} colors The currently set difficulty colors
+ *
+ * @param {XPBudgetProps} props
+ * @returns {React.ReactElement}
  */
-export default function XPBudget({ budget, switched, handleChange, colors }) {
+export default function XPBudget(props) {
+  const { budget, switched, handleChange, colors } = props;
   const { Title, Text } = Typography;
 
   const budgetTiers = [

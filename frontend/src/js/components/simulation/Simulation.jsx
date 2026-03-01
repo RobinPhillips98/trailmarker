@@ -1,3 +1,4 @@
+// Third-party libraries
 import { useContext, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -12,9 +13,12 @@ import {
 } from "antd";
 import { PlayCircleOutlined } from "@ant-design/icons";
 
+// Personal helpers
 import api from "../../api";
-import { AuthContext } from "../../contexts/AuthContext";
 import { errorAlert, getRandom, toTitleCase } from "../../services/helpers";
+
+// Contexts
+import { AuthContext } from "../../contexts/AuthContext";
 
 /**
  * A page to display the results of a simulation.
@@ -25,14 +29,10 @@ import { errorAlert, getRandom, toTitleCase } from "../../services/helpers";
  *
  * @property {object} enemies The enemies to be included in the encounter
  *
- * @returns {JSX.Element}
+ * @returns {React.ReactElement}
  */
 export default function Simulation() {
-  const { token } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const { state } = useLocation();
-  const { enemies } = state;
-  const { useBreakpoint } = Grid;
+  // State Variables
   const [simData, setSimData] = useState([{}]);
   const [wins, setWins] = useState();
   const [winsRatio, setWinsRatio] = useState();
@@ -43,16 +43,39 @@ export default function Simulation() {
   const [loaded, setLoaded] = useState(false);
   const [run, setRun] = useState(false);
   const [switched, setSwitched] = useState(false);
-  const { Paragraph, Title } = Typography;
-  const screens = useBreakpoint();
 
-  function handleChange() {
-    setSwitched(!switched);
-  }
+  // Other variables
+  const { token } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  const screens = Grid.useBreakpoint();
+  const { enemies } = state;
+  const { Paragraph, Title } = Typography;
 
   const simTitle = switched
     ? "Individual Simulation Data"
     : "Sampled Simulation Data";
+
+  // Functions
+
+  /**
+   * Toggles the "show all simulations" switch.
+   */
+  function handleChange() {
+    setSwitched(!switched);
+  }
+
+  /**
+   * Changes the run variable to the opposite of itself, since useEffect
+   * depends on run this causes useEffect to run again, running the
+   * simulation again.
+   */
+  function handleClick() {
+    setLoaded(false);
+    setRun(!run);
+  }
+
+  // useEffect calls
 
   useEffect(() => {
     if (!token) {
@@ -71,9 +94,10 @@ export default function Simulation() {
       }),
     };
     /**
-     * Uses the passed in enemies object to make a POST request to the
-     * simulation API endpoint, then sets simData, wins, and totalSims to
-     * the data returned by the simulation in order to display the results.
+     * Uses the `enemies` object obtained from useLocation to make a POST
+     * request to the simulation API endpoint, then sets simData, wins,
+     * totalSims, winsRatio, avgDeaths, avgRounds, and totalPlayers using the
+     * data returned by the simulation in order to display the results.
      */
     async function callSimulation() {
       try {
@@ -96,16 +120,6 @@ export default function Simulation() {
     }
     callSimulation();
   }, [enemies, run, token]);
-
-  /**
-   * Changes the run variable to the opposite of itself, since useEffect
-   * depends on run this causes useEffect to run again, running the
-   * simulation again.
-   */
-  function handleClick() {
-    setLoaded(false);
-    setRun(!run);
-  }
 
   if (loaded) {
     const randomSimData = getRandom(simData, 10).sort(
@@ -133,6 +147,7 @@ export default function Simulation() {
             </Paragraph>
             <Paragraph>Rounds taken: {sim.rounds}</Paragraph>
             <Title level={2}>Combat Log:</Title>
+
             {sim.log.map((message, index) => {
               if (message.includes("won")) {
                 return (

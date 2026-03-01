@@ -4,7 +4,7 @@ import api from "../api";
  * Attempts to retrieve a JSON Web Token from the API using the given credentials
  *
  * @param {object} credentials An object containing the username and password given
- * @returns
+ * @returns {object}
  */
 async function loginUser(credentials) {
   try {

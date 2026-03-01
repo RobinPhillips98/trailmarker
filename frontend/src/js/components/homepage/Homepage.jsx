@@ -1,18 +1,23 @@
+// Third-party libraries
 import { useState } from "react";
+import { FloatButton, Typography } from "antd";
 
+// Personal helpers
 import api from "../../api";
 
+// Components
 import Overview from "./overview/Overview";
 import EncounterDisplay from "./encounter_display/EncounterDisplay";
 import EnemyList from "./enemy_list/EnemyList";
-import { FloatButton, Typography } from "antd";
+import TutorialModal from "./overview/subcomponents/TutorialModal";
 
 /**
  * The homepage of the site which displays information and options about the
  * current encounter, the enemies selected in the current encounter, and a list
- * of enemies that can be added to the current encounter.
+ * of enemies that can be added to the current encounter. At the top of the
+ * overview is a button to start the simulation.
  *
- * @returns {JSX.Element}
+ * @returns {React.ReactElement}
  */
 export default function Homepage() {
   const [selectedEnemies, setSelectedEnemies] = useState([]);
@@ -36,6 +41,14 @@ export default function Homepage() {
     }
   }
 
+  /**
+   * Increases the quantity of `enemy` by 1.
+   *
+   * Directly modifies enemy.quantity to ensure MAX_ENEMY_QUANTITY check in
+   * Enemy.jsx works properly
+   *
+   * @param {object} enemy The enemy being altered
+   */
   function incrementQuantity(enemy) {
     setSelectedEnemies((prev) => {
       prev.map((currentEnemy) => {
@@ -45,6 +58,14 @@ export default function Homepage() {
     });
   }
 
+  /**
+   * Decreases the quantity of `enemy` by 1
+   *
+   * Directly modifies enemy.quantity to ensure MAX_ENEMY_QUANTITY check in
+   * Enemy.jsx works properly
+   *
+   * @param {object} enemy The enemy being altered
+   */
   function decrementQuantity(enemy) {
     if (enemy.quantity === 1) removeEnemy(enemy);
     else {
@@ -57,13 +78,23 @@ export default function Homepage() {
     }
   }
 
+  /**
+   * Removes `enemy` from the encounter
+   *
+   * @param {object} enemy The enemy being altered
+   */
   function removeEnemy(enemy) {
+    enemy.quantity = 0;
     setSelectedEnemies((prev) =>
       prev.filter((currentEnemy) => currentEnemy !== enemy),
     );
   }
 
+  /**
+   * Removes all enemies from the encounter.
+   */
   function clearEnemies() {
+    selectedEnemies.forEach((enemy) => (enemy.quantity = 0));
     setSelectedEnemies([]);
   }
 
@@ -74,6 +105,7 @@ export default function Homepage() {
    * @param {object} encounter The encounter to be loaded
    */
   async function loadEncounter(encounter) {
+    clearEnemies();
     const newEnemies = await Promise.all(
       encounter.enemies.map(async (enemy) => {
         const response = await api.get(`enemies/${enemy.id}`);
@@ -82,13 +114,12 @@ export default function Homepage() {
         return currentEnemy;
       }),
     );
-
     setSelectedEnemies(newEnemies);
   }
 
   return (
     <>
-      <Title>Trailmarker</Title>
+      <Title style={{ marginLeft: 10 }}>Trailmarker</Title>
       <Overview
         selectedEnemies={selectedEnemies}
         clearEncounter={clearEnemies}
@@ -103,7 +134,10 @@ export default function Homepage() {
       />
       <br />
       <EnemyList handleAdd={addEnemy} />
-      <FloatButton.BackTop />
+      <FloatButton.Group>
+        <TutorialModal />
+        <FloatButton.BackTop />
+      </FloatButton.Group>
     </>
   );
 }

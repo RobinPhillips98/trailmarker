@@ -1,8 +1,8 @@
 import { toTitleCase } from "../../services/helpers";
 
 /**
- * A list with the available ancestry options, formatted to be the options of a
- * select component
+ * A list with the available ancestry options, formatted to be used as the
+ * options of a select component
  */
 export const ancestries = [
   {
@@ -19,54 +19,44 @@ export const ancestries = [
   },
 ];
 
-export const dwarfHeritages = [
+/**
+ * A list of the available area typed, formatted to be used as the options of
+ * a select component
+ */
+export const areaTypes = [
   {
-    value: "death_warden",
-    label: "Death Warden Dwarf",
+    value: "burst",
+    label: "Burst",
   },
   {
-    value: "forge",
-    label: "Forge Dwarf",
+    value: "cone",
+    label: "Cone",
   },
   {
-    value: "rock",
-    label: "Rock Dwarf",
-  },
-];
-
-export const elfHeritages = [
-  {
-    value: "Cavern",
-    label: "Cavern Elf",
+    value: "emanation",
+    label: "Emanation",
   },
   {
-    value: "whisper",
-    label: "Whisper Elf",
-  },
-  {
-    value: "woodland",
-    label: "Woodland Elf",
-  },
-];
-
-export const humanHeritages = [
-  {
-    value: "battle_trained",
-    label: "Battle Trained",
-  },
-  {
-    value: "skilled",
-    label: "Skilled",
-  },
-  {
-    value: "warden",
-    label: "Warden",
+    value: "line",
+    label: "Line",
   },
 ];
 
 /**
- * A list with the available background options, formatted to be the options of a
- * select component
+ * A list of the attributes in Pathfinder
+ */
+export const attributes = [
+  "strength",
+  "dexterity",
+  "constitution",
+  "intelligence",
+  "wisdom",
+  "charisma",
+];
+
+/**
+ * A list with the available background options, formatted to be used as the
+ * options of a select component
  */
 export const backgrounds = [
   {
@@ -100,8 +90,8 @@ export const backgrounds = [
 ];
 
 /**
- * A list with the available class options, formatted to be the options of a
- * select component
+ * A list with the available class options, formatted to be used as the options
+ *  of a select component
  */
 export const classes = [
   {
@@ -123,43 +113,8 @@ export const classes = [
 ];
 
 /**
- * A list of the attributes in Pathfinder
- */
-export const attributes = [
-  "strength",
-  "dexterity",
-  "constitution",
-  "intelligence",
-  "wisdom",
-  "charisma",
-];
-
-/**
- * A list of the skills in Pathfinder
- */
-export const skills = [
-  "acrobatics",
-  "arcana",
-  "athletics",
-  "crafting",
-  "deception",
-  "diplomacy",
-  "intimidation",
-  "lore",
-  "medicine",
-  "nature",
-  "occultism",
-  "performance",
-  "religion",
-  "society",
-  "stealth",
-  "survival",
-  "thievery",
-];
-
-/**
- * A list of the damage types in Pathfinder, formatted to be the options of a
- * select component
+ * A list of the damage types in Pathfinder, formatted to be used as the
+ * options of a select component
  */
 export const damageTypes = [
   {
@@ -224,6 +179,90 @@ export const damageTypes = [
   },
 ];
 
+/**
+ * A list of the available dwarf heritages, formatted to be used as the options
+ *  of a select component.
+ */
+export const dwarfHeritages = [
+  {
+    value: "death_warden",
+    label: "Death Warden Dwarf",
+  },
+  {
+    value: "forge",
+    label: "Forge Dwarf",
+  },
+  {
+    value: "rock",
+    label: "Rock Dwarf",
+  },
+];
+
+/**
+ * A list of the available elf heritages, formatted to be used as the options
+ *  of a select component.
+ */
+export const elfHeritages = [
+  {
+    value: "cavern",
+    label: "Cavern Elf",
+  },
+  {
+    value: "whisper",
+    label: "Whisper Elf",
+  },
+  {
+    value: "woodland",
+    label: "Woodland Elf",
+  },
+];
+
+/**
+ * A list of the available human heritages, formatted to be used as the options
+ *  of a select component.
+ */
+export const humanHeritages = [
+  {
+    value: "battle_trained",
+    label: "Battle Trained",
+  },
+  {
+    value: "skilled",
+    label: "Skilled",
+  },
+  {
+    value: "warden",
+    label: "Warden",
+  },
+];
+
+/**
+ * A list of the skills in Pathfinder
+ */
+export const skills = [
+  "acrobatics",
+  "arcana",
+  "athletics",
+  "crafting",
+  "deception",
+  "diplomacy",
+  "intimidation",
+  "lore",
+  "medicine",
+  "nature",
+  "occultism",
+  "performance",
+  "religion",
+  "society",
+  "stealth",
+  "survival",
+  "thievery",
+];
+
+/**
+ * A list of the available weapon traits, formatted to be used as the options
+ * of a select component.
+ */
 export const weaponTraits = [
   {
     value: "agile",
@@ -282,6 +321,10 @@ export const weaponTraits = [
  */
 export const saves = ["fortitude", "reflex", "will"];
 
+/**
+ * A list of the saving throws in Pathfinder, formatted to be used as the
+ * options of a select component.
+ */
 export const saveOptions = saves.map((save) => {
   return {
     value: save,
@@ -289,21 +332,7 @@ export const saveOptions = saves.map((save) => {
   };
 });
 
-export const areaTypes = [
-  {
-    value: "burst",
-    label: "Burst",
-  },
-  {
-    value: "cone",
-    label: "Cone",
-  },
-  {
-    value: "emanation",
-    label: "Emanation",
-  },
-  {
-    value: "line",
-    label: "Line",
-  },
-];
+/**
+ * A regex pattern used to verify a string is a valid damage roll
+ */
+export const damagePattern = /^[1-9]\d?d(4|6|8|10|12)([+-]\d{1,2})?$/i;

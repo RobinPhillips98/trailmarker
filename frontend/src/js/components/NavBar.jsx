@@ -1,16 +1,16 @@
 import { useContext, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, Button, Drawer, Grid } from "antd";
+import { Button, Drawer, Grid, Menu } from "antd";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
 
 import { AuthContext } from "../contexts/AuthContext";
 
 /**
  * The nav bar at the top of the site, displaying links to the homepage and,
- * depending on whether the user is logged in, the pages to register and login, or
- * the page for saved characters and a button to log out.
+ * depending on whether the user is logged in, the pages to register and login,
+ * or the page for saved characters and a button to log out.
  *
- * @returns {JSX.Element}
+ * @returns {React.ReactElement}
  */
 export default function NavBar() {
   const location = useLocation();
@@ -89,7 +89,7 @@ export default function NavBar() {
           to="/"
           style={{ fontSize: "18px", fontWeight: "bold", lineHeight: "1" }}
         >
-          TrailMarker
+          Trailmarker
         </Link>
         <Button
           type="text"

@@ -7,26 +7,25 @@ import { AuthContext } from "../../contexts/AuthContext";
 /**
  * The page to allow the user to register a new account
  *
- * @returns {JSX.Element}
+ * @returns {React.ReactElement}
  */
 export default function Register() {
   const { register, user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const { useBreakpoint } = Grid;
-  const screens = useBreakpoint();
+  const screens = Grid.useBreakpoint();
+
+  function handleSubmit(values) {
+    register(values.username, values.password);
+  }
 
   const { Title } = Typography;
 
   useEffect(() => {
     if (user) {
-      alert("You already logged in. Please log out before registering");
+      alert("You are currently logged in. Please log out before registering");
       navigate("/");
     }
   }, [user, navigate]);
-
-  function handleSubmit(values) {
-    register(values.username, values.password);
-  }
 
   return (
     <>

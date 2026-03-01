@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
-import { Typography, Card, Tag } from "antd";
+import { Card, Tag, Typography } from "antd";
 
 import { toTitleCase } from "../../../../services/helpers";
 
 /**
- * A component to display information about the current difficulty of the encounter
+ * A component to display the current difficulty of the encounter
  *
- * @param {object} props
- * @param {string} props.difficulty The name of the current difficulty
- * @param {number} props.xp The experience point cost of the current encounter
- * @returns {JSX.Element}
+ * @typedef {object} CurrentDifficultyDisplayProps
+ * @property {string} difficulty The name of the current difficulty
+ * @property {number} xp The experience point cost of the current encounter
+ * @property {object} colors The currently set difficulty color options
+ *
+ * @param {CurrentDifficultyDisplayProps} props
+ * @returns {React.ReactElement}
  */
-export default function CurrentDifficultyDisplay({ difficulty, xp, colors }) {
+export default function CurrentDifficultyDisplay(props) {
+  const { difficulty, xp, colors } = props;
   const { Title, Text } = Typography;
 
   const [description, setDescription] = useState("");

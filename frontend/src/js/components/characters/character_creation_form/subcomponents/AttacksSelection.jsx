@@ -1,16 +1,20 @@
 import { Button, Card, Form, Input, InputNumber, Select } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 
-import { damageTypes, weaponTraits } from "../../characterHelpers";
+import {
+  damagePattern,
+  damageTypes,
+  weaponTraits,
+} from "../../characterHelpers";
 
 /**
  * A component to allow a user to add attacks to a player character
  *
  * @param {object} props
  * @param {boolean} props.editing True if this is a saved character being
- *  edited, false if this is a new character
- * @param {object} props.savedCharacter The character being edited
- * @returns {JSX.element}
+ *  edited, false if this is a new character.
+ * @param {object} props.savedCharacter The character being edited, if any.
+ * @returns {React.ReactElement}
  */
 export default function AttacksSelection({ editing, savedCharacter }) {
   const initialAttacks = editing
@@ -21,7 +25,7 @@ export default function AttacksSelection({ editing, savedCharacter }) {
         damageType: attack.damageType,
         traits: attack.traits,
       }))
-    : [{}];
+    : [];
 
   return (
     <Card title="Attacks" style={{ width: "100%" }}>
@@ -60,7 +64,7 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                   rules={[
                     { required: true, message: "Please input a damage" },
                     {
-                      pattern: /^\dd(4|6|8|10|12)([+-]\d{1,2})?$/i,
+                      pattern: damagePattern,
                       message:
                         "Input must be a valid damage roll (ex. 1d4 or 1d8+4)",
                     },
@@ -76,6 +80,7 @@ export default function AttacksSelection({ editing, savedCharacter }) {
                     { required: true, message: "Please input a damage type" },
                   ]}
                 >
+                  {/* Weapon attacks only deal some damage types */}
                   <Select options={damageTypes.slice(0, 3)} />
                 </Form.Item>
 

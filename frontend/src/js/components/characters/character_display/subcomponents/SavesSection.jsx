@@ -1,16 +1,17 @@
-import { Card, Row, Col, Typography } from "antd";
-import { toTitleCase } from "../../../../services/helpers";
+import { Card, Col, Row, Typography } from "antd";
 
-const { Title, Text } = Typography;
+import { toTitleCase } from "../../../../services/helpers";
 
 /**
  * A component to display character saving throws
  *
  * @param {object} props
  * @param {object} props.character The character being displayed
- * @returns {JSX.element}
+ * @returns {React.ReactElement}
  */
 export default function SavesSection({ character }) {
+  const { Title, Text } = Typography;
+
   return (
     <Card title="Saving Throws" style={{ marginBottom: 16 }}>
       <Row gutter={[16, 16]} justify="space-evenly">

@@ -1,16 +1,16 @@
-import { Card, Row, Col, Divider, List, Typography, Empty } from "antd";
+import { Card, Col, Divider, Empty, List, Row, Typography } from "antd";
+
 import { toTitleCase, splitCamelCase } from "../../../../services/helpers";
 
 /**
- * A component to display character spellcasting information
- * Only renders if the character has spells
+ * A component to display character spellcasting information, if any
  *
  * @param {object} props
  * @param {object} props.character The character being displayed
- * @returns {JSX.element}
+ * @returns {React.ReactElement}
  */
 export default function SpellcastingSection({ character }) {
-  const { Title } = Typography;
+  const { Text, Title } = Typography;
 
   const hasSpells =
     character.actions?.spells && character.actions.spells.length > 0;
@@ -38,6 +38,7 @@ export default function SpellcastingSection({ character }) {
             </div>
           </Card>
         </Col>
+
         <Col xs={24} sm={12} md={6}>
           <Card title="Spell DC" size="small">
             <div style={{ textAlign: "center" }}>
@@ -49,22 +50,19 @@ export default function SpellcastingSection({ character }) {
             </div>
           </Card>
         </Col>
-        {hasHeals ? (
+
+        {hasHeals && (
           <Col xs={24} sm={12} md={6}>
             <Card title="Heal Spells Prepared" size="small">
               <div style={{ textAlign: "center" }}>
-                <Title level={4}>
-                  {character.actions.heals || (
-                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-                  )}
-                </Title>
+                <Title level={4}>{character.actions.heals}</Title>
               </div>
             </Card>
           </Col>
-        ) : null}
+        )}
       </Row>
 
-      {hasSpells ? (
+      {hasSpells && (
         <Card title="Spells">
           <Row gutter={[16, 16]}>
             {character.actions.spells.map((spell) => (
@@ -76,41 +74,49 @@ export default function SpellcastingSection({ character }) {
                 >
                   <List size="small">
                     <List.Item>
-                      <strong>Level:</strong>{" "}
+                      <Text strong>Level:</Text>{" "}
                       {spell.level > 0 ? spell.level : "Cantrip"}
                     </List.Item>
+
                     {spell.slots && spell.level > 0 && (
                       <List.Item>
-                        <strong>Slots:</strong> {spell.slots}
+                        <Text strong>Slots:</Text> {spell.slots}
                       </List.Item>
                     )}
+
                     <List.Item>
-                      <strong>Damage:</strong> {spell.damage_roll}
+                      <Text strong>Damage:</Text> {spell.damage_roll}
                     </List.Item>
+
                     <List.Item>
-                      <strong>Type:</strong> {toTitleCase(spell.damage_type)}
+                      <Text strong>Type:</Text> {toTitleCase(spell.damage_type)}
                     </List.Item>
+
                     <List.Item>
-                      <strong>Range:</strong> {spell.range}
+                      <Text strong>Range:</Text> {spell.range}
                     </List.Item>
+
                     <List.Item>
-                      <strong>Target:</strong> {spell.target}
+                      <Text strong>Target:</Text> {spell.target}
                     </List.Item>
+
                     <List.Item>
-                      <strong>Actions:</strong> {spell.actions}
+                      <Text strong>Actions:</Text> {spell.actions}
                     </List.Item>
+
                     {spell.save && (
                       <List.Item>
-                        <strong>Save:</strong> {toTitleCase(spell.save)}
+                        <Text strong>Save:</Text> {toTitleCase(spell.save)}
                       </List.Item>
                     )}
+
                     {spell.area &&
                       typeof spell.area === "object" &&
                       Object.keys(spell.area).map((key) => (
                         <List.Item key={key}>
-                          <strong>
+                          <Text strong>
                             Area {toTitleCase(splitCamelCase(key))}:
-                          </strong>{" "}
+                          </Text>{" "}
                           {spell.area[key]}
                         </List.Item>
                       ))}
@@ -120,7 +126,7 @@ export default function SpellcastingSection({ character }) {
             ))}
           </Row>
         </Card>
-      ) : null}
+      )}
     </>
   );
 }

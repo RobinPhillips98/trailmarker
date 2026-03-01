@@ -5,23 +5,16 @@ import { DeleteOutlined, DownloadOutlined } from "@ant-design/icons";
  * A component for displaying information about a saved encounter
  *
  * @typedef {object} EncounterProps
- * @property {function} handleLoad The function to select this encounter's enemies
+ * @property {function} handleLoad The function to overwrite the current
+ *  encounter with this encounter
  * @property {function} handleDelete The function to delete this encounter
  * @property {object} encounter The encounter to be displayed
  *
  * @param {EncounterProps} props
- * @returns {JSX.Element}
+ * @returns {React.ReactElement}
  */
 export default function Encounter(props) {
   const { handleLoad, handleDelete, encounter } = props;
-
-  function handleClickLoad() {
-    handleLoad(encounter);
-  }
-
-  function handleClickDelete() {
-    handleDelete(encounter);
-  }
 
   const dataSource = encounter.enemies.map((enemy) => {
     return { ...enemy, ["key"]: enemy.id };
@@ -40,8 +33,16 @@ export default function Encounter(props) {
     },
   ];
 
+  function handleClickLoad() {
+    handleLoad(encounter);
+  }
+
+  function handleClickDelete() {
+    handleDelete(encounter);
+  }
+
   return (
-    <div>
+    <>
       <Table
         dataSource={dataSource}
         columns={columns}
@@ -65,6 +66,6 @@ export default function Encounter(props) {
       >
         Delete Encounter
       </Button>
-    </div>
+    </>
   );
 }
