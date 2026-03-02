@@ -33,9 +33,10 @@ export default function CharacterCreationForm() {
   const { state } = useLocation();
   const { editing, savedCharacter } = state;
   const { token } = useContext(AuthContext);
-  const { useBreakpoint } = Grid;
   const navigate = useNavigate();
   const { Title } = Typography;
+
+  const [form] = Form.useForm();
 
   useEffect(() => {
     if (!token) {
@@ -125,7 +126,7 @@ export default function CharacterCreationForm() {
 
   const title = editing ? "Edit Character" : "Character Creation";
 
-  const formSize = useBreakpoint().lg ? "large" : "middle";
+  const formSize = Grid.useBreakpoint().lg ? "large" : "middle";
 
   return (
     <>
@@ -141,6 +142,7 @@ export default function CharacterCreationForm() {
         size={formSize}
         requiredMark="optional"
         scrollToFirstError={{ focus: true }}
+        form={form}
       >
         <Space style={{ marginTop: 24, marginBottom: 24 }}>
           <Form.Item label={null}>
@@ -176,7 +178,7 @@ export default function CharacterCreationForm() {
             />
           </Col>
           <Col xs={24} md={12}>
-            <GeneralStatsSelection />
+            <GeneralStatsSelection form={form} />
           </Col>
         </Row>
         <br />

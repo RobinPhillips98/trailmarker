@@ -1,14 +1,21 @@
 import { Card, Form, InputNumber, Select } from "antd";
 
-import { levelOptions } from "../../../../services/helpers";
+import { isEmpty, levelOptions } from "../../../../services/helpers";
 
 /**
  * A component to allow a user to set general numerical stats for a player
  * character, such as their level, hit point maximum, or armor class
  *
+ * @param {object} props
+ * @param {FormInstance} props.form Form instance used for form.useWatch
+ *
  * @returns {React.ReactElement}
  */
-export default function GeneralStatsSelection() {
+export default function GeneralStatsSelection({ form }) {
+  const spells = Form.useWatch(["actions", "spells"], form);
+
+  const hasSpells = spells && !isEmpty(spells);
+
   return (
     <Card style={{ width: "100%" }}>
       <Form.Item
@@ -37,10 +44,18 @@ export default function GeneralStatsSelection() {
         label="Spell Attack Bonus"
         labelCol={{ span: 12 }}
         name="spell_attack_bonus"
+        rules={[
+          { required: hasSpells, message: "Please input a spell attack bonus" },
+        ]}
       >
         <InputNumber min={0} max={20} style={{ width: 120 }} />
       </Form.Item>
-      <Form.Item label="Spell DC" labelCol={{ span: 12 }} name="spell_dc">
+      <Form.Item
+        label="Spell DC"
+        labelCol={{ span: 12 }}
+        name="spell_dc"
+        rules={[{ required: hasSpells, message: "Please input a spell DC" }]}
+      >
         <InputNumber min={0} max={30} style={{ width: 120 }} />
       </Form.Item>
       <Form.Item
