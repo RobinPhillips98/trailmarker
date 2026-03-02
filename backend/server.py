@@ -8,10 +8,12 @@ import models
 from api.routes import auth, characters, encounters, enemies, simulation, user
 from db import engine
 
-app = FastAPI(debug=True)
+app = FastAPI()
 
 origins = [
     "http://localhost:5173",
+    "https://trailmarker2e.com",
+    "https://www.trailmarker2e.com",
 ]
 
 app.add_middleware(

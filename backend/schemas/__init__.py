@@ -36,7 +36,7 @@ class Spell(BaseModel):
     damage_type: str
     range_: int = Field(..., alias="range")
     area: Optional[dict[str, str | int]] = None
-    save: Optional[str] = "none"
+    save: Optional[str] = None
     targets: Optional[int] = 0
     actions: str
 

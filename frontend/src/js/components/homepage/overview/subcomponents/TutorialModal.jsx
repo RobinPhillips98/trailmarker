@@ -30,6 +30,7 @@ export default function TutorialModal() {
         title="How To Enable Trailmarker's Simulation"
         closable={{ "aria-label": "Custom Close Button" }}
         open={isModalOpen}
+        onCancel={closeModal}
         footer={[
           <Button key="ok" onClick={closeModal} type="primary">
             OK

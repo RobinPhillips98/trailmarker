@@ -1,7 +1,7 @@
 // Third-party libraries
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, FloatButton, Tabs, Typography } from "antd";
+import { Button, FloatButton, Spin, Tabs, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
 // Personal helpers
@@ -24,6 +24,7 @@ export default function Characters() {
   // State variables
   const [characters, setCharacters] = useState([]);
   const [activeTab, setActiveTab] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Other variables
   const navigate = useNavigate();
@@ -89,6 +90,7 @@ export default function Characters() {
           a.name.localeCompare(b.name),
         );
         setCharacters(sortedCharacters);
+        setLoading(false);
 
         // Set active tab to the character from navigation state if available
         if (location.state?.selectedCharacter) {
@@ -119,14 +121,16 @@ export default function Characters() {
         >
           Create Character
         </Button>
-        <Tabs
-          type="card"
-          size="large"
-          items={characterTabs}
-          className="character-tabs"
-          activeKey={activeTab}
-          onChange={setActiveTab}
-        />
+        <Spin spinning={loading}>
+          <Tabs
+            type="card"
+            size="large"
+            items={characterTabs}
+            className="character-tabs"
+            activeKey={activeTab}
+            onChange={setActiveTab}
+          />
+        </Spin>
         <FloatButton.BackTop />
       </>
     );

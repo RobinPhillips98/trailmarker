@@ -121,7 +121,17 @@ export default function SpellItem(props) {
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item {...restField} name={[name, "targets"]} label="Targets">
+          <Form.Item
+            {...restField}
+            name={[name, "targets"]}
+            label="Targets"
+            rules={[
+              {
+                required: !areaType,
+                message: "Please input a number of targets",
+              },
+            ]}
+          >
             <InputNumber min={0} max={10} />
           </Form.Item>
         </Col>
@@ -131,7 +141,7 @@ export default function SpellItem(props) {
           <Form.Item
             {...restField}
             name={[name, "area", "type"]}
-            label="Area type"
+            label="Area Type"
           >
             <Select options={areaTypes} allowClear />
           </Form.Item>
@@ -140,11 +150,11 @@ export default function SpellItem(props) {
           <Form.Item
             {...restField}
             name={[name, "area", "value"]}
-            label="Area value"
+            label="Area Size"
             rules={[
               {
                 required: areaType,
-                message: "Please input an area value",
+                message: "Please input an area size",
               },
             ]}
           >
@@ -154,7 +164,17 @@ export default function SpellItem(props) {
       </Row>
       <Row gutter={12}>
         <Col span={12}>
-          <Form.Item {...restField} name={[name, "save"]} label="Saving Throw">
+          <Form.Item
+            {...restField}
+            name={[name, "save"]}
+            label="Saving Throw"
+            rules={[
+              {
+                required: areaType,
+                message: "Please input a saving throw value",
+              },
+            ]}
+          >
             <Select
               allowClear
               options={saveOptions}

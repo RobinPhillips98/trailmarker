@@ -157,7 +157,7 @@ class TestPlayerSpells:
         assert spell_1.range == 120
         assert spell_1.area_type is None
         assert spell_1.area_size == 0
-        assert spell_1.save == "none"
+        assert spell_1.save is None
         assert spell_1.targets == 1
         assert spell_1.cost == 1
 
@@ -172,7 +172,7 @@ class TestPlayerSpells:
         assert spell_3.range == 5
         assert spell_3.area_type is None
         assert spell_3.area_size == 0
-        assert spell_3.save == "none"
+        assert spell_3.save is None
         assert spell_3.targets == 1
         assert spell_3.cost == 2
 
@@ -187,7 +187,7 @@ class TestPlayerSpells:
         assert spell_4.range == 30
         assert spell_4.area_type is None
         assert spell_4.area_size == 0
-        assert spell_4.save == "none"
+        assert spell_4.save is None
         assert spell_4.targets == 1
         assert spell_4.cost == 2
 
@@ -295,7 +295,7 @@ class TestEnemySpells:
         assert spell.range == 30
         assert spell.area_type is None
         assert spell.area_size == 0
-        assert spell.save == "none"
+        assert spell.save is None
         assert spell.targets == 1
         assert spell.cost == 2
 

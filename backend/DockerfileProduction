@@ -1,0 +1,43 @@
+# Stage 2: Build Backend Dependencies
+FROM python:3.14 as backend-builder
+
+WORKDIR /app
+
+# Install Poetry
+RUN pip install --no-cache-dir poetry
+
+# Configure Poetry
+RUN poetry config virtualenvs.create false
+
+# Copy backend dependency files
+COPY ./pyproject.toml ./poetry.lock* /app/
+
+# Install dependencies (production only)
+RUN poetry install --no-interaction --no-ansi --only=main --no-root
+
+# Stage 3: Final Runtime Image
+FROM python:3.14
+
+WORKDIR /app
+
+# Copy installed Python packages and binaries from builder
+COPY --from=backend-builder /usr/local/lib/python3.14/site-packages /usr/local/lib/python3.14/site-packages
+COPY --from=backend-builder /usr/local/bin /usr/local/bin
+
+# Copy backend application code
+COPY . /app
+
+# Create non-root user for security
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
+
+USER appuser
+
+# Expose port (Railway sets PORT automatically)
+EXPOSE 8080
+
+# Use PORT environment variable if set, otherwise default to 8080
+ENV PORT=8080
+
+# Change to backend directory and run server
+CMD sh -c "uvicorn server:app --host 0.0.0.0 --port \${PORT:-8080}"

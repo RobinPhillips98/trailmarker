@@ -1,3 +1,6 @@
+echo 'Running backend tests...'
+cd backend
+
 echo 'Running flake8...'
 poetry run flake8
 
@@ -9,6 +12,8 @@ poetry run black --line-length=79 . --check
 
 echo 'Running unit tests...'
 poetry run pytest -x
+
+echo 'Running frontend tests...'
 
 cd ../frontend
 
