@@ -15,7 +15,7 @@ is_production = os.getenv("ENVIRONMENT") == "production"
 app = FastAPI(
     docs_url=None if is_production else "/docs",
     redoc_url=None if is_production else "/redoc",
-    debug=not is_production
+    debug=not is_production,
 )
 
 origins = [
