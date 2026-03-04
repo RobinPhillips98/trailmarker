@@ -1,5 +1,5 @@
 // Third-party libraries
-import { Alert, ConfigProvider, Flex, Layout, theme } from "antd";
+import { ConfigProvider, Flex, Layout, theme } from "antd";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 // Contexts
@@ -14,7 +14,8 @@ import Characters from "./components/characters/Characters.jsx";
 import CharacterCreationForm from "./components/characters/character_creation_form/CharacterCreationForm.jsx";
 import Simulation from "./components/simulation/Simulation.jsx";
 import PolicyNotice from "./components/PolicyNotice.jsx";
-import NotFound from "./components/NotFound.jsx";
+import NotFound from "./components/status_pages/NotFound.jsx";
+import ErrorBoundary from "./components/status_pages/ErrorBoundary.jsx";
 
 /**
  * The core app component, orchestrating all other components.
@@ -23,7 +24,6 @@ import NotFound from "./components/NotFound.jsx";
  */
 export default function App() {
   const { Header, Content, Footer } = Layout;
-  const { ErrorBoundary } = Alert;
   const themeConfig = {
     token: {
       colorBgLayout: "#0f1418",
@@ -48,9 +48,9 @@ export default function App() {
 
   return (
     <Router>
-      <ErrorBoundary>
-        <AuthProvider>
-          <ConfigProvider theme={themeConfig}>
+      <AuthProvider>
+        <ConfigProvider theme={themeConfig}>
+          <ErrorBoundary>
             <Flex>
               <Layout>
                 <Header
@@ -84,9 +84,9 @@ export default function App() {
                 </Footer>
               </Layout>
             </Flex>
-          </ConfigProvider>
-        </AuthProvider>
-      </ErrorBoundary>
+          </ErrorBoundary>
+        </ConfigProvider>
+      </AuthProvider>
     </Router>
   );
 }

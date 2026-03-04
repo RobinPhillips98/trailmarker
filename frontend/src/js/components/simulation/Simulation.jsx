@@ -1,6 +1,6 @@
 // Third-party libraries
 import { useContext, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   Button,
   Collapse,
@@ -19,6 +19,9 @@ import { errorAlert, getRandom, toTitleCase } from "../../services/helpers";
 
 // Contexts
 import { AuthContext } from "../../contexts/AuthContext";
+
+// Components
+import NotAuthorized from "../status_pages/NotAuthorized";
 
 /**
  * A page to display the results of a simulation.
@@ -46,10 +49,9 @@ export default function Simulation() {
 
   // Other variables
   const { token } = useContext(AuthContext);
-  const navigate = useNavigate();
   const { state } = useLocation();
   const screens = Grid.useBreakpoint();
-  const { enemies } = state;
+  const { enemies } = state || { enemies: null };
   const { Paragraph, Title } = Typography;
 
   const simTitle = switched
@@ -78,13 +80,14 @@ export default function Simulation() {
   // useEffect calls
 
   useEffect(() => {
-    if (!token) {
-      alert("Sorry: You must be logged in to access this page");
-      navigate("/login");
+    if (!enemies) {
+      if (!token) return <NotAuthorized />;
+      else
+        throw new Error(
+          'Enemies is null. Did you click "Run Simulation" on the homepage?',
+        );
     }
-  }, [navigate, token]);
 
-  useEffect(() => {
     const request = {
       enemies: enemies.map((enemy) => {
         return {
@@ -120,6 +123,8 @@ export default function Simulation() {
     }
     callSimulation();
   }, [enemies, run, token]);
+
+  if (!token) return <NotAuthorized />;
 
   if (loaded) {
     const randomSimData = getRandom(simData, 10).sort(

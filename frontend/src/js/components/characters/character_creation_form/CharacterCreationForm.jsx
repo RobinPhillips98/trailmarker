@@ -1,4 +1,5 @@
-import { useContext, useEffect } from "react";
+// Third-Party Libraries
+import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   Button,
@@ -12,6 +13,14 @@ import {
 } from "antd";
 import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
 
+// Personal Helpers
+import api from "../../../api";
+import { errorAlert } from "../../../services/helpers";
+
+// Contexts
+import { AuthContext } from "../../../contexts/AuthContext";
+
+// Components
 import AttributeSelection from "./subcomponents/AttributeSelection";
 import SkillSelection from "./subcomponents/SkillSelection";
 import SavesSelection from "./subcomponents/SavesSelection";
@@ -19,10 +28,7 @@ import AttacksSelection from "./subcomponents/AttacksSelection";
 import GeneralInfoSelection from "./subcomponents/GeneralInfoSelection";
 import GeneralStatsSelection from "./subcomponents/GeneralStatsSelection";
 import SpellsSelection from "./subcomponents/SpellsSelection";
-
-import api from "../../../api";
-import { AuthContext } from "../../../contexts/AuthContext";
-import { errorAlert } from "../../../services/helpers";
+import NotAuthorized from "../../status_pages/NotAuthorized";
 
 /**
  * A component to allow a user to create or edit a player character
@@ -30,20 +36,16 @@ import { errorAlert } from "../../../services/helpers";
  * @returns {React.ReactElement}
  */
 export default function CharacterCreationForm() {
-  const { state } = useLocation();
-  const { editing, savedCharacter } = state;
   const { token } = useContext(AuthContext);
+  const { state } = useLocation();
+  const { editing, savedCharacter } = state || {
+    editing: false,
+    savedCharacter: null,
+  };
   const navigate = useNavigate();
   const { Title } = Typography;
 
   const [form] = Form.useForm();
-
-  useEffect(() => {
-    if (!token) {
-      alert("Sorry: You must be logged in to access this page");
-      navigate("/login");
-    }
-  }, [token, navigate]);
 
   const initialValues = editing
     ? {
@@ -128,94 +130,99 @@ export default function CharacterCreationForm() {
 
   const formSize = Grid.useBreakpoint().lg ? "large" : "middle";
 
-  return (
-    <>
-      <Title>{title}</Title>
-      <Form
-        name="character"
-        labelCol={{ span: 24 }}
-        wrapperCol={{ span: 24 }}
-        style={{ maxWidth: 1200, margin: "0 auto" }}
-        initialValues={initialValues}
-        onFinish={onFinish}
-        autoComplete="off"
-        size={formSize}
-        requiredMark="optional"
-        scrollToFirstError={{ focus: true }}
-        form={form}
-      >
-        <Space style={{ marginTop: 24, marginBottom: 24 }}>
-          <Form.Item label={null}>
-            <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
-              Save Character
-            </Button>
-          </Form.Item>
-          <Form.Item label={null}>
-            <Button onClick={handleCancel} icon={<CloseOutlined />}>
-              Cancel
-            </Button>
-          </Form.Item>
-        </Space>
-        <FloatButton.Group shape="square">
-          <FloatButton
-            type="primary"
-            htmlType="submit"
-            icon={<SaveOutlined />}
-            tooltip="Save Character"
-          />
-          <FloatButton
-            onClick={handleCancel}
-            icon={<CloseOutlined />}
-            tooltip="Cancel"
-          />
-          <FloatButton.BackTop />
-        </FloatButton.Group>
-        <Row gutter={16} align="middle">
-          <Col xs={24} md={12}>
-            <GeneralInfoSelection
-              editing={editing}
-              savedCharacter={savedCharacter}
+  if (token)
+    return (
+      <>
+        <Title>{title}</Title>
+        <Form
+          name="character"
+          labelCol={{ span: 24 }}
+          wrapperCol={{ span: 24 }}
+          style={{ maxWidth: 1200, margin: "0 auto" }}
+          initialValues={initialValues}
+          onFinish={onFinish}
+          autoComplete="off"
+          size={formSize}
+          requiredMark="optional"
+          scrollToFirstError={{ focus: true }}
+          form={form}
+        >
+          <Space style={{ marginTop: 24, marginBottom: 24 }}>
+            <Form.Item label={null}>
+              <Button type="primary" htmlType="submit" icon={<SaveOutlined />}>
+                Save Character
+              </Button>
+            </Form.Item>
+            <Form.Item label={null}>
+              <Button onClick={handleCancel} icon={<CloseOutlined />}>
+                Cancel
+              </Button>
+            </Form.Item>
+          </Space>
+          <FloatButton.Group shape="square">
+            <FloatButton
+              type="primary"
+              htmlType="submit"
+              icon={<SaveOutlined />}
+              tooltip="Save Character"
             />
-          </Col>
-          <Col xs={24} md={12}>
-            <GeneralStatsSelection form={form} />
-          </Col>
-        </Row>
-        <br />
-        <Row gutter={16} align="middle">
-          <Col xs={24} md={12}>
-            <AttributeSelection
-              editing={editing}
-              savedCharacter={savedCharacter}
+            <FloatButton
+              onClick={handleCancel}
+              icon={<CloseOutlined />}
+              tooltip="Cancel"
             />
-          </Col>
-          <Col xs={24} md={12}>
-            <SavesSelection />
-          </Col>
-        </Row>
-        <br />
-        <Row>
-          <Col span={24}>
-            <SkillSelection editing={editing} savedCharacter={savedCharacter} />
-          </Col>
-        </Row>
-        <br />
-        <Row gutter={16}>
-          <Col xs={24} md={12}>
-            <AttacksSelection
-              editing={editing}
-              savedCharacter={savedCharacter}
-            />
-          </Col>
-          <Col xs={24} md={12}>
-            <SpellsSelection
-              editing={editing}
-              savedCharacter={savedCharacter}
-            />
-          </Col>
-        </Row>
-        <br />
-      </Form>
-    </>
-  );
+            <FloatButton.BackTop />
+          </FloatButton.Group>
+          <Row gutter={16} align="middle">
+            <Col xs={24} md={12}>
+              <GeneralInfoSelection
+                editing={editing}
+                savedCharacter={savedCharacter}
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <GeneralStatsSelection form={form} />
+            </Col>
+          </Row>
+          <br />
+          <Row gutter={16} align="middle">
+            <Col xs={24} md={12}>
+              <AttributeSelection
+                editing={editing}
+                savedCharacter={savedCharacter}
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <SavesSelection />
+            </Col>
+          </Row>
+          <br />
+          <Row>
+            <Col span={24}>
+              <SkillSelection
+                editing={editing}
+                savedCharacter={savedCharacter}
+              />
+            </Col>
+          </Row>
+          <br />
+          <Row gutter={16}>
+            <Col xs={24} md={12}>
+              <AttacksSelection
+                editing={editing}
+                savedCharacter={savedCharacter}
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <SpellsSelection
+                editing={editing}
+                savedCharacter={savedCharacter}
+              />
+            </Col>
+          </Row>
+          <br />
+        </Form>
+      </>
+    );
+  else return <NotAuthorized />;
 }
