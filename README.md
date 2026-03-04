@@ -115,4 +115,15 @@ This will:
 
 ## 📄 License
 
-This project is for personal/educational use. Pathfinder 2e content sourced from the [Foundry VTT pf2e system](https://github.com/foundryvtt/pf2e) is subject to the Paizo Community Use Policy.
+Trailmarker's source code is licensed under the **[MIT License](./LICENSE)**.
+
+**Pathfinder Second Edition content** (enemy names, stats, and mechanics) is used under the
+[Paizo Inc. Community Use Policy](https://paizo.com/community/communityuse).
+This project is not published, endorsed, or specifically approved by Paizo Inc.
+
+**Enemy data JSON files** are sourced from the
+[Foundry VTT pf2e system](https://github.com/foundryvtt/pf2e), licensed under the
+[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0),
+and have been transformed and restructured for use in this project.
+
+See [`THIRD_PARTY_ATTRIBUTIONS.md`](./THIRD_PARTY_ATTRIBUTIONS.md) for full attribution details.
