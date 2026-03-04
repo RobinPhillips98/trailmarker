@@ -13,6 +13,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 
 // Components
 import CharacterDisplay from "./character_display/CharacterDisplay";
+import NotAuthorized from "../status_pages/NotAuthorized";
 
 /**
  * The page for displaying saved characters, with options to edit saved
@@ -103,10 +104,6 @@ export default function Characters() {
       }
     }
     if (token) fetchCharacters();
-    else {
-      alert("Sorry: You must be logged in to access this page");
-      navigate("/login");
-    }
   }, [location.state, token, navigate]);
 
   if (token)
@@ -135,6 +132,6 @@ export default function Characters() {
       </>
     );
   else {
-    return null;
+    return <NotAuthorized />;
   }
 }
