@@ -1,5 +1,7 @@
 """Initializes and launches the server itself."""
 
+import os
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +10,13 @@ import models
 from api.routes import auth, characters, encounters, enemies, simulation, user
 from db import engine
 
-app = FastAPI()
+is_production = os.getenv("ENVIRONMENT") == "production"
+
+app = FastAPI(
+    docs_url=None if is_production else "/docs",
+    redoc_url=None if is_production else "/redoc",
+    debug=not is_production
+)
 
 origins = [
     "http://localhost:5173",
