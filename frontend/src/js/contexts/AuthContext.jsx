@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { App } from "antd";
 
 import {
@@ -50,9 +50,18 @@ function AuthProvider({ children }) {
     storedToken && !isTokenExpired(storedToken) ? storedToken : null,
   );
   const [user, setUser] = useState(null);
+  const [pendingMessage, setPendingMessage] = useState(null);
   const navigate = useNavigate();
   const interceptorIdRef = useRef(null);
   const { message } = App.useApp();
+  const location = useLocation();
+  const locationRef = useRef(location.pathname);
+  const publicRoutes = ["/", "/login", "/register"];
+
+  // Keep locationRef in sync with the current pathname
+  useEffect(() => {
+    locationRef.current = location.pathname;
+  }, [location.pathname]);
 
   // If there was a stored token but it's already expired on load, clear it
   useEffect(() => {
@@ -72,14 +81,28 @@ function AuthProvider({ children }) {
     }
   }, [token]);
 
+  // Navigate to /login and show a message after token is cleared
+  useEffect(() => {
+    if (!token && pendingMessage) {
+      if (!publicRoutes.includes(locationRef.current)) navigate("/login");
+      if (pendingMessage.type === "success")
+        message.success(pendingMessage.text);
+      if (pendingMessage.type === "warning")
+        message.warning(pendingMessage.text);
+      setPendingMessage(null);
+    }
+  }, [token, pendingMessage, navigate, message]);
+
   // Set up the Axios interceptor to catch 401s (e.g. token expired mid-session)
   useEffect(() => {
     interceptorIdRef.current = setupAuthInterceptor(() => {
       setToken(null);
       setUser(null);
       localStorage.removeItem("token");
-      navigate("/login");
-      message.warning("Your session has expired. Please log in again.");
+      setPendingMessage({
+        type: "warning",
+        text: "Your session has expired. Please log in again.",
+      });
     });
 
     return () => {
@@ -87,7 +110,7 @@ function AuthProvider({ children }) {
         api.interceptors.response.eject(interceptorIdRef.current);
       }
     };
-  }, [navigate]);
+  }, [navigate, message]);
 
   // Proactively log the user out when the token's expiration time is reached
   useEffect(() => {
@@ -103,13 +126,15 @@ function AuthProvider({ children }) {
       setToken(null);
       setUser(null);
       localStorage.removeItem("token");
-      navigate("/login");
-      message.warning("Your session has expired. Please log in again.");
+      setPendingMessage({
+        type: "warning",
+        text: "Your session has expired. Please log in again.",
+      });
     }, msUntilExpiry);
 
     // Clear the timer if the token changes before it fires (e.g. logout)
     return () => clearTimeout(timer);
-  }, [token, navigate]);
+  }, [token, navigate, message]);
 
   /**
    * Attempts to log the user in and saves their JWT in local storage
@@ -144,7 +169,6 @@ function AuthProvider({ children }) {
   async function register(username, password) {
     try {
       await registerUser({ username, password });
-      message.success("Registered successfully!");
       navigate("/login");
     } catch (error) {
       console.error("Error registering", error);
@@ -161,8 +185,7 @@ function AuthProvider({ children }) {
     setToken(null);
     setUser(null);
     localStorage.removeItem("token");
-    navigate("/login");
-    message.success("Logged out!");
+    setPendingMessage({ type: "success", text: "Logged out!" });
   }
 
   return (
