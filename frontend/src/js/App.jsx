@@ -14,6 +14,7 @@ import Characters from "./components/characters/Characters.jsx";
 import CharacterCreationForm from "./components/characters/character_creation_form/CharacterCreationForm.jsx";
 import Simulation from "./components/simulation/Simulation.jsx";
 import PolicyNotice from "./components/PolicyNotice.jsx";
+import NotFound from "./components/NotFound.jsx";
 
 /**
  * The core app component, orchestrating all other components.
@@ -72,6 +73,7 @@ export default function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/simulation" element={<Simulation />} />
                     <Route path="/copyright" element={<PolicyNotice />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Content>
                 <Footer>
