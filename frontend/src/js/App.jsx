@@ -1,5 +1,5 @@
 // Third-party libraries
-import { ConfigProvider, Flex, Layout, theme } from "antd";
+import { App as AntApp, ConfigProvider, Flex, Layout, theme } from "antd";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 // Contexts
@@ -48,45 +48,47 @@ export default function App() {
 
   return (
     <Router>
-      <AuthProvider>
-        <ConfigProvider theme={themeConfig}>
-          <ErrorBoundary>
-            <Flex>
-              <Layout>
-                <Header
-                  style={{
-                    background: themeConfig.token.colorBgContainer,
-                    marginBottom: 10,
-                  }}
-                >
-                  <NavBar />
-                </Header>
-                <Content>
-                  <Routes>
-                    <Route path="/" element={<Homepage />} />
-                    <Route path="/characters" element={<Characters />} />
-                    <Route
-                      path="/characters/create"
-                      element={<CharacterCreationForm />}
-                    />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/simulation" element={<Simulation />} />
-                    <Route path="/copyright" element={<PolicyNotice />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Content>
-                <Footer>
-                  This website is not published, endorsed, or specifically
-                  approved by Paizo Inc. We are expressly prohibited from
-                  charging you to use or access this content.{" "}
-                  <Link to="/copyright">See more.</Link>
-                </Footer>
-              </Layout>
-            </Flex>
-          </ErrorBoundary>
-        </ConfigProvider>
-      </AuthProvider>
+      <ConfigProvider theme={themeConfig}>
+        <AntApp>
+          <AuthProvider>
+            <ErrorBoundary>
+              <Flex>
+                <Layout>
+                  <Header
+                    style={{
+                      background: themeConfig.token.colorBgContainer,
+                      marginBottom: 10,
+                    }}
+                  >
+                    <NavBar />
+                  </Header>
+                  <Content>
+                    <Routes>
+                      <Route path="/" element={<Homepage />} />
+                      <Route path="/characters" element={<Characters />} />
+                      <Route
+                        path="/characters/create"
+                        element={<CharacterCreationForm />}
+                      />
+                      <Route path="/register" element={<Register />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/simulation" element={<Simulation />} />
+                      <Route path="/copyright" element={<PolicyNotice />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Content>
+                  <Footer>
+                    This website is not published, endorsed, or specifically
+                    approved by Paizo Inc. We are expressly prohibited from
+                    charging you to use or access this content.{" "}
+                    <Link to="/copyright">See more.</Link>
+                  </Footer>
+                </Layout>
+              </Flex>
+            </ErrorBoundary>
+          </AuthProvider>
+        </AntApp>
+      </ConfigProvider>
     </Router>
   );
 }

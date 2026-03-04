@@ -6,7 +6,7 @@ import { PlusOutlined } from "@ant-design/icons";
 
 // Personal helpers
 import api from "../../api";
-import { errorAlert } from "../../services/helpers";
+import useErrorMessage from "../../services/hooks/useErrorMessage";
 
 // Contexts
 import { AuthContext } from "../../contexts/AuthContext";
@@ -31,6 +31,7 @@ export default function Characters() {
   const navigate = useNavigate();
   const location = useLocation();
   const { token } = useContext(AuthContext);
+  const { errorMessage } = useErrorMessage();
 
   const { Title } = Typography;
 
@@ -72,7 +73,7 @@ export default function Characters() {
         prev.filter((currentCharacter) => currentCharacter !== character),
       );
     } catch (error) {
-      errorAlert("Error deleting character", error);
+      errorMessage("Error deleting character", error);
     }
   }
 
@@ -100,7 +101,7 @@ export default function Characters() {
           setActiveTab(sortedCharacters[0].name);
         }
       } catch (error) {
-        errorAlert("Error fetching characters", error);
+        errorMessage("Error fetching characters", error);
       }
     }
     if (token) fetchCharacters();

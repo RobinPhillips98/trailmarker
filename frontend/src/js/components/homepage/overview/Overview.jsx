@@ -1,12 +1,13 @@
 // Third-party libraries
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Col, Divider, Row } from "antd";
+import { App, Button, Col, Divider, Row } from "antd";
 import { LockOutlined, PlayCircleOutlined } from "@ant-design/icons";
 
 // Personal helpers
 import api from "../../../api";
-import { errorAlert, isEmpty } from "../../../services/helpers";
+import { isEmpty } from "../../../services/helpers";
+import useErrorMessage from "../../../services/hooks/useErrorMessage";
 
 // Contexts
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -47,6 +48,8 @@ export default function Overview(props) {
   // Other variables
   const navigate = useNavigate();
   const { token, user } = useContext(AuthContext);
+  const { errorMessage } = useErrorMessage();
+  const { message } = App.useApp();
 
   const difficultyColors = colorBlind
     ? {
@@ -110,13 +113,13 @@ export default function Overview(props) {
           setCharactersSaved(true);
         } else {
           if (useSaved) {
-            alert("No saved characters!");
+            message.warning("No saved characters!");
             setUseSaved(false);
           }
           setCharactersSaved(false);
         }
       } catch (error) {
-        errorAlert("Error fetching characters", error);
+        errorMessage("Error fetching characters", error);
       }
     }
     if (token) getPartyInfoFromServer();

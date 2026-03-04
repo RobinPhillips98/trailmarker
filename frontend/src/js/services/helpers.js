@@ -39,17 +39,6 @@ export function isEmpty(obj) {
 }
 
 /**
- * Logs the error to the console and displays an alert to the user.
- *
- * @param {string} message Message to be displayed summarizing the error.
- * @param {object} error The full error object
- */
-export function errorAlert(message, error) {
-  console.error(message, error);
-  alert(`${message}: ${error.response.data.detail}`);
-}
-
-/**
  * Returns `n` unique random elements from `arr`
  *
  * Source - https://stackoverflow.com/a/19270021
