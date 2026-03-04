@@ -1,12 +1,12 @@
 import { createContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { App } from "antd";
 
 import {
   loginUser,
   registerUser,
   fetchUserProfile,
 } from "../services/AuthHelpers";
-import { errorAlert } from "../services/helpers";
 import api, { setupAuthInterceptor } from "../api";
 
 const AuthContext = createContext({});
@@ -52,6 +52,7 @@ function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const interceptorIdRef = useRef(null);
+  const { message } = App.useApp();
 
   // If there was a stored token but it's already expired on load, clear it
   useEffect(() => {
@@ -77,8 +78,8 @@ function AuthProvider({ children }) {
       setToken(null);
       setUser(null);
       localStorage.removeItem("token");
-      alert("Your session has expired. Please log in again.");
       navigate("/login");
+      message.warning("Your session has expired. Please log in again.");
     });
 
     return () => {
@@ -102,8 +103,8 @@ function AuthProvider({ children }) {
       setToken(null);
       setUser(null);
       localStorage.removeItem("token");
-      alert("Your session has expired. Please log in again.");
       navigate("/login");
+      message.warning("Your session has expired. Please log in again.");
     }, msUntilExpiry);
 
     // Clear the timer if the token changes before it fires (e.g. logout)
@@ -127,7 +128,10 @@ function AuthProvider({ children }) {
         navigate("/");
       }
     } catch (error) {
-      errorAlert("Error logging in", error);
+      console.error("Error logging in", error);
+      message.error(
+        `Error logging in: ${error?.response?.data?.detail ?? error}`,
+      );
     }
   }
 
@@ -140,9 +144,13 @@ function AuthProvider({ children }) {
   async function register(username, password) {
     try {
       await registerUser({ username, password });
+      message.success("Registered successfully!");
       navigate("/login");
     } catch (error) {
-      errorAlert("Error registering", error);
+      console.error("Error registering", error);
+      message.error(
+        `Error registering: ${error?.response?.data?.detail ?? error}`,
+      );
     }
   }
 
@@ -153,8 +161,8 @@ function AuthProvider({ children }) {
     setToken(null);
     setUser(null);
     localStorage.removeItem("token");
-    alert("Logged out!");
     navigate("/login");
+    message.success("Logged out!");
   }
 
   return (

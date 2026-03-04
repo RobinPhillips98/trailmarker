@@ -4,7 +4,7 @@ import { Col, Empty, Form, Row, Spin, Typography } from "antd";
 
 // Personal helpers
 import api from "../../../api";
-import { errorAlert } from "../../../services/helpers";
+import useErrorMessage from "../../../services/hooks/useErrorMessage";
 
 // Components
 import Enemy from "./Enemy";
@@ -22,7 +22,9 @@ export default function EnemyList({ handleAdd }) {
   const [enemies, setEnemies] = useState([]);
   const [displayEnemies, setDisplayEnemies] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const { Title } = Typography;
+  const { errorMessage } = useErrorMessage();
 
   const [form] = Form.useForm();
   const name = Form.useWatch("name", form);
@@ -47,7 +49,7 @@ export default function EnemyList({ handleAdd }) {
       setDisplayEnemies(response.data.enemies);
       setLoading(false);
     } catch (error) {
-      errorAlert("Error fetching enemies", error);
+      errorMessage("Error fetching enemies", error);
       setLoading(false);
     }
   }

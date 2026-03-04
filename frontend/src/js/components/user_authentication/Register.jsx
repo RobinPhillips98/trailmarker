@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Form, Grid, Input, Typography } from "antd";
+import { App, Button, Form, Grid, Input, Typography } from "antd";
 
 import { AuthContext } from "../../contexts/AuthContext";
 
@@ -13,6 +13,7 @@ export default function Register() {
   const { register, user } = useContext(AuthContext);
   const navigate = useNavigate();
   const screens = Grid.useBreakpoint();
+  const { message } = App.useApp();
 
   function handleSubmit(values) {
     register(values.username, values.password);
@@ -22,8 +23,10 @@ export default function Register() {
 
   useEffect(() => {
     if (user) {
-      alert("You are currently logged in. Please log out before registering");
       navigate("/");
+      message.warning(
+        "You are currently logged in. Please log out before registering.",
+      );
     }
   }, [user, navigate]);
 

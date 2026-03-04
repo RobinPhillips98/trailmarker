@@ -15,7 +15,7 @@ import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
 
 // Personal Helpers
 import api from "../../../api";
-import { errorAlert } from "../../../services/helpers";
+import useErrorMessage from "../../../services/hooks/useErrorMessage";
 
 // Contexts
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -44,6 +44,7 @@ export default function CharacterCreationForm() {
   };
   const navigate = useNavigate();
   const { Title } = Typography;
+  const { errorMessage } = useErrorMessage();
 
   const [form] = Form.useForm();
 
@@ -118,7 +119,7 @@ export default function CharacterCreationForm() {
         state: { selectedCharacter: character.name },
       });
     } catch (error) {
-      errorAlert("Error saving character", error);
+      errorMessage("Error saving character", error);
     }
   }
 

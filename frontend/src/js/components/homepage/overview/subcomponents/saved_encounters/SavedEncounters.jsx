@@ -5,7 +5,7 @@ import { FolderOpenOutlined, LockOutlined } from "@ant-design/icons";
 
 // Personal helpers
 import api from "../../../../../api";
-import { errorAlert } from "../../../../../services/helpers";
+import useErrorMessage from "../../../../../services/hooks/useErrorMessage";
 
 // Contexts
 import { AuthContext } from "../../../../../contexts/AuthContext";
@@ -24,6 +24,7 @@ export default function SavedEncounters({ handleLoad }) {
   const [encounters, setEncounters] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { errorMessage } = useErrorMessage();
   const { user, token } = useContext(AuthContext);
 
   function showModal() {
@@ -62,7 +63,7 @@ export default function SavedEncounters({ handleLoad }) {
         });
         setEncounters(response.data.encounters);
       } catch (error) {
-        errorAlert("Error fetching encounters", error);
+        errorMessage("Error fetching encounters", error);
       }
     }
     if (user) fetchEncounters();

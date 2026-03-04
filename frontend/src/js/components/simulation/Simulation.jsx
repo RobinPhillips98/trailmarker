@@ -15,7 +15,8 @@ import { PlayCircleOutlined } from "@ant-design/icons";
 
 // Personal helpers
 import api from "../../api";
-import { errorAlert, getRandom, toTitleCase } from "../../services/helpers";
+import { getRandom, toTitleCase } from "../../services/helpers";
+import useErrorMessage from "../../services/hooks/useErrorMessage";
 
 // Contexts
 import { AuthContext } from "../../contexts/AuthContext";
@@ -53,6 +54,7 @@ export default function Simulation() {
   const screens = Grid.useBreakpoint();
   const { enemies } = state || { enemies: null };
   const { Paragraph, Title } = Typography;
+  const { errorMessage } = useErrorMessage();
 
   const simTitle = switched
     ? "Individual Simulation Data"
@@ -80,13 +82,7 @@ export default function Simulation() {
   // useEffect calls
 
   useEffect(() => {
-    if (!enemies) {
-      if (!token) return <NotAuthorized />;
-      else
-        throw new Error(
-          'Enemies is null. Did you click "Run Simulation" on the homepage?',
-        );
-    }
+    if (!enemies || !token) return;
 
     const request = {
       enemies: enemies.map((enemy) => {
@@ -118,13 +114,18 @@ export default function Simulation() {
         setTotalPlayers(response.data.sim_data[0].total_players);
         setLoaded(true);
       } catch (error) {
-        errorAlert("Error running simulation", error);
+        errorMessage("Error running simulation", error);
       }
     }
     callSimulation();
   }, [enemies, run, token]);
 
   if (!token) return <NotAuthorized />;
+
+  if (!enemies)
+    throw new Error(
+      'Enemies is null. Did you click "Run Simulation" on the homepage?',
+    );
 
   if (loaded) {
     const randomSimData = getRandom(simData, 10).sort(

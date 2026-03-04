@@ -1,11 +1,11 @@
 // Third-party libraries
 import { useContext, useState } from "react";
-import { Button, Col, Grid, Input, Row, Space } from "antd";
+import { App, Button, Col, Grid, Input, Row, Space } from "antd";
 import { ClearOutlined, LockOutlined, SaveOutlined } from "@ant-design/icons";
 
 // Personal helpers
 import api from "../../../../api";
-import { errorAlert } from "../../../../services/helpers";
+import useErrorMessage from "../../../../services/hooks/useErrorMessage";
 
 // Contexts
 import { AuthContext } from "../../../../contexts/AuthContext";
@@ -29,6 +29,9 @@ import SavedEncounters from "./saved_encounters/SavedEncounters";
 export default function EncounterControls(props) {
   const { enemies, clearEncounter, handleLoad } = props;
   const [encounterName, setEncounterName] = useState("");
+
+  const { errorMessage } = useErrorMessage();
+  const { message } = App.useApp();
   const screens = Grid.useBreakpoint();
   const encounterEmpty = enemies.length === 0;
 
@@ -45,7 +48,7 @@ export default function EncounterControls(props) {
    */
   async function save() {
     if (encounterEmpty) {
-      alert("Encounter is empty, please add enemies.");
+      message.warning("Encounter is empty, please add enemies.");
       return;
     }
     const enemy_array = enemies.map((enemy) => ({
@@ -66,9 +69,9 @@ export default function EncounterControls(props) {
         },
       });
       setEncounterName("");
-      alert("Encounter saved!");
+      message.success("Encounter saved!");
     } catch (error) {
-      errorAlert("Failed to save encounter", error);
+      errorMessage("Failed to save encounter", error);
     }
   }
 
