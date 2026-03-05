@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button, Drawer, Grid, Menu } from "antd";
-import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
+import { Button, Drawer, Grid, Menu, Space, Typography } from "antd";
+import { CloseOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 
 import { AuthContext } from "../contexts/AuthContext";
 
@@ -13,16 +13,24 @@ import { AuthContext } from "../contexts/AuthContext";
  * @returns {React.ReactElement}
  */
 export default function NavBar() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const location = useLocation();
   const [current, setCurrent] = useState(location.pathname);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const screens = Grid.useBreakpoint();
-
   const { user, token, logout } = useContext(AuthContext);
+  const { Text } = Typography;
 
   useEffect(() => {
     setCurrent(location.pathname);
   }, [location]);
+
+  const userDisplay = user ? (
+    <Space.Compact>
+      <UserOutlined />
+      <Text>{user.username}</Text>
+    </Space.Compact>
+  ) : null;
 
   const menuItems =
     user && token
@@ -36,9 +44,15 @@ export default function NavBar() {
             label: <Link to="/characters">Saved Characters</Link>,
           },
           {
-            key: "/login",
-            label: <Link onClick={logout}>Logout</Link>,
-            danger: true,
+            key: "username",
+            label: userDisplay,
+            children: [
+              {
+                key: "logout",
+                label: <Link onClick={logout}>Logout</Link>,
+                danger: true,
+              },
+            ],
           },
         ]
       : [
@@ -56,7 +70,8 @@ export default function NavBar() {
           },
         ];
 
-  const handleMenuItemClick = () => {
+  const handleMenuItemClick = (e) => {
+    if (user && e.target?.firstChild?.textContent == user.username) return;
     setMobileMenuOpen(false);
   };
 
@@ -107,7 +122,7 @@ export default function NavBar() {
         >
           <Menu
             selectedKeys={[current]}
-            mode="vertical"
+            mode="inline"
             items={menuItems.slice(1).map((item) => ({
               ...item,
               label: <div onClick={handleMenuItemClick}>{item.label}</div>,

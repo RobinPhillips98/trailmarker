@@ -16,6 +16,8 @@ import { AuthContext } from "../../../../contexts/AuthContext";
  * @property {number} partyLevel The level of the characters in the party
  * @property {boolean} switched Whether the "use saved characters" switch is
  *  toggled
+ * @property {boolean} charactersSaved Whether the user has any characters
+ *  already saved.
  * @property {function} handlePartySize The function to set the party size
  *  based on the select component
  * @property {function} handlePartyLevel The function to set the party level
@@ -31,6 +33,7 @@ export default function PartyInfoForm(props) {
     partySize,
     partyLevel,
     switched,
+    charactersSaved,
     handlePartySize,
     handlePartyLevel,
     handleChange,
@@ -38,6 +41,8 @@ export default function PartyInfoForm(props) {
 
   const { Title } = Typography;
   const { user } = useContext(AuthContext);
+
+  const disabled = !user || !charactersSaved;
 
   const sizeOptions = [
     {
@@ -73,7 +78,11 @@ export default function PartyInfoForm(props) {
           <Title level={4} style={{ marginBottom: 8 }}>
             Use Saved Characters?
           </Title>
-          <Switch checked={switched} onChange={handleChange} disabled={!user} />
+          <Switch
+            checked={switched}
+            onChange={handleChange}
+            disabled={disabled}
+          />
         </div>
         <div>
           <Title level={4} style={{ marginBottom: 8 }}>

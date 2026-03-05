@@ -1,5 +1,6 @@
-import { useContext } from "react";
-import { Button, Form, Grid, Input, Typography } from "antd";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { App, Button, Form, Grid, Input, Typography } from "antd";
 
 import { AuthContext } from "../../contexts/AuthContext.jsx";
 
@@ -9,12 +10,26 @@ import { AuthContext } from "../../contexts/AuthContext.jsx";
  * @returns {React.ReactElement}
  */
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  const [justLoggedIn, setJustLoggedIn] = useState(false);
+
+  const navigate = useNavigate();
+  const { login, user } = useContext(AuthContext);
   const screens = Grid.useBreakpoint();
+  const { message } = App.useApp();
 
   const { Title } = Typography;
 
+  useEffect(() => {
+    if (user && !justLoggedIn) {
+      navigate("/");
+      message.warning(
+        "You are currently logged in. Please log out before logging in again.",
+      );
+    }
+  }, [user, navigate]);
+
   function handleSubmit(values) {
+    setJustLoggedIn(true);
     login(values.username, values.password);
   }
 

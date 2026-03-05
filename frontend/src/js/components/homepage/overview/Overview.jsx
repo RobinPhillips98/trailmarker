@@ -246,6 +246,7 @@ export default function Overview(props) {
             partySize={partySize}
             partyLevel={partyLevel}
             switched={useSaved}
+            charactersSaved={charactersSaved}
             handlePartySize={handlePartySize}
             handlePartyLevel={handlePartyLevel}
             handleChange={handleChangeSaved}
