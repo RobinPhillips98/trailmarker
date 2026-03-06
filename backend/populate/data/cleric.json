@@ -1,0 +1,96 @@
+{
+  "id": 2,
+  "name": "Kyra",
+  "level": 1,
+  "perception": 7,
+  "skills": {
+    "acrobatics": 1,
+    "arcana": 0,
+    "athletics": 1,
+    "crafting": 0,
+    "deception": 2,
+    "diplomacy": 5,
+    "intimidation": 2,
+    "lore": 3,
+    "medicine": 7,
+    "nature": 4,
+    "occultism": 0,
+    "performance": 2,
+    "religion": 7,
+    "society": 0,
+    "stealth": 1,
+    "survival": 7,
+    "thievery": 1
+  },
+  "attribute_modifiers": {
+    "strength": 1,
+    "constitution": 1,
+    "dexterity": 1,
+    "intelligence": 0,
+    "wisdom": 4,
+    "charisma": 2
+  },
+  "defenses": {
+    "armor_class": 16,
+    "saves": {
+      "fortitude": 6,
+      "reflex": 4,
+      "will": 9
+    }
+  },
+  "max_hit_points": 21,
+  "spell_attack_bonus": 7,
+  "spell_dc": 17,
+  "speed": 25,
+  "actions": {
+    "attacks": [
+      {
+        "name": "Scimitar",
+        "attackBonus": 4,
+        "damage": "1d6+1",
+        "damageType": "slashing",
+        "range": null,
+        "traits": ["forceful", "sweep"]
+      }
+    ],
+    "spells": [
+      {
+        "name": "Breathe Fire",
+        "slots": 1,
+        "level": 1,
+        "damage_roll": "2d6",
+        "damage_type": "fire",
+        "range": 5,
+        "area": {
+          "type": "cone",
+          "value": "15"
+        },
+        "save": "reflex",
+        "targets": 0,
+        "actions": "2"
+      },
+      {
+        "name": "Vitality Lash",
+        "slots": 1,
+        "level": 0,
+        "damage_roll": "2d6",
+        "damage_type": "vitality",
+        "range": 30,
+        "area": {},
+        "save": "fortitude",
+        "targets": 1,
+        "actions": "1"
+      }
+    ],
+    "heals": 4,
+    "shield": 2,
+    "sneak_attack": false
+  },
+  "user_id": 1,
+  "player": "",
+  "xp": 0,
+  "ancestry": "human",
+  "heritage": "warden",
+  "background": "acolyte",
+  "class": "cleric"
+}

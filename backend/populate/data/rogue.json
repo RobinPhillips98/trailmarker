@@ -1,0 +1,78 @@
+{
+  "name": "Merisiel",
+  "level": 1,
+  "perception": 7,
+  "skills": {
+    "acrobatics": 7,
+    "arcana": 1,
+    "athletics": 4,
+    "crafting": 4,
+    "deception": 3,
+    "diplomacy": 3,
+    "intimidation": 3,
+    "lore": 4,
+    "medicine": 5,
+    "nature": 2,
+    "occultism": 1,
+    "performance": 0,
+    "religion": 2,
+    "society": 4,
+    "stealth": 7,
+    "survival": 5,
+    "thievery": 7
+  },
+  "attribute_modifiers": {
+    "strength": 1,
+    "constitution": 1,
+    "dexterity": 4,
+    "intelligence": 1,
+    "wisdom": 2,
+    "charisma": 0
+  },
+  "defenses": {
+    "armor_class": 18,
+    "saves": {
+      "fortitude": 4,
+      "reflex": 9,
+      "will": 7
+    }
+  },
+  "max_hit_points": 15,
+  "speed": 30,
+  "actions": {
+    "attacks": [
+      {
+        "name": "Rapier",
+        "attackBonus": 7,
+        "damage": "1d6+4",
+        "damageType": "piercing",
+        "range": null,
+        "traits": ["deadly-d8", "finesse"]
+      },
+      {
+        "name": "Shortsword",
+        "attackBonus": 7,
+        "damage": "1d6+4",
+        "damageType": "piercing",
+        "range": null,
+        "traits": ["agile", "finesse", "versatile-s"]
+      },
+      {
+        "name": "Dagger",
+        "attackBonus": 7,
+        "damage": "1d4+1",
+        "damageType": "piercing",
+        "range": null,
+        "traits": ["agile", "finesse", "versatile-s"]
+      }
+    ],
+    "spells": []
+  },
+  "user_id": 1,
+  "player": "",
+  "xp": 0,
+  "ancestry": "elf",
+  "heritage": "whisper",
+  "background": "criminal",
+  "class": "rogue"
+}
