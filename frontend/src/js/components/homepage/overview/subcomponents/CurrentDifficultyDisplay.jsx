@@ -16,7 +16,7 @@ import { toTitleCase } from "../../../../services/helpers";
  */
 export default function CurrentDifficultyDisplay(props) {
   const { difficulty, xp, colors } = props;
-  const { Title, Text } = Typography;
+  const { Text } = Typography;
 
   const [description, setDescription] = useState("");
   const [difficultyColor, setDifficultyColor] = useState("");
@@ -60,11 +60,8 @@ export default function CurrentDifficultyDisplay(props) {
   }, [difficulty, colors]);
 
   return (
-    <Card style={{ height: "100%" }}>
+    <Card title="Current Difficulty" style={{ height: "100%" }}>
       <div style={{ marginBottom: 16 }}>
-        <Title level={4} style={{ marginTop: 0, marginBottom: 8 }}>
-          Current Difficulty
-        </Title>
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <Tag color={difficultyColor} style={{ fontSize: "14px", margin: 0 }}>
             {toTitleCase(difficulty)}

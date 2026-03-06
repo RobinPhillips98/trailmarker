@@ -11,7 +11,11 @@ import {
   Switch,
   Typography,
 } from "antd";
-import { PlayCircleOutlined } from "@ant-design/icons";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  PlayCircleOutlined,
+} from "@ant-design/icons";
 
 // Personal helpers
 import api from "../../api";
@@ -223,7 +227,12 @@ export default function Simulation() {
           <List.Item>Average Number of Rounds: {avgRounds}</List.Item>
         </List>
         <Title level={2}>Show data for all simulations?</Title>
-        <Switch checked={switched} onChange={handleChange} />
+        <Switch
+          checked={switched}
+          onChange={handleChange}
+          checkedChildren={<CheckOutlined />}
+          unCheckedChildren={<CloseOutlined />}
+        />
         <Title level={2}>{simTitle}:</Title>
         <Collapse
           accordion

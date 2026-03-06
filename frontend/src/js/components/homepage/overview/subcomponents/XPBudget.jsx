@@ -1,4 +1,5 @@
 import { Card, Space, Switch, Tag, Typography } from "antd";
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
 /**
  * A component to display the XP budget for the current party size
@@ -26,10 +27,7 @@ export default function XPBudget(props) {
   ];
 
   return (
-    <Card style={{ height: "100%" }}>
-      <Title level={4} style={{ marginTop: 0 }}>
-        XP Budget
-      </Title>
+    <Card title="XP Budget" style={{ height: "100%" }}>
       <Space direction="vertical" style={{ width: "100%" }} size={12}>
         {budgetTiers.map((tier) => (
           <div
@@ -52,7 +50,12 @@ export default function XPBudget(props) {
         <Title level={5} style={{ marginBottom: 8 }}>
           Colorblind friendly?
         </Title>
-        <Switch checked={switched} onChange={handleChange} />
+        <Switch
+          checked={switched}
+          onChange={handleChange}
+          checkedChildren={<CheckOutlined />}
+          unCheckedChildren={<CloseOutlined />}
+        />
       </Space>
     </Card>
   );
