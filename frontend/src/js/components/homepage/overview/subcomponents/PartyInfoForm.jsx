@@ -1,6 +1,7 @@
 // Third-party libraries
 import { useContext } from "react";
-import { Card, Select, Space, Switch, Typography } from "antd";
+import { Card, Form, Select, Space, Switch } from "antd";
+import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
 // Personal helpers
 import { levelOptions } from "../../../../services/helpers";
@@ -39,7 +40,6 @@ export default function PartyInfoForm(props) {
     handleChange,
   } = props;
 
-  const { Title } = Typography;
   const { user } = useContext(AuthContext);
 
   const disabled = !user || !charactersSaved;
@@ -72,44 +72,39 @@ export default function PartyInfoForm(props) {
   ];
 
   return (
-    <Card style={{ height: "100%" }}>
+    <Card title="Difficulty Calculation Options" style={{ height: "100%" }}>
       <Space direction="vertical" style={{ width: "100%" }} size="large">
-        <div>
-          <Title level={4} style={{ marginBottom: 8 }}>
-            Use Saved Characters?
-          </Title>
-          <Switch
-            checked={switched}
-            onChange={handleChange}
-            disabled={disabled}
-          />
-        </div>
-        <div>
-          <Title level={4} style={{ marginBottom: 8 }}>
-            Number of Players
-          </Title>
-          <Select
-            defaultValue="2"
-            value={partySize}
-            options={sizeOptions}
-            onChange={handlePartySize}
-            disabled={switched}
-            style={{ width: "100%" }}
-          />
-        </div>
-        <div>
-          <Title level={4} style={{ marginBottom: 8 }}>
-            Party Level
-          </Title>
-          <Select
-            defaultValue="1"
-            value={partyLevel}
-            options={levelOptions}
-            onChange={handlePartyLevel}
-            disabled={switched}
-            style={{ width: "100%" }}
-          />
-        </div>
+        <Form labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
+          <Form.Item label="Use Saved Characters?">
+            <Switch
+              checked={switched}
+              onChange={handleChange}
+              disabled={disabled}
+              checkedChildren={<CheckOutlined />}
+              unCheckedChildren={<CloseOutlined />}
+            />
+          </Form.Item>
+          <Form.Item label="Number of Players">
+            <Select
+              defaultValue="2"
+              value={partySize}
+              options={sizeOptions}
+              onChange={handlePartySize}
+              disabled={switched}
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+          <Form.Item label="Party Level">
+            <Select
+              defaultValue="1"
+              value={partyLevel}
+              options={levelOptions}
+              onChange={handlePartyLevel}
+              disabled={switched}
+              style={{ width: "100%" }}
+            />
+          </Form.Item>
+        </Form>
       </Space>
     </Card>
   );
