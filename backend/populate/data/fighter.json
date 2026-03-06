@@ -1,0 +1,79 @@
+{
+  "name": "Valeros",
+  "level": 1,
+  "perception": 5,
+  "skills": {
+    "acrobatics": 5,
+    "arcana": 1,
+    "athletics": 7,
+    "crafting": 4,
+    "deception": 0,
+    "diplomacy": 3,
+    "intimidation": 3,
+    "lore": 4,
+    "medicine": 0,
+    "nature": 0,
+    "occultism": 1,
+    "performance": 0,
+    "religion": 0,
+    "society": 1,
+    "stealth": 2,
+    "survival": 3,
+    "thievery": 2
+  },
+  "attribute_modifiers": {
+    "strength": 4,
+    "constitution": 2,
+    "dexterity": 2,
+    "intelligence": 1,
+    "wisdom": 0,
+    "charisma": 0
+  },
+  "defenses": {
+    "armor_class": 18,
+    "saves": {
+      "fortitude": 7,
+      "reflex": 7,
+      "will": 3
+    }
+  },
+  "max_hit_points": 24,
+  "speed": 25,
+  "actions": {
+    "attacks": [
+      {
+        "name": "Longsword",
+        "attackBonus": 9,
+        "damage": "1d8+4",
+        "damageType": "slashing",
+        "range": null,
+        "traits": ["versatile-p"]
+      },
+      {
+        "name": "Dagger",
+        "attackBonus": 9,
+        "damage": "1d4+4",
+        "damageType": "piercing",
+        "range": null,
+        "traits": ["agile", "finesse", "thrown", "versatile-s"]
+      },
+      {
+        "name": "Shortbow",
+        "attackBonus": 7,
+        "damage": "1d6",
+        "damageType": "piercing",
+        "range": null,
+        "traits": ["deadly-d10"]
+      }
+    ],
+    "spells": [],
+    "shield": 2
+  },
+  "user_id": 1,
+  "player": "",
+  "xp": 0,
+  "ancestry": "human",
+  "heritage": "warden",
+  "background": "farmhand",
+  "class": "fighter"
+}

@@ -14,7 +14,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from db import engine_sync
-from models import Base, Enemy, User
+from models import Base, Character, Enemy, User
+from populate.populate_characters import initialize_characters
 from populate.populate_enemies import initialize_enemies
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -156,6 +157,14 @@ Dropping and recreating the enemies table only.
                 create_user(db)
             else:
                 print("Users already exist, skipping user creation")
+            if (
+                args.rebuild
+                or db.execute(select(Character).limit(1)).first() is None
+            ):
+                print("Populating character data...")
+                initialize_characters(db)
+            else:
+                print("Characters already exist, skipping character creation")
 
         except Exception as e:
             print(f"Error populating database: {e}")
