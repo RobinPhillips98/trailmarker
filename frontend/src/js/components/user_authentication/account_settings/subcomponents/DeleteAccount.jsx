@@ -61,7 +61,7 @@ export default function DeleteAccount() {
         wrapperCol={{
           span: screens.sm ? 16 : 24,
         }}
-        style={{ maxWidth: 600 }}
+        style={screens.xs ? { maxWidth: 400 } : { maxWidth: 600 }}
         scrollToFirstError={{ focus: true }}
         onFinish={showModal}
         form={form}
