@@ -1,6 +1,6 @@
 // Third-party libraries
 import { useContext } from "react";
-import { Card, Form, Select, Space, Switch } from "antd";
+import { Card, Form, Select, Space, Switch, Tooltip } from "antd";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 
 // Personal helpers
@@ -44,6 +44,14 @@ export default function PartyInfoForm(props) {
 
   const disabled = !user || !charactersSaved;
 
+  let switchTooltip = "";
+  if (!user) switchTooltip = "Log in to create custom characters";
+  else if (!charactersSaved) {
+    switchTooltip = "No characters saved!";
+  } else {
+    switchTooltip = "";
+  }
+
   const sizeOptions = [
     {
       value: "1",
@@ -72,17 +80,19 @@ export default function PartyInfoForm(props) {
   ];
 
   return (
-    <Card title="Difficulty Calculation Options" style={{ height: "100%" }}>
+    <Card title="Difficulty Calculation Settings" style={{ height: "100%" }}>
       <Space direction="vertical" style={{ width: "100%" }} size="large">
         <Form labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
           <Form.Item label="Use Saved Characters?">
-            <Switch
-              checked={switched}
-              onChange={handleChange}
-              disabled={disabled}
-              checkedChildren={<CheckOutlined />}
-              unCheckedChildren={<CloseOutlined />}
-            />
+            <Tooltip title={switchTooltip} placement="right">
+              <Switch
+                checked={switched}
+                onChange={handleChange}
+                disabled={disabled}
+                checkedChildren={<CheckOutlined />}
+                unCheckedChildren={<CloseOutlined />}
+              />
+            </Tooltip>
           </Form.Item>
           <Form.Item label="Number of Players">
             <Select

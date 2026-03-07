@@ -1,6 +1,6 @@
 // Third-party libraries
 import { useContext, useEffect, useState } from "react";
-import { Button, Card, Modal } from "antd";
+import { Button, Card, Modal, Tooltip } from "antd";
 import { FolderOpenOutlined, LockOutlined } from "@ant-design/icons";
 
 // Personal helpers
@@ -71,16 +71,18 @@ export default function SavedEncounters({ handleLoad }) {
 
   return (
     <div>
-      <Button
-        style={{ marginBottom: 10 }}
-        type="primary"
-        block
-        onClick={showModal}
-        disabled={!user}
-        icon={user ? <FolderOpenOutlined /> : <LockOutlined />}
-      >
-        Open Saved Encounters
-      </Button>
+      <Tooltip title={!user ? "Log in to open saved encounters" : null}>
+        <Button
+          style={{ marginBottom: 10 }}
+          type="primary"
+          block
+          onClick={showModal}
+          disabled={!user}
+          icon={user ? <FolderOpenOutlined /> : <LockOutlined />}
+        >
+          Open Saved Encounters
+        </Button>
+      </Tooltip>
       <Modal
         title="Saved Encounters"
         closable={{ "aria-label": "Custom Close Button" }}
