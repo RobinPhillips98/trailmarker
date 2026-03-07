@@ -1,6 +1,6 @@
 // Third-party libraries
 import { useContext, useState } from "react";
-import { App, Button, Col, Grid, Input, Row, Space } from "antd";
+import { App, Button, Col, Grid, Input, Row, Space, Tooltip } from "antd";
 import { ClearOutlined, LockOutlined, SaveOutlined } from "@ant-design/icons";
 
 // Personal helpers
@@ -30,12 +30,13 @@ export default function EncounterControls(props) {
   const { enemies, clearEncounter, handleLoad } = props;
   const [encounterName, setEncounterName] = useState("");
 
+  const { user, token } = useContext(AuthContext);
   const { errorMessage } = useErrorMessage();
   const { message } = App.useApp();
   const screens = Grid.useBreakpoint();
-  const encounterEmpty = enemies.length === 0;
 
-  const { user, token } = useContext(AuthContext);
+  const encounterEmpty = enemies.length === 0;
+  const cannotSave = !user || encounterEmpty;
 
   function handleChange(event) {
     setEncounterName(event.target.value);
@@ -96,28 +97,42 @@ export default function EncounterControls(props) {
 
       <Row gutter={[16, 16]}>
         <Col xs={24}>
-          <Space.Compact
-            style={screens.md ? { width: "50%" } : { width: "100%" }}
+          <Tooltip
+            title={!user ? "Must log in to save encounters" : ""}
+            placement="right"
           >
-            <Input
-              type="text"
-              id="name"
-              placeholder="Enter encounter name..."
-              value={encounterName}
-              onChange={handleChange}
-              disabled={!user}
-              style={{ flex: 1 }}
-            />
-            <Button
-              type="primary"
-              onClick={save}
-              disabled={!user || encounterEmpty}
-              style={{ width: "auto" }}
-              icon={user ? <SaveOutlined /> : <LockOutlined />}
+            <Space.Compact
+              style={screens.md ? { width: "50%" } : { width: "100%" }}
             >
-              Save Encounter
-            </Button>
-          </Space.Compact>
+              <Input
+                type="text"
+                id="name"
+                placeholder="Enter encounter name..."
+                value={encounterName}
+                onChange={handleChange}
+                disabled={!user}
+                style={{ flex: 1 }}
+              />
+              <Tooltip
+                title={
+                  user && encounterEmpty // Use above tooltip if not logged in
+                    ? "Must select enemies before saving encounter"
+                    : ""
+                }
+                placement="right"
+              >
+                <Button
+                  type="primary"
+                  onClick={save}
+                  disabled={cannotSave}
+                  style={{ width: "auto" }}
+                  icon={user ? <SaveOutlined /> : <LockOutlined />}
+                >
+                  Save Encounter
+                </Button>
+              </Tooltip>
+            </Space.Compact>
+          </Tooltip>
         </Col>
       </Row>
     </Space>

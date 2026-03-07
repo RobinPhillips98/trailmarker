@@ -1,6 +1,10 @@
 import { useState } from "react";
-import { Button, FloatButton, Modal } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { Button, Collapse, FloatButton, Modal } from "antd";
+import {
+  MenuOutlined,
+  QuestionCircleOutlined,
+  QuestionOutlined,
+} from "@ant-design/icons";
 
 /**
  * A component that displays a tutorial modal with a floating button.
@@ -9,8 +13,15 @@ import { QuestionCircleOutlined } from "@ant-design/icons";
  */
 export default function TutorialModal() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewedTutorial, setViewedTutorial] = useState(
+    localStorage.getItem("viewedTutorial"),
+  );
 
   function showModal() {
+    if (!viewedTutorial) {
+      setViewedTutorial(true);
+      localStorage.setItem("viewedTutorial", true);
+    }
     setIsModalOpen(true);
   }
 
@@ -18,16 +29,91 @@ export default function TutorialModal() {
     setIsModalOpen(false);
   }
 
+  const items = [
+    {
+      key: "collapse_1",
+      label: "Basic Usage",
+      children: (
+        <>
+          <p>
+            Select enemies from the list then press the &quot;Run
+            Simulation&quot; button to run a simulation with pre-generated
+            characters.
+          </p>
+          <p>
+            Use the filters to search for certain enemies based on name, level,
+            traits, immunities, and resistances.
+          </p>
+          <p>
+            Other features, such as running a simulation with custom characters,
+            require creating an account.
+          </p>
+        </>
+      ),
+    },
+    {
+      key: "collapse_2",
+      label: "Saving Encounters",
+      children: (
+        <>
+          <strong>You must have an account to save encounters.</strong>
+          <p>
+            To save an encounter, simply select the enemies you want then click
+            &quot;Save Encounter&quot;
+          </p>
+          <p>
+            Optionally, you may give the encounter a name using the textbox.
+            Once the encounter is saved, you can click &quot;Open Saved
+            Encounters&quot; to display your saved encounters and select one to
+            use.
+          </p>
+        </>
+      ),
+    },
+    {
+      key: "collapse_3",
+      label: "Creating Custom Characters",
+      children: (
+        <>
+          <strong>You must have an account to create custom characters.</strong>
+          <p>
+            To create a character, use the navbar (or <MenuOutlined /> nav menu
+            on mobile) and click on &quot;Saved Characters&quot; to open the
+            character display page
+          </p>
+          <p>
+            Once on the character display page, you can click &quot;Create
+            Character&quot; to open the character creation form. Fill it out,
+            click save, and your character will be ready to use in simulations!
+          </p>
+          <p>
+            After creating characters, you can use the &quot;Edit
+            Character&quot; button to change any values the character has, or
+            &quot;Delete Character&quot; to delete the character
+          </p>
+          <p>
+            Once you&apos;ve saved some characters, you can use those characters
+            in the simulation, simply uncheck the &quot;Use pre-generated
+            characters?&quot; switch.
+          </p>
+        </>
+      ),
+    },
+  ];
+
   return (
     <>
       <FloatButton
         type="primary"
         onClick={showModal}
-        icon={<QuestionCircleOutlined />}
+        icon={
+          !viewedTutorial ? <QuestionOutlined /> : <QuestionCircleOutlined />
+        }
         tooltip="How To Use"
+        style={!viewedTutorial ? { scale: 1.5 } : null}
       />
       <Modal
-        title="How To Enable Trailmarker's Simulation"
+        title="How To Use Trailmarker"
         closable={{ "aria-label": "Custom Close Button" }}
         open={isModalOpen}
         onCancel={closeModal}
@@ -37,19 +123,7 @@ export default function TutorialModal() {
           </Button>,
         ]}
       >
-        <ol>
-          <li>Register an account and login</li>
-          <li>
-            Navigate to &quot;Saved Characters&quot; then &quot;Create
-            Character&quot; and fill out the character creation form for each
-            character in your party.
-          </li>
-          <li>
-            Return to the homepage and choose enemies using the list and filters
-            below
-          </li>
-          <li>Run the simulation!</li>
-        </ol>
+        <Collapse items={items} defaultActiveKey={["collapse_1"]} />
       </Modal>
     </>
   );

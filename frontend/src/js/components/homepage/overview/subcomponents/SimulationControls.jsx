@@ -1,7 +1,7 @@
 // Third-party libraries
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Col, Row, Switch, Typography } from "antd";
+import { Button, Card, Col, Row, Switch, Tooltip, Typography } from "antd";
 import {
   CheckOutlined,
   CloseOutlined,
@@ -29,14 +29,24 @@ export default function SimulationControls({
   selectedEnemies,
   charactersSaved,
 }) {
+  const [switched, setSwitched] = useState(true);
+
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const { Text } = Typography;
+
   const simButtonDisabled = isEmpty(selectedEnemies);
   const switchDisabled = !user || !charactersSaved;
 
-  const [switched, setSwitched] = useState(!user);
+  let switchTooltip = "";
+  if (!user) switchTooltip = "Log in to create custom characters";
+  else if (!charactersSaved) {
+    switchTooltip = "No characters saved!";
+  } else {
+    switchTooltip = "";
+  }
 
+  // Switch needs to be set back to true when user logs out
   useEffect(() => {
     if (!user) setSwitched(true);
   }, [user]);
@@ -51,32 +61,51 @@ export default function SimulationControls({
   }
 
   return (
-    <Row gutter={[16, 16]} style={{ marginBottom: 24 }} justify="center">
+    <Row
+      gutter={[16, 16]}
+      style={{ marginBottom: 24 }}
+      justify="center"
+      align="middle"
+    >
       {/* Empty column to keep Run Simulation button centered*/}
       <Col xs={0} md={8} />
 
       <Col xs={24} md={8}>
-        <Button
-          type="primary"
-          size="large"
-          block
-          onClick={handleClick}
-          disabled={simButtonDisabled}
-          icon={!simButtonDisabled ? <PlayCircleOutlined /> : <LockOutlined />}
+        <Tooltip
+          title={
+            simButtonDisabled
+              ? "Select enemies before running simulation"
+              : null
+          }
         >
-          Run Simulation
-        </Button>
+          <Button
+            type="primary"
+            size="large"
+            block
+            onClick={handleClick}
+            disabled={simButtonDisabled}
+            icon={
+              !simButtonDisabled ? <PlayCircleOutlined /> : <LockOutlined />
+            }
+          >
+            Run Simulation
+          </Button>
+        </Tooltip>
       </Col>
 
       <Col xs={24} md={8}>
-        <Switch
-          checked={switched}
-          disabled={switchDisabled}
-          onChange={() => setSwitched(!switched)}
-          checkedChildren={<CheckOutlined />}
-          unCheckedChildren={<CloseOutlined />}
-        />
-        <Text style={{ marginLeft: 5 }}>Use pre-generated characters?</Text>
+        <Card title="Simulation Options">
+          <Tooltip title={switchTooltip}>
+            <Switch
+              checked={switched}
+              disabled={switchDisabled}
+              onChange={() => setSwitched(!switched)}
+              checkedChildren={<CheckOutlined />}
+              unCheckedChildren={<CloseOutlined />}
+            />
+          </Tooltip>
+          <Text style={{ marginLeft: 5 }}>Use generic characters</Text>
+        </Card>
       </Col>
     </Row>
   );
