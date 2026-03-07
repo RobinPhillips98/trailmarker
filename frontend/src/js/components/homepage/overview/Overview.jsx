@@ -1,12 +1,9 @@
 // Third-party libraries
 import { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { App, Button, Col, Divider, Row } from "antd";
-import { LockOutlined, PlayCircleOutlined } from "@ant-design/icons";
+import { App, Col, Divider, Row } from "antd";
 
 // Personal helpers
 import api from "../../../api";
-import { isEmpty } from "../../../services/helpers";
 import useErrorMessage from "../../../services/hooks/useErrorMessage";
 
 // Contexts
@@ -17,6 +14,7 @@ import PartyInfoForm from "./subcomponents/PartyInfoForm";
 import CurrentDifficultyDisplay from "./subcomponents/CurrentDifficultyDisplay";
 import XPBudget from "./subcomponents/XPBudget";
 import EncounterControls from "./subcomponents/EncounterControls";
+import SimulationControls from "./subcomponents/SimulationControls";
 
 /**
  * An overview with information and options for the current encounter
@@ -46,8 +44,7 @@ export default function Overview(props) {
   const [difficulty, setDifficulty] = useState("");
 
   // Other variables
-  const navigate = useNavigate();
-  const { token, user } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
   const { errorMessage } = useErrorMessage();
   const { message } = App.useApp();
 
@@ -84,12 +81,6 @@ export default function Overview(props) {
   function handlePartyLevel(value) {
     setPartyLevel(value);
   }
-
-  function handleClick() {
-    navigate("/simulation/", { state: { enemies: selectedEnemies } });
-  }
-
-  // useEffect calls
 
   useEffect(() => {
     /**
@@ -225,20 +216,10 @@ export default function Overview(props) {
 
   return (
     <div style={{ width: "100%" }}>
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }} justify="center">
-        <Col sm={24} md={8}>
-          <Button
-            type="primary"
-            size="large"
-            block
-            onClick={handleClick}
-            disabled={!user || isEmpty(selectedEnemies) || !charactersSaved}
-            icon={user ? <PlayCircleOutlined /> : <LockOutlined />}
-          >
-            Run Simulation
-          </Button>
-        </Col>
-      </Row>
+      <SimulationControls
+        selectedEnemies={selectedEnemies}
+        charactersSaved={charactersSaved}
+      />
 
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} md={8}>

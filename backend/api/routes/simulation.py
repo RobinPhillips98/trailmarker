@@ -11,6 +11,7 @@ stats about the simulations.
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
 
 import models
 from schemas import Character, Enemy, SimRequest, SimResponse
@@ -26,7 +27,7 @@ router = APIRouter()
 @router.post(
     "/simulation", response_model=SimResponse, status_code=status.HTTP_200_OK
 )
-async def run_simulations(
+async def init_sim_with_auth(
     request: SimRequest,
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
@@ -40,58 +41,125 @@ async def run_simulations(
 
     Args:
         request (SimRequest): List of enemy IDs and the quantity of each enemy.
-        db (db_dependency): A SQLAlchemy database session
+        db (db_dependency): A SQLAlchemy database session.
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
+
+    Raises:
+        http_err: Any HTTPException, raised as-is.
+        HTTPException: Any other caught exception, raised as an HTTP 500 error.
 
     Returns:
         SimResponse: Overall data and data from each simulation.
     """
     try:
-        total_sims = 100
-        response = {
-            "total_sims": total_sims,
-            "wins": 0,
-            "wins_ratio": 0.0,
-            "average_deaths": 0.0,
-            "average_rounds": 0.0,
-            "sim_data": [],
-        }
-        players = []
-        result = await fetch_characters_from_db(current_user, db)
-        characters = result.characters
-        for character in characters:
-            players.append(convert_to_player_dict(character))
-
-        enemies = []
-        for enemy in request.enemies:
-            db_enemy = await get_enemy(enemy.id, db)
-            enemy_dict = convert_to_enemy_dict(db_enemy)
-            for i in range(enemy.quantity):
-                enemies.append(enemy_dict)
-
-        for i in range(total_sims):
-            sim_data = run_simulation(players, enemies)
-            sim_data["sim_num"] = i + 1
-            if sim_data["winner"] == "players":
-                response["wins"] += 1
-            response["sim_data"].append(sim_data)
-
-        response["wins_ratio"] = (response["wins"] / total_sims) * 100
-
-        deaths = sum(data["players_killed"] for data in response["sim_data"])
-        response["average_deaths"] = deaths / total_sims
-
-        total_rounds = sum(data["rounds"] for data in response["sim_data"])
-        response["average_rounds"] = total_rounds / total_sims
+        return await run_simulations(current_user, request, db)
 
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
         print(f"Error in run_simulations: {str(e)}")
         raise HTTPException(
-            status_code=500, detail=f"Internal server error: {str(e)}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}",
         )
+
+
+@router.post(
+    "/simulation_pregen",
+    response_model=SimResponse,
+    status_code=status.HTTP_200_OK,
+)
+async def init_sim_with_pregens(
+    request: SimRequest,
+    db: db_dependency,
+) -> SimResponse:
+    """Runs simulations using a pre-made party and requested enemies.
+
+    Takes in a list of enemy IDs and quantities, then fetches all player
+    characters associated with the admin user as well as the enemies whose
+    IDs were passed in and creates a list of each, then runs a number of
+    simulations and returns a response with data from those simulations.
+
+    Uses the admin user to run the simulation using a pre-generated party.
+
+    Args:
+        request (SimRequest): List of enemy IDs and the quantity of each enemy.
+        db (db_dependency): A SQLAlchemy database session.
+
+    Raises:
+        http_err: Any HTTPException, raised as-is.
+        HTTPException: Any other caught exception, raised as an HTTP 500 error.
+
+    Returns:
+        SimResponse: Overall data and data from each simulation.
+    """
+    try:
+        query = select(models.User)
+        query = query.where(models.User.id == 1)
+        result = await db.execute(query)
+        user = result.scalar_one_or_none()
+        return await run_simulations(user, request, db)
+
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in run_simulations: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}",
+        )
+
+
+async def run_simulations(
+    user: models.User, request: SimRequest, db: db_dependency
+) -> SimResponse:
+    """Driver to handle running the simulation using the passed in `user`.
+
+    Args:
+        user (models.User): The user whose characters should be used.
+        request (SimRequest): List of enemy IDs and the quantity of each enemy.
+        db (db_dependency): A SQLAlchemy database session.
+
+    Returns:
+        SimResponse: Overall data and data from each simulation.
+    """
+    total_sims = 100
+    response = {
+        "total_sims": total_sims,
+        "wins": 0,
+        "wins_ratio": 0.0,
+        "average_deaths": 0.0,
+        "average_rounds": 0.0,
+        "sim_data": [],
+    }
+    players = []
+    result = await fetch_characters_from_db(user, db)
+    characters = result.characters
+    for character in characters:
+        players.append(convert_to_player_dict(character))
+
+    enemies = []
+    for enemy in request.enemies:
+        db_enemy = await get_enemy(enemy.id, db)
+        enemy_dict = convert_to_enemy_dict(db_enemy)
+        for i in range(enemy.quantity):
+            enemies.append(enemy_dict)
+
+    for i in range(total_sims):
+        sim_data = run_simulation(players, enemies)
+        sim_data["sim_num"] = i + 1
+        if sim_data["winner"] == "players":
+            response["wins"] += 1
+        response["sim_data"].append(sim_data)
+
+    response["wins_ratio"] = (response["wins"] / total_sims) * 100
+
+    deaths = sum(data["players_killed"] for data in response["sim_data"])
+    response["average_deaths"] = deaths / total_sims
+
+    total_rounds = sum(data["rounds"] for data in response["sim_data"])
+    response["average_rounds"] = total_rounds / total_sims
 
     return response
 
