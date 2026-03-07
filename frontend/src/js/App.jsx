@@ -45,6 +45,11 @@ export default function App() {
       borderRadius: 6,
     },
     algorithm: theme.darkAlgorithm,
+    components: {
+      Menu: {
+        itemSelectedColor: "#E9E7E2",
+      },
+    },
   };
 
   return (
@@ -74,7 +79,7 @@ export default function App() {
                       <Route path="/register" element={<Register />} />
                       <Route path="/login" element={<Login />} />
                       <Route
-                        path="/user_settings"
+                        path="/user/settings"
                         element={<AccountSettings />}
                       />
                       <Route path="/simulation" element={<Simulation />} />
