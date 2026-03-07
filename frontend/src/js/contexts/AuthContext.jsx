@@ -188,8 +188,18 @@ function AuthProvider({ children }) {
     setPendingMessage({ type: "success", text: "Logged out!" });
   }
 
+  function logoutWithRedirect(destination = "/login", msg = "") {
+    setToken(null);
+    setUser(null);
+    localStorage.removeItem("token");
+    navigate(destination);
+    message.success(msg);
+  }
+
   return (
-    <AuthContext.Provider value={{ token, user, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ token, user, login, register, logout, logoutWithRedirect }}
+    >
       {children}
     </AuthContext.Provider>
   );

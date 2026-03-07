@@ -16,6 +16,7 @@ import Simulation from "./components/simulation/Simulation.jsx";
 import PolicyNotice from "./components/PolicyNotice.jsx";
 import NotFound from "./components/status_pages/NotFound.jsx";
 import ErrorBoundary from "./components/status_pages/ErrorBoundary.jsx";
+import AccountSettings from "./components/user_authentication/account_settings/AccountSettings.jsx";
 
 /**
  * The core app component, orchestrating all other components.
@@ -72,6 +73,10 @@ export default function App() {
                       />
                       <Route path="/register" element={<Register />} />
                       <Route path="/login" element={<Login />} />
+                      <Route
+                        path="/user_settings"
+                        element={<AccountSettings />}
+                      />
                       <Route path="/simulation" element={<Simulation />} />
                       <Route path="/copyright" element={<PolicyNotice />} />
                       <Route path="*" element={<NotFound />} />

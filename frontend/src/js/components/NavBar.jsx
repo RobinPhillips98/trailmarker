@@ -1,7 +1,19 @@
 import { useContext, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Button, Drawer, Grid, Menu, Space, Typography } from "antd";
-import { CloseOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Drawer, Grid, Menu } from "antd";
+import {
+  CloseOutlined,
+  FolderOpenOutlined,
+  FolderOutlined,
+  HomeFilled,
+  HomeOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  UserAddOutlined,
+  UserOutlined,
+  UserSwitchOutlined,
+} from "@ant-design/icons";
 
 import { AuthContext } from "../contexts/AuthContext";
 
@@ -19,18 +31,10 @@ export default function NavBar() {
   const [current, setCurrent] = useState(location.pathname);
   const screens = Grid.useBreakpoint();
   const { user, token, logout } = useContext(AuthContext);
-  const { Text } = Typography;
 
   useEffect(() => {
     setCurrent(location.pathname);
   }, [location]);
-
-  const userDisplay = user ? (
-    <Space.Compact>
-      <UserOutlined />
-      <Text>{user.username}</Text>
-    </Space.Compact>
-  ) : null;
 
   const menuItems =
     user && token
@@ -38,19 +42,33 @@ export default function NavBar() {
           {
             key: "/",
             label: <Link to="/">Home</Link>,
+            icon: current === "/" ? <HomeFilled /> : <HomeOutlined />,
           },
           {
             key: "/characters",
             label: <Link to="/characters">Saved Characters</Link>,
+            icon:
+              current === "/characters" ? (
+                <FolderOpenOutlined />
+              ) : (
+                <FolderOutlined />
+              ),
           },
           {
-            key: "username",
-            label: userDisplay,
+            key: "/user_settings",
+            label: user.username,
+            icon: <UserOutlined />,
             children: [
+              {
+                key: "settings",
+                label: <Link to="/user_settings">Account Settings</Link>,
+                icon: <UserSwitchOutlined />,
+              },
               {
                 key: "logout",
                 label: <Link onClick={logout}>Logout</Link>,
                 danger: true,
+                icon: <LogoutOutlined />,
               },
             ],
           },
@@ -59,14 +77,17 @@ export default function NavBar() {
           {
             key: "/",
             label: <Link to="/">Home</Link>,
+            icon: current === "/" ? <HomeFilled /> : <HomeOutlined />,
           },
           {
             key: "/register",
             label: <Link to="/register">Register</Link>,
+            icon: <UserAddOutlined />,
           },
           {
             key: "/login",
             label: <Link to="/login">Login</Link>,
+            icon: <LoginOutlined />,
           },
         ];
 
@@ -126,6 +147,14 @@ export default function NavBar() {
             items={menuItems.slice(1).map((item) => ({
               ...item,
               label: <div onClick={handleMenuItemClick}>{item.label}</div>,
+              children: item.children?.map((child) => ({
+                ...child,
+                label: (
+                  <div onClick={() => setMobileMenuOpen(false)}>
+                    {child.label}
+                  </div>
+                ),
+              })),
             }))}
             style={{ border: "none" }}
           />
