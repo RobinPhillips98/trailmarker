@@ -25,9 +25,6 @@ import useErrorMessage from "../../services/hooks/useErrorMessage";
 // Contexts
 import { AuthContext } from "../../contexts/AuthContext";
 
-// Components
-import NotAuthorized from "../status_pages/NotAuthorized";
-
 /**
  * A page to display the results of a simulation.
  *
@@ -56,7 +53,10 @@ export default function Simulation() {
   const { token } = useContext(AuthContext);
   const { state } = useLocation();
   const screens = Grid.useBreakpoint();
-  const { enemies } = state || { enemies: null };
+  const { enemies, pregen_chars } = state ?? {
+    enemies: null,
+    pregen_chars: null,
+  };
   const { Paragraph, Title } = Typography;
   const { errorMessage } = useErrorMessage();
 
@@ -86,7 +86,7 @@ export default function Simulation() {
   // useEffect calls
 
   useEffect(() => {
-    if (!enemies || !token) return;
+    if (!enemies || pregen_chars == null) return;
 
     const request = {
       enemies: enemies.map((enemy) => {
@@ -95,6 +95,7 @@ export default function Simulation() {
           quantity: enemy.quantity,
         };
       }),
+      pregen_chars: pregen_chars,
     };
     /**
      * Uses the `enemies` object obtained from useLocation to make a POST
@@ -104,11 +105,13 @@ export default function Simulation() {
      */
     async function callSimulation() {
       try {
-        const response = await api.post("/simulation", request, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = pregen_chars
+          ? await api.post("/simulation_pregen", request)
+          : await api.post("/simulation", request, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
         setSimData(response.data.sim_data);
         setWins(response.data.wins);
         setTotalSims(response.data.total_sims);
@@ -122,13 +125,11 @@ export default function Simulation() {
       }
     }
     callSimulation();
-  }, [enemies, run, token]);
+  }, [run, token]);
 
-  if (!token) return <NotAuthorized />;
-
-  if (!enemies)
+  if (!enemies || pregen_chars == null)
     throw new Error(
-      'Enemies is null. Did you click "Run Simulation" on the homepage?',
+      'Null state passed in. Did you click "Run Simulation" on the homepage?',
     );
 
   if (loaded) {
