@@ -47,7 +47,8 @@ async def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
     db_user = await get_user(db, user.username)
     if db_user:
         raise HTTPException(
-            status_code=400, detail="Username already registered."
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already registered.",
         )
     hashed_password = get_password_hash(user.password)
     db_user = User(username=user.username, hashed_password=hashed_password)

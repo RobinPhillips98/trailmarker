@@ -15,8 +15,8 @@ from schemas import Encounter, Encounters
 from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency
 from ..exceptions import (
+    ForbiddenException,
     InternalServerError,
-    NotAuthorizedException,
     NotFoundException,
 )
 
@@ -117,7 +117,7 @@ async def delete_encounter(
 
     Raises:
         NotFoundException: A 404 exception if the encounter is not found.
-        NotAuthorizedException: A 403 exception if the encounter does not
+        ForbiddenException: A 403 exception if the encounter does not
             belong to the current user
 
     Returns:
@@ -136,7 +136,7 @@ async def delete_encounter(
         raise NotFoundException(route="encounter")
 
     if encounter.user_id != current_user.id:
-        raise NotAuthorizedException(action="delete", route="encounter")
+        raise ForbiddenException(action="delete", route="encounter")
 
     await db.delete(encounter)
     await db.commit()
