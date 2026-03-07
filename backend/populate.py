@@ -10,7 +10,7 @@ import argparse
 import os
 
 from passlib.context import CryptContext
-from sqlalchemy import select
+from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 
 from db import engine_sync

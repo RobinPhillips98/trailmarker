@@ -14,7 +14,11 @@ from schemas import Encounter, Encounters
 
 from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency
-from ..exceptions import NotAuthorizedException, NotFoundException
+from ..exceptions import (
+    InternalServerError,
+    NotAuthorizedException,
+    NotFoundException,
+)
 
 router = APIRouter()
 
@@ -48,9 +52,7 @@ async def get_encounters(
         raise http_err
     except Exception as e:
         print(f"Error in get_encounters: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Internal server error: {str(e)}"
-        )
+        raise InternalServerError(message=str(e))
     return Encounters(encounters=encounter_list)
 
 
@@ -91,9 +93,7 @@ async def add_encounter(
         raise http_err
     except Exception as e:
         print(f"Error in add_encounters: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Internal server error: {str(e)}"
-        )
+        raise InternalServerError(message=str(e))
     return db_encounter
 
 
