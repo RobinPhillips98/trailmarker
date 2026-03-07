@@ -226,6 +226,10 @@ class UserCreate(BaseModel):
     password: str
 
 
+class UserDelete(BaseModel):
+    password: str
+
+
 class UserResponse(BaseModel):
     username: str
 
