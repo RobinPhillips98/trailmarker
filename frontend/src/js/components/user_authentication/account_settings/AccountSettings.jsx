@@ -4,6 +4,11 @@ import EditUsername from "./subcomponents/EditUsername";
 import EditPassword from "./subcomponents/EditPassword";
 import DeleteAccount from "./subcomponents/DeleteAccount";
 
+/**
+ * A component to display account settings to the user.
+ *
+ * @returns {React.ReactElement}
+ */
 export default function AccountSettings() {
   const { Title } = Typography;
 

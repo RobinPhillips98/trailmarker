@@ -1,7 +1,7 @@
 // Third-party libraries
 import { useContext, useState } from "react";
 import { Button, Form, Grid, Input, Modal, Typography } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined, UserDeleteOutlined } from "@ant-design/icons";
 
 // Personal Helpers
 import useErrorMessage from "../../../../services/hooks/useErrorMessage";
@@ -10,6 +10,11 @@ import api from "../../../../api";
 // Contexts
 import { AuthContext } from "../../../../contexts/AuthContext";
 
+/**
+ * A component allowing a user to delete their account.
+ *
+ * @returns {React.ReactElement}
+ */
 export default function DeleteAccount() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -49,7 +54,7 @@ export default function DeleteAccount() {
   return (
     <>
       <Form
-        name="register"
+        name="DeleteAccount"
         labelCol={{
           span: screens.sm ? 8 : 24,
         }}
@@ -99,7 +104,7 @@ export default function DeleteAccount() {
             type="primary"
             danger
             htmlType="submit"
-            icon={<DeleteOutlined />}
+            icon={<UserDeleteOutlined />}
           >
             Delete Account
           </Button>
@@ -113,8 +118,14 @@ export default function DeleteAccount() {
           <Button key="cancel" onClick={closeModal}>
             Cancel
           </Button>,
-          <Button key="confirm" type="primary" danger onClick={handleSubmit}>
-            Confirm
+          <Button
+            key="confirm"
+            type="primary"
+            danger
+            onClick={handleSubmit}
+            icon={<DeleteOutlined />}
+          >
+            CONFIRM
           </Button>,
         ]}
       >

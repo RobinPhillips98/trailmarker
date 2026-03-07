@@ -227,9 +227,9 @@ class UserCreate(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    username: str
+    username: Optional[str] = None
     old_password: str
-    password: str
+    password: Optional[str] = None
 
 
 class UserDelete(BaseModel):
