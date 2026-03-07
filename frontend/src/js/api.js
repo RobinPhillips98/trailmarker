@@ -21,7 +21,14 @@ export function setupAuthInterceptor(onUnauthorized) {
     (response) => response,
     (error) => {
       const isLoginRequest = error.config?.url === "/auth/token";
-      if (error.response?.status === 401 && !isLoginRequest) {
+      const isUserSelfRequest =
+        error.config?.url === "/users/" &&
+        ["delete", "patch"].includes(error.config?.method);
+      if (
+        error.response?.status === 401 &&
+        !isLoginRequest &&
+        !isUserSelfRequest
+      ) {
         onUnauthorized();
       }
       return Promise.reject(error);
