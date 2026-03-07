@@ -1,5 +1,5 @@
 // Third-party libraries
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FloatButton, Typography } from "antd";
 
 // Personal helpers
@@ -20,8 +20,14 @@ import TutorialModal from "./overview/subcomponents/TutorialModal";
  * @returns {React.ReactElement}
  */
 export default function Homepage() {
-  const [selectedEnemies, setSelectedEnemies] = useState([]);
+  const [selectedEnemies, setSelectedEnemies] = useState(
+    JSON.parse(sessionStorage.getItem("enemies")) ?? [],
+  );
   const { Title } = Typography;
+
+  useEffect(() => {
+    sessionStorage.setItem("enemies", JSON.stringify(selectedEnemies));
+  }, [selectedEnemies]);
 
   /**
    * Adds the given enemy to the encounter, or if it's already in the encounter,
@@ -96,6 +102,7 @@ export default function Homepage() {
   function clearEnemies() {
     selectedEnemies.forEach((enemy) => (enemy.quantity = 0));
     setSelectedEnemies([]);
+    sessionStorage.removeItem("enemies");
   }
 
   /**
