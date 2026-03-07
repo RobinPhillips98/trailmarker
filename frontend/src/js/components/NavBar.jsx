@@ -55,13 +55,13 @@ export default function NavBar() {
               ),
           },
           {
-            key: "/user_settings",
+            key: "/user",
             label: user.username,
             icon: <UserOutlined />,
             children: [
               {
-                key: "settings",
-                label: <Link to="/user_settings">Account Settings</Link>,
+                key: "/user/settings",
+                label: <Link to="/user/settings">Account Settings</Link>,
                 icon: <UserSwitchOutlined />,
               },
               {
