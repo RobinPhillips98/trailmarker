@@ -3,7 +3,7 @@
 from fastapi import HTTPException, status
 
 
-class NotAuthorizedException(HTTPException):
+class ForbiddenException(HTTPException):
     """Returns a 403 exception when a user attempts an unauthorized action.
 
     Attributes:
@@ -11,11 +11,9 @@ class NotAuthorizedException(HTTPException):
         route: The API route the user attempts the action on
     """
 
-    def __init__(
-        self, action: str = None, route: str = None, detail: str = None
-    ):
+    def __init__(self, action: str = None, route: str = None):
         self.status_code = status.HTTP_403_FORBIDDEN
-        self.detail = detail or f"Not authorized to {action} this {route}"
+        self.detail = f"Not authorized to {action} this {route}"
 
 
 class NotFoundException(HTTPException):

@@ -15,8 +15,8 @@ from schemas import Character, CharacterCreate, Characters, CharacterUpdate
 from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency
 from ..exceptions import (
+    ForbiddenException,
     InternalServerError,
-    NotAuthorizedException,
     NotFoundException,
 )
 from ..helpers import fetch_characters_from_db
@@ -113,7 +113,7 @@ async def update_character(
 
     Raises:
         NotFoundException: A 404 exception if the character is not found.
-        NotAuthorizedException: A 403 exception if the character does not
+        ForbiddenException: A 403 exception if the character does not
             belong to the current user
         http_err: A caught HTTP error
         HTTPException: A non-HTTP exception caught and raised as an HTTP 500
@@ -129,7 +129,7 @@ async def update_character(
             raise NotFoundException(route="character")
 
         if db_character.user_id != current_user.id:
-            raise NotAuthorizedException(action="update", route="character")
+            raise ForbiddenException(action="update", route="character")
 
         update_data = character_update.dict(exclude_unset=True)
         for key, value in update_data.items():
@@ -168,7 +168,7 @@ async def delete_character(
 
     Raises:
         NotFoundException: A 404 exception if the character is not found.
-        NotAuthorizedException: A 403 exception if the character does not
+        ForbiddenException: A 403 exception if the character does not
             belong to the current user
 
     Returns:
@@ -187,7 +187,7 @@ async def delete_character(
         raise NotFoundException(route="character")
 
     if character.user_id != current_user.id:
-        raise NotAuthorizedException(action="delete", route="character")
+        raise ForbiddenException(action="delete", route="character")
 
     await db.delete(character)
     await db.commit()
