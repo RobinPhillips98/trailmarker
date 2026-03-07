@@ -10,14 +10,16 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
 from models import Character, Encounter, User
-from schemas import UserDelete, UserResponse
+from schemas import UserDelete, UserResponse, UserUpdate
 
-from ..auth_helpers import get_current_user, verify_password
-from ..dependencies import db_dependency
-from ..exceptions import (
-    InternalServerError,
-    NotAuthorizedException,
+from ..auth_helpers import (
+    get_current_user,
+    get_password_hash,
+    get_user,
+    verify_password,
 )
+from ..dependencies import db_dependency
+from ..exceptions import InternalServerError
 
 router = APIRouter()
 
@@ -36,6 +38,51 @@ async def read_user(current_user: User = Depends(get_current_user)) -> User:
     return current_user
 
 
+@router.patch(
+    "/users/", response_model=UserResponse, status_code=status.HTTP_200_OK
+)
+async def update_user(
+    request: UserUpdate,
+    db: db_dependency,
+    current_user: User = Depends(get_current_user),
+) -> UserResponse:
+    try:
+        if not verify_password(
+            request.old_password, current_user.hashed_password
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Password invalid. Please try again",
+            )
+
+        update_data = {}
+        if request.username:
+            db_user = await get_user(db, request.username)
+            if db_user:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Username already registered.",
+                )
+            update_data["username"] = request.username
+        if request.password:
+            hashed_password = get_password_hash(request.password)
+            update_data["hashed_password"] = hashed_password
+
+        for key, value in update_data.items():
+            setattr(current_user, key, value)
+
+        await db.commit()
+        await db.refresh(current_user)
+
+        return current_user
+
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in update_user: {str(e)}")
+        raise InternalServerError(message=str(e))
+
+
 @router.delete(
     "/users/", response_model=object, status_code=status.HTTP_200_OK
 )
@@ -45,8 +92,9 @@ async def delete_user(
     current_user: User = Depends(get_current_user),
 ) -> object:
     if not verify_password(request.password, current_user.hashed_password):
-        raise NotAuthorizedException(
-            detail="Password invalid. Please try again"
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Password invalid. Please try again",
         )
 
     try:
@@ -84,5 +132,5 @@ async def delete_user(
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
-        print(f"Error in update_character: {str(e)}")
+        print(f"Error in delete_user: {str(e)}")
         raise InternalServerError(message=str(e))
