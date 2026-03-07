@@ -11,13 +11,14 @@ stats about the simulations.
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy.future import select
 
 import models
 from schemas import Character, Enemy, SimRequest, SimResponse
 
 from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency, run_simulation
+from ..exceptions import InternalServerError
 from ..helpers import fetch_characters_from_db
 from .enemies import get_enemy
 
@@ -58,11 +59,8 @@ async def init_sim_with_auth(
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
-        print(f"Error in run_simulations: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}",
-        )
+        print(f"Error in init_sim_with_auth: {str(e)}")
+        raise InternalServerError(message=str(e))
 
 
 @router.post(
@@ -104,11 +102,8 @@ async def init_sim_with_pregens(
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
-        print(f"Error in run_simulations: {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}",
-        )
+        print(f"Error in init_sim_with_pregens: {str(e)}")
+        raise InternalServerError(message=str(e))
 
 
 async def run_simulations(

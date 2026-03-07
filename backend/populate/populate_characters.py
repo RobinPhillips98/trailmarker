@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 
-from sqlalchemy import select
+from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 
 from models import Character, User

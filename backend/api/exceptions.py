@@ -26,3 +26,15 @@ class NotFoundException(HTTPException):
     def __init__(self, route: str):
         self.status_code = status.HTTP_404_NOT_FOUND
         self.detail = f"{route} not found"
+
+
+class InternalServerError(HTTPException):
+    """Returns a 500 exception when an error occurs during a route.
+
+    Attributes:
+        message: The detail to display about the error
+    """
+
+    def __init__(self, message: str):
+        self.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        self.detail = f"Internal Server Error: {message}"

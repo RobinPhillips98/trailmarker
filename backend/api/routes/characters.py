@@ -14,7 +14,11 @@ from schemas import Character, CharacterCreate, Characters, CharacterUpdate
 
 from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency
-from ..exceptions import NotAuthorizedException, NotFoundException
+from ..exceptions import (
+    InternalServerError,
+    NotAuthorizedException,
+    NotFoundException,
+)
 from ..helpers import fetch_characters_from_db
 
 router = APIRouter()
@@ -43,9 +47,7 @@ async def get_characters(
         raise http_err
     except Exception as e:
         print(f"Error in get_characters: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Internal server error: {str(e)}"
-        )
+        raise InternalServerError(message=str(e))
 
 
 @router.post(
@@ -84,9 +86,7 @@ async def add_character(
         raise http_err
     except Exception as e:
         print(f"Error in add_character: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Internal server error: {str(e)}"
-        )
+        raise InternalServerError(message=str(e))
     return db_character
 
 
@@ -145,9 +145,7 @@ async def update_character(
         raise http_err
     except Exception as e:
         print(f"Error in update_character: {str(e)}")
-        raise HTTPException(
-            status_code=500, detail=f"Internal server error: {str(e)}"
-        )
+        raise InternalServerError(message=str(e))
 
 
 @router.delete(
