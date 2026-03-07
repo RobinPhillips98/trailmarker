@@ -1,32 +1,31 @@
 import { useState } from "react";
 import { Button, Collapse, FloatButton, Modal } from "antd";
-import {
-  MenuOutlined,
-  QuestionCircleOutlined,
-  QuestionOutlined,
-} from "@ant-design/icons";
+import { MenuOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 
 /**
  * A component that displays a tutorial modal with a floating button.
  *
+ * @param {object} props
+ * @param {React.RefObject} props.ref The reference used by the opening tour to
+ * target this component
+ * @param {function} props.setTourOpen The function to set whether or not the
+ *  opening tour is open.
  * @returns {React.ReactElement}
  */
-export default function TutorialModal() {
+export default function TutorialModal({ ref, setTourOpen }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [viewedTutorial, setViewedTutorial] = useState(
-    localStorage.getItem("viewedTutorial"),
-  );
 
   function showModal() {
-    if (!viewedTutorial) {
-      setViewedTutorial(true);
-      localStorage.setItem("viewedTutorial", true);
-    }
     setIsModalOpen(true);
   }
 
   function closeModal() {
     setIsModalOpen(false);
+  }
+
+  function handleClickTutorial() {
+    closeModal();
+    setTourOpen(true);
   }
 
   const items = [
@@ -106,11 +105,9 @@ export default function TutorialModal() {
       <FloatButton
         type="primary"
         onClick={showModal}
-        icon={
-          !viewedTutorial ? <QuestionOutlined /> : <QuestionCircleOutlined />
-        }
+        icon={<QuestionCircleOutlined />}
         tooltip="How To Use"
-        style={!viewedTutorial ? { scale: 1.5 } : null}
+        ref={ref}
       />
       <Modal
         title="How To Use Trailmarker"
@@ -118,6 +115,9 @@ export default function TutorialModal() {
         open={isModalOpen}
         onCancel={closeModal}
         footer={[
+          <Button key="open_tour" onClick={handleClickTutorial}>
+            View Tutorial
+          </Button>,
           <Button key="ok" onClick={closeModal} type="primary">
             OK
           </Button>,

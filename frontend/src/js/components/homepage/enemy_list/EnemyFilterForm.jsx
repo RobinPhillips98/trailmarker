@@ -19,9 +19,11 @@ import { damageTypes } from "../../characters/characterHelpers";
  *
  * @param {object} props
  * @param {object} props.form The Ant Design form instance
+ * @param {React.RefObject} props.ref The reference used by the opening tour to
+ * target this component
  * @returns {React.ReactElement}
  */
-export default function EnemyFilterForm({ form }) {
+export default function EnemyFilterForm({ form, ref }) {
   const initialValues = {
     name: "",
     minLevel: -1,
@@ -40,7 +42,7 @@ export default function EnemyFilterForm({ form }) {
   }
 
   return (
-    <Card style={{ marginBottom: 16 }}>
+    <Card ref={ref} style={{ marginBottom: 16 }}>
       <Form
         form={form}
         initialValues={initialValues}

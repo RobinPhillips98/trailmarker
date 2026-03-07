@@ -18,17 +18,19 @@ import { AuthContext } from "../../../../contexts/AuthContext";
 /**
  * A component to handle setting options for and starting the simulation.
  *
- * @param {object} props
- * @param {object} props.selectedEnemies The currently selected enemies in the
+ * @typedef {object} SimulationControlsProps
+ * @property {object} selectedEnemies The currently selected enemies in the
  *  encounter
- * @param {boolean} props.charactersSaved Whether or not the current user has
+ * @property {boolean} charactersSaved Whether or not the current user has
  *  any saved characters
+ * @property {React.RefObject[]} refs References used by the opening tour to
+ * target components
+ *
+ * @param {SimulationControlsProps} props
  * @returns {React.ReactElement}
  */
-export default function SimulationControls({
-  selectedEnemies,
-  charactersSaved,
-}) {
+export default function SimulationControls(props) {
+  const { selectedEnemies, charactersSaved, refs } = props;
   const [switched, setSwitched] = useState(true);
 
   const navigate = useNavigate();
@@ -87,6 +89,7 @@ export default function SimulationControls({
             icon={
               !simButtonDisabled ? <PlayCircleOutlined /> : <LockOutlined />
             }
+            ref={refs[7]}
           >
             Run Simulation
           </Button>
@@ -94,7 +97,7 @@ export default function SimulationControls({
       </Col>
 
       <Col xs={24} md={8}>
-        <Card title="Simulation Options">
+        <Card ref={refs[6]} title="Simulation Options">
           <Tooltip title={switchTooltip}>
             <Switch
               checked={switched}

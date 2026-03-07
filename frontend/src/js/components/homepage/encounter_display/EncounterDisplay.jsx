@@ -14,16 +14,18 @@ import SelectedEnemy from "./SelectedEnemy";
  *  button is clicked
  * @property {function} handleAdd The function called when the plus button is
  *  clicked
+ * @property {React.RefObject} ref The reference used by the opening tour to
+ * target this component
  *
  * @param {EncounterDisplayProps} props
  * @returns {React.ReactElement}
  */
 export default function EncounterDisplay(props) {
-  const { enemies, handleRemove, handleDecrement, handleAdd } = props;
+  const { enemies, handleRemove, handleDecrement, handleAdd, ref } = props;
   const { Title } = Typography;
 
   return (
-    <Card>
+    <Card ref={ref}>
       <Title level={4} style={{ marginTop: 0, marginBottom: 16 }}>
         Encounter
       </Title>

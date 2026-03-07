@@ -26,12 +26,14 @@ import SimulationControls from "./subcomponents/SimulationControls";
  *  enemies
  * @property {function} clearEncounter The function to clear all enemies from
  *  the encounter
+ * @property {React.RefObject[]} refs References used by the opening tour to
+ * target components
  *
  * @param {OverviewProps} props
  * @returns {React.ReactElement}
  */
 export default function Overview(props) {
-  const { selectedEnemies, handleLoad, clearEncounter } = props;
+  const { selectedEnemies, handleLoad, clearEncounter, refs } = props;
 
   // State Variables
   const [useSaved, setUseSaved] = useState(false);
@@ -219,9 +221,10 @@ export default function Overview(props) {
       <SimulationControls
         selectedEnemies={selectedEnemies}
         charactersSaved={charactersSaved}
+        refs={refs}
       />
 
-      <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+      <Row ref={refs[0]} gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} md={8}>
           <PartyInfoForm
             partySize={partySize}
@@ -231,6 +234,7 @@ export default function Overview(props) {
             handlePartySize={handlePartySize}
             handlePartyLevel={handlePartyLevel}
             handleChange={handleChangeSaved}
+            ref={refs[1]}
           />
         </Col>
 

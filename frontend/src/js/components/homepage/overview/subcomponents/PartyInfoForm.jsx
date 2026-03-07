@@ -25,6 +25,8 @@ import { AuthContext } from "../../../../contexts/AuthContext";
  *  based on the select component
  * @property {function} handleChange The function to handle when the switch is
  *  toggled
+ * @property {React.RefObject} ref The reference used by the opening tour to
+ * target this component
  *
  * @param {PartyInfoFormProps} props
  * @returns {React.ReactElement}
@@ -38,6 +40,7 @@ export default function PartyInfoForm(props) {
     handlePartySize,
     handlePartyLevel,
     handleChange,
+    ref,
   } = props;
 
   const { user } = useContext(AuthContext);
@@ -80,7 +83,11 @@ export default function PartyInfoForm(props) {
   ];
 
   return (
-    <Card title="Difficulty Calculation Settings" style={{ height: "100%" }}>
+    <Card
+      ref={ref}
+      title="Difficulty Calculation Settings"
+      style={{ height: "100%" }}
+    >
       <Space direction="vertical" style={{ width: "100%" }} size="large">
         <Form labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
           <Form.Item label="Use Saved Characters?">
