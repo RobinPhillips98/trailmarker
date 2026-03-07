@@ -16,9 +16,11 @@ import EnemyFilterForm from "./EnemyFilterForm";
  * @param {object} props
  * @param {function} props.handleAdd The function to add an enemy to the
  *  encounter
+ * @param {React.RefObject[]} props.refs References used by the opening tour to
+ * target components
  * @returns {React.ReactElement}
  */
-export default function EnemyList({ handleAdd }) {
+export default function EnemyList({ handleAdd, refs }) {
   const [enemies, setEnemies] = useState([]);
   const [displayEnemies, setDisplayEnemies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -149,15 +151,15 @@ export default function EnemyList({ handleAdd }) {
   ]);
 
   return (
-    <div style={{ width: "100%" }}>
+    <div ref={refs[2]} style={{ width: "100%" }}>
       <Title level={3} style={{ marginTop: 0, marginBottom: 16 }}>
         Enemies
       </Title>
 
-      <EnemyFilterForm form={form} />
+      <EnemyFilterForm ref={refs[3]} form={form} />
 
       <Spin spinning={loading}>
-        <div style={{ height: "60vh", overflow: "auto" }}>
+        <div ref={refs[4]} style={{ height: "60vh", overflow: "auto" }}>
           <Row gutter={[16, 16]}>
             {displayEnemies.map((enemy) => (
               <Col

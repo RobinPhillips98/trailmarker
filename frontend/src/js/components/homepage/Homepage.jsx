@@ -1,5 +1,5 @@
 // Third-party libraries
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FloatButton, Typography } from "antd";
 
 // Personal helpers
@@ -10,6 +10,7 @@ import Overview from "./overview/Overview";
 import EncounterDisplay from "./encounter_display/EncounterDisplay";
 import EnemyList from "./enemy_list/EnemyList";
 import TutorialModal from "./overview/subcomponents/TutorialModal";
+import Tutorial from "./Tutorial";
 
 /**
  * The homepage of the site which displays information and options about the
@@ -20,10 +21,18 @@ import TutorialModal from "./overview/subcomponents/TutorialModal";
  * @returns {React.ReactElement}
  */
 export default function Homepage() {
+  const [tourOpen, setTourOpen] = useState(!localStorage.getItem("viewedTour"));
+
   const [selectedEnemies, setSelectedEnemies] = useState(
     JSON.parse(sessionStorage.getItem("enemies")) ?? [],
   );
   const { Title } = Typography;
+
+  const refs = [];
+  for (let i = 0; i <= 8; i++) {
+    const ref = useRef(null);
+    refs.push(ref);
+  }
 
   useEffect(() => {
     sessionStorage.setItem("enemies", JSON.stringify(selectedEnemies));
@@ -126,11 +135,13 @@ export default function Homepage() {
 
   return (
     <>
+      <Tutorial refs={refs} open={tourOpen} setOpen={setTourOpen} />
       <Title style={{ marginLeft: 10 }}>Trailmarker</Title>
       <Overview
         selectedEnemies={selectedEnemies}
         clearEncounter={clearEnemies}
         handleLoad={loadEncounter}
+        refs={refs}
       />
       <br />
       <EncounterDisplay
@@ -138,11 +149,12 @@ export default function Homepage() {
         handleDecrement={decrementQuantity}
         handleAdd={incrementQuantity}
         enemies={selectedEnemies}
+        ref={refs[5]}
       />
       <br />
-      <EnemyList handleAdd={addEnemy} />
+      <EnemyList handleAdd={addEnemy} refs={refs} />
       <FloatButton.Group>
-        <TutorialModal />
+        <TutorialModal setTourOpen={setTourOpen} ref={refs[8]} />
         <FloatButton.BackTop />
       </FloatButton.Group>
     </>
