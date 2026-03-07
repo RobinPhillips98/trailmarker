@@ -226,6 +226,12 @@ class UserCreate(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    username: str
+    old_password: str
+    password: str
+
+
 class UserDelete(BaseModel):
     password: str
 
