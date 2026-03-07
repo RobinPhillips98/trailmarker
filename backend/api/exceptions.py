@@ -11,9 +11,11 @@ class NotAuthorizedException(HTTPException):
         route: The API route the user attempts the action on
     """
 
-    def __init__(self, action: str, route: str):
+    def __init__(
+        self, action: str = None, route: str = None, detail: str = None
+    ):
         self.status_code = status.HTTP_403_FORBIDDEN
-        self.detail = f"Not authorized to {action} this {route}"
+        self.detail = detail or f"Not authorized to {action} this {route}"
 
 
 class NotFoundException(HTTPException):
