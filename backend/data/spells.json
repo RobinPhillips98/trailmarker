@@ -1,0 +1,89 @@
+{
+  "Acid Grip": {
+    "name": "Acid Grip",
+    "level": 2,
+    "damage_roll": "2d8",
+    "damage_type": "acid",
+    "range": 120,
+    "area": {},
+    "save": "reflex",
+    "targets": 1,
+    "actions": "2"
+  },
+  "Breathe Fire": {
+    "name": "Breathe Fire",
+    "level": 1,
+    "damage_roll": "2d6",
+    "damage_type": "fire",
+    "range": 5,
+    "area": {
+      "type": "cone",
+      "value": "15"
+    },
+    "save": "reflex",
+    "targets": 0,
+    "actions": "2"
+  },
+  "Floating Flame": {
+    "name": "Floating Flame",
+    "level": 2,
+    "damage_roll": "3d6",
+    "damage_type": "fire",
+    "range": 30,
+    "area": {},
+    "save": "reflex",
+    "targets": 1,
+    "actions": "2"
+  },
+  "Force Barrage": {
+    "name": "Force Barrage",
+    "level": 1,
+    "damage_roll": "1d4+1",
+    "damage_type": "force",
+    "range_": 120,
+    "area": {},
+    "targets": 1,
+    "actions": "1 to 3"
+  },
+  "Force Bolt": {
+    "name": "Force Bolt",
+    "level": 1,
+    "damage_roll": "1d4+1",
+    "damage_type": "force",
+    "range_": 30,
+    "area": {},
+    "targets": 1,
+    "actions": "2"
+  },
+  "Gouging Claw": {
+    "name": "Gouging Claw",
+    "level": 0,
+    "damage_roll": "2d6",
+    "damage_type": "slashing",
+    "range_": 5,
+    "area": {},
+    "targets": 1,
+    "actions": "2"
+  },
+  "Telekinetic Projectile": {
+    "name": "Telekinetic Projectile",
+    "level": 0,
+    "damage_roll": "2d6",
+    "damage_type": "bludgeoning",
+    "range_": 30,
+    "area": {},
+    "targets": 0,
+    "actions": "2"
+  },
+  "Vitality Lash": {
+    "name": "Vitality Lash",
+    "level": 0,
+    "damage_roll": "2d6",
+    "damage_type": "vitality",
+    "range": 30,
+    "area": {},
+    "save": "fortitude",
+    "targets": 1,
+    "actions": "1"
+  }
+}

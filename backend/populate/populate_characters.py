@@ -10,10 +10,10 @@ from models import Character, User
 
 def initialize_characters(db: Session):
     user = db.execute(select(User).filter(User.username == "admin")).scalar()
-    data_folder = "populate/data/"
+    data_folder = "data/characters/"
     filenames = os.listdir(data_folder)
     for filename in filenames:
-        path = Path(f"{data_folder}/{filename}")
+        path = Path(f"{data_folder}{filename}")
         character_dict = json.loads(path.read_text())
         db_character = Character(
             user=user,
