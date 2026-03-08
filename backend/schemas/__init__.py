@@ -188,6 +188,9 @@ class CharacterUpdate(BaseModel):
     heritage: str
     background: str
     class_: str = Field(..., alias="class")
+    proficiencies: Optional[dict[str, int]] = {}
+    extra_proficiencies: Optional[dict[str, int]] = {}
+    other_features: Optional[list[str]] = []
 
 
 class Enemies(BaseModel):
