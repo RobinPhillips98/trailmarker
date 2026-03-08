@@ -10,7 +10,14 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
 import models
-from schemas import Character, CharacterCreate, Characters, CharacterUpdate
+from schemas import (
+    BasicResponse,
+    Character,
+    CharacterCreate,
+    Characters,
+    CharacterUpdate,
+    PathbuilderImport,
+)
 
 from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency
@@ -19,7 +26,7 @@ from ..exceptions import (
     InternalServerError,
     NotFoundException,
 )
-from ..helpers import fetch_characters_from_db
+from ..helpers import convert_import_to_character, fetch_characters_from_db
 
 router = APIRouter()
 
@@ -70,14 +77,62 @@ async def add_character(
 
     Raises:
         http_err: A caught HTTP error
-        HTTPException: A non-HTTP exception caught and raised as an HTTP 500
-            exception
+        InternalServerError: A non-HTTP exception caught and raised as an HTTP
+            500 exception
 
     Returns:
         Character: The character added to the database
     """
     try:
         db_character = convert_to_db_character(character, current_user)
+
+        db.add(db_character)
+        await db.commit()
+        await db.refresh(db_character)
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in add_character: {str(e)}")
+        raise InternalServerError(message=str(e))
+    return db_character
+
+
+@router.post(
+    "/characters/import",
+    response_model=Character,
+    status_code=status.HTTP_200_OK,
+)
+async def import_character(
+    imported_character: PathbuilderImport,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_user),
+) -> Character:
+    """Adds a character imported from Pathbuilder to the database
+
+    Reads a JSON file from Pathbuilder, converts it to the character format
+    used by Trailmarker, then adds the character to the database as normal.
+
+    Args:
+        imported_character (PathbuilderImport): An exported JSON file from
+            Pathbuilder2e representing a Pathfinder 2E character
+        db (db_dependency): A SQLAlchemy database session
+        current_user (models.User, optional): The currently logged in user.
+             Defaults to Depends(get_current_user).
+
+    Raises:
+        http_err: A caught HTTP error
+        InternalServerError: A non-HTTP exception caught and raised as an HTTP
+            500 exception
+
+    Returns:
+        Character: The character added to the database
+    """
+    try:
+        converted_character = convert_import_to_character(imported_character)
+
+        db_character = convert_to_db_character(
+            converted_character, current_user
+        )
 
         db.add(db_character)
         await db.commit()
@@ -116,8 +171,8 @@ async def update_character(
         ForbiddenException: A 403 exception if the character does not
             belong to the current user
         http_err: A caught HTTP error
-        HTTPException: A non-HTTP exception caught and raised as an HTTP 500
-            exception
+        InternalServerError: A non-HTTP exception caught and raised as an HTTP
+            500 exception
 
     Returns:
         Character: The updated character's data
@@ -150,7 +205,7 @@ async def update_character(
 
 @router.delete(
     "/characters/{character_id}",
-    response_model=object,
+    response_model=BasicResponse,
     status_code=status.HTTP_200_OK,
 )
 async def delete_character(

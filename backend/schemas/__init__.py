@@ -5,6 +5,10 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class BasicResponse(BaseModel):
+    message: str
+
+
 # Encounters
 class Encounter(BaseModel):
     id: int
@@ -91,6 +95,8 @@ class Attributes(BaseModel):
 
 # Creatures
 class Creature(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
     id: int
     name: str
     level: int
@@ -242,3 +248,77 @@ class UserResponse(BaseModel):
 
 class UserInDB(UserResponse):
     hashed_password: str
+
+
+# Pathbuilder Schemas
+class PathbuilderAbilities(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+    str_: int = Field(..., alias="str")
+    dex: int
+    con: int
+    wis: int
+    cha: int
+    int_: int = Field(..., alias="int")
+
+
+class PathbuilderAttributes(BaseModel):
+    ancestryhp: int
+    classhp: int
+    bonushp: int
+    bonushpPerLevel: int
+    speed: int
+
+
+class PathbuilderProfiencies(BaseModel):
+    perception: int
+    fortitude: int
+    reflex: int
+    will: int
+    acrobatics: int
+    arcana: int
+    athletics: int
+    crafting: int
+    deception: int
+    diplomacy: int
+    intimidation: int
+    medicine: int
+    nature: int
+    occultism: int
+    performance: int
+    religion: int
+    society: int
+    stealth: int
+    survival: int
+    thievery: int
+
+
+class PathbuilderWeapon(BaseModel):
+    name: str
+    qty: int
+    die: str
+    damageType: str
+    attack: int
+    damageBonus: int
+
+
+class PathbuilderArmor(BaseModel):
+    acTotal: int
+    shieldBonus: int
+
+
+class PathbuilderImport(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+    name: str
+    class_: str = Field(..., alias="class")
+    level: int
+    xp: int
+    ancestry: str
+    heritage: str
+    background: str
+    abilities: PathbuilderAbilities
+    attributes: PathbuilderAttributes
+    proficiencies: PathbuilderProfiencies
+    lores: list[list[str | int]]
+    weapons: list[PathbuilderWeapon]
+    acTotal: PathbuilderArmor
