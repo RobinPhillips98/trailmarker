@@ -43,32 +43,7 @@
   "spell_dc": 17,
   "speed": 25,
   "actions": {
-    "attacks": [
-      {
-        "name": "Dagger",
-        "attackBonus": 5,
-        "damage": "1d4",
-        "damageType": "piercing",
-        "range": null,
-        "traits": ["agile", "finesse", "thrown", "versatile-s"]
-      },
-      {
-        "name": "Staff",
-        "attackBonus": 3,
-        "damage": "1d8",
-        "damageType": "bludgeoning",
-        "range": null,
-        "traits": []
-      },
-      {
-        "name": "Crossbow",
-        "attackBonus": 5,
-        "damage": "1d8",
-        "damageType": "piercing",
-        "range": 120,
-        "traits": []
-      }
-    ],
+    "attacks": ["dagger", "staff", "crossbow"],
     "spells": [
       {
         "name": "Force Barrage",
@@ -76,7 +51,7 @@
         "level": 1,
         "damage_roll": "1d4+1",
         "damage_type": "force",
-        "range_": 120,
+        "range": 120,
         "area": {},
         "targets": 1,
         "actions": "1 to 3"
@@ -87,7 +62,7 @@
         "level": 1,
         "damage_roll": "1d4+1",
         "damage_type": "force",
-        "range_": 30,
+        "range": 30,
         "area": {},
         "targets": 1,
         "actions": "2"
@@ -98,7 +73,7 @@
         "level": 0,
         "damage_roll": "2d6",
         "damage_type": "slashing",
-        "range_": 5,
+        "range": 5,
         "area": {},
         "targets": 1,
         "actions": "2"
@@ -109,7 +84,7 @@
         "level": 0,
         "damage_roll": "2d6",
         "damage_type": "bludgeoning",
-        "range_": 30,
+        "range": 30,
         "area": {},
         "targets": 0,
         "actions": "2"
@@ -125,5 +100,12 @@
   "ancestry": "human",
   "heritage": "skilled",
   "background": "scholar",
-  "class": "wizard"
+  "class": "wizard",
+  "extra_proficiencies": {
+    "club": 2,
+    "crossbow": 2,
+    "dagger": 2,
+    "heavy crossbow": 2,
+    "staff": 2
+  }
 }

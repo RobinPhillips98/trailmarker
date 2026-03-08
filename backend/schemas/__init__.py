@@ -53,6 +53,15 @@ class Actions(BaseModel):
     sneak_attack: Optional[bool] = False
 
 
+class ActionsRequest(BaseModel):
+    attacks: Optional[list[str]] = []
+    # spells: Optional[list[str]] = []
+    spells: Optional[list[Spell]] = None
+    heals: Optional[int] = None
+    shield: Optional[int] = 0
+    sneak_attack: Optional[bool] = False
+
+
 class Skills(BaseModel):
     acrobatics: Optional[int] = None
     arcana: Optional[int] = None
@@ -130,7 +139,9 @@ class Enemy(Creature):
     resistances: dict[str, int]
 
 
-class CreatureCreate(BaseModel):
+class CharacterCreate(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     name: str
     level: int
     perception: int
@@ -141,10 +152,21 @@ class CreatureCreate(BaseModel):
     spell_attack_bonus: Optional[int] = None
     spell_dc: Optional[int] = None
     speed: int
-    actions: Optional[Actions]
+    actions: Optional[ActionsRequest]
+    player: Optional[str] = ""
+    xp: Optional[int] = 0
+    ancestry: str
+    heritage: str
+    background: str
+    class_: str = Field(..., alias="class")
+    proficiencies: Optional[dict[str, int]] = {}
+    extra_proficiencies: Optional[dict[str, int]] = {}
+    other_features: Optional[list[str]] = []
 
 
-class CreatureUpdate(BaseModel):
+class CharacterUpdate(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     id: int
     name: str
     level: int
@@ -157,22 +179,6 @@ class CreatureUpdate(BaseModel):
     spell_dc: Optional[int] = None
     speed: int
     actions: Optional[Actions]
-
-
-class CharacterCreate(CreatureCreate):
-    model_config = ConfigDict(populate_by_name=True)
-
-    player: Optional[str] = ""
-    xp: Optional[int] = 0
-    ancestry: str
-    heritage: str
-    background: str
-    class_: str = Field(..., alias="class")
-
-
-class CharacterUpdate(CreatureUpdate):
-    model_config = ConfigDict(populate_by_name=True)
-
     player: Optional[str] = ""
     xp: Optional[int] = 0
     ancestry: str
