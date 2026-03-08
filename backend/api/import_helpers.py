@@ -1,29 +1,8 @@
-"""Defines helper functions used by multiple modules in the API."""
+"""Defines helper functions used to import Pathbuilder2e characters."""
 
 import math
 
-from sqlalchemy.future import select
-
-import models
-from schemas import CharacterCreate, Characters, PathbuilderImport
-
-
-async def fetch_characters_from_db(user, db) -> Characters:
-    """Fetches all characters owned by `user`
-
-    Args:
-        user: The user whose characters should be fetched
-        db: A SQLAlchemy database session
-
-    Returns:
-        Characters: A list of Character objects
-    """
-    query = select(models.Character)
-    query = query.where(models.Character.user_id == user.id)
-    result = await db.execute(query)
-    characters = result.scalars().all()
-    character_list = [e.__dict__ for e in characters]
-    return Characters(characters=character_list)
+from schemas import CharacterCreate, PathbuilderImport
 
 
 def convert_import_to_character(
@@ -72,14 +51,23 @@ def convert_import_to_character(
         },
     }
 
-    attacks_dict = build_attack_dicts(imported_character)
+    attacks = []
+    for weapon in imported_character.weapons:
+        attacks.append(weapon.name)
 
     actions_dict = {
-        "attacks": attacks_dict,
+        "attacks": attacks,
         "spells": [],
         "heals": 0,
         "shield": int(imported_character.acTotal.shieldBonus),
     }
+
+    proficiencies = {
+        "simple": imported_character.proficiencies.simple,
+        "martial": imported_character.proficiencies.martial,
+    }
+
+    print(proficiencies)
 
     character = CharacterCreate(
         name=imported_character.name,
@@ -101,6 +89,7 @@ def convert_import_to_character(
         skills=skills_dict,
         defenses=defense_dict,
         actions=actions_dict,
+        proficiencies=proficiencies,
     )
 
     return character
@@ -166,9 +155,16 @@ def add_skills(
 
     skills_dict = {}
 
+    # We want to move past all proficiencies that aren't skills
+    start_index = 0
+    for proficiency_name in dict(imported_character.proficiencies).keys():
+        if proficiency_name == "acrobatics":
+            break
+        start_index += 1
+
     for skill_name, profiency_bonus in list(
         dict(imported_character.proficiencies).items()
-    )[4:]:
+    )[start_index:]:
         skills_dict[skill_name] = (
             profiency_bonus
             + imported_character.level
@@ -182,45 +178,3 @@ def add_skills(
     )
 
     return skills_dict
-
-
-def build_attack_dicts(
-    imported_character: PathbuilderImport,
-) -> list[dict[str, str | int | list[str]]]:
-    """Builds a list of attack dictionaries for the character
-
-    Args:
-        imported_character (PathbuilderImport): An exported JSON file from
-            Pathbuilder2e representing a Pathfinder 2E character
-
-    Raises:
-        ValueError: If `imported_character` contains an invalid damage type
-
-    Returns:
-        list[dict[str, str | int | list[str]]]: A list of dictionaries
-            representing attacks
-    """
-    attack_dicts = []
-    for weapon in imported_character.weapons:
-        damage = f"{weapon.qty}{weapon.die}+{weapon.damageBonus}"
-        match weapon.damageType:
-            case "S":
-                damage_type = "slashing"
-            case "P":
-                damage_type = "piercing"
-            case "B":
-                damage_type = "bludgeoning"
-            case _:
-                raise ValueError("Invalid damage type")
-
-        attack_dict = {
-            "name": weapon.name,
-            "attackBonus": weapon.attack,
-            "damage": damage,
-            "damageType": damage_type,
-            "range": 5,
-            "traits": [],
-        }
-        attack_dicts.append(attack_dict)
-
-    return attack_dicts

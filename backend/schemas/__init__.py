@@ -283,6 +283,8 @@ class PathbuilderProfiencies(BaseModel):
     fortitude: int
     reflex: int
     will: int
+    simple: int
+    martial: int
     acrobatics: int
     arcana: int
     athletics: int
@@ -303,11 +305,11 @@ class PathbuilderProfiencies(BaseModel):
 
 class PathbuilderWeapon(BaseModel):
     name: str
-    qty: int
-    die: str
-    damageType: str
-    attack: int
-    damageBonus: int
+    # qty: int
+    # die: str
+    # damageType: str
+    # attack: int
+    # damageBonus: int
 
 
 class PathbuilderArmor(BaseModel):

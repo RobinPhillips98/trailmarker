@@ -5,7 +5,7 @@ from pathlib import Path
 from sqlalchemy.future import select
 from sqlalchemy.orm import Session
 
-from api.routes.characters import convert_to_db_character
+from api.character_helpers import convert_to_db_character
 from models import User
 from schemas import CharacterCreate
 
