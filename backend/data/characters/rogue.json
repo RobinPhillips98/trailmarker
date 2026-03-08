@@ -41,7 +41,7 @@
   "speed": 30,
   "actions": {
     "attacks": ["rapier", "shortsword", "dagger"],
-    "spells": []
+    "spells": {}
   },
   "user_id": 1,
   "player": "",

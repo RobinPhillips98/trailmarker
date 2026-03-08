@@ -44,35 +44,10 @@
   "speed": 25,
   "actions": {
     "attacks": ["scimitar"],
-    "spells": [
-      {
-        "name": "Breathe Fire",
-        "slots": 1,
-        "level": 1,
-        "damage_roll": "2d6",
-        "damage_type": "fire",
-        "range": 5,
-        "area": {
-          "type": "cone",
-          "value": "15"
-        },
-        "save": "reflex",
-        "targets": 0,
-        "actions": "2"
-      },
-      {
-        "name": "Vitality Lash",
-        "slots": 1,
-        "level": 0,
-        "damage_roll": "2d6",
-        "damage_type": "vitality",
-        "range": 30,
-        "area": {},
-        "save": "fortitude",
-        "targets": 1,
-        "actions": "1"
-      }
-    ],
+    "spells": {
+      "breathe_fire": 1,
+      "vitality_lash": 1
+    },
     "heals": 4,
     "shield": 2,
     "sneak_attack": false

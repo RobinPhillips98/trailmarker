@@ -44,52 +44,12 @@
   "speed": 25,
   "actions": {
     "attacks": ["dagger", "staff", "crossbow"],
-    "spells": [
-      {
-        "name": "Force Barrage",
-        "slots": 2,
-        "level": 1,
-        "damage_roll": "1d4+1",
-        "damage_type": "force",
-        "range": 120,
-        "area": {},
-        "targets": 1,
-        "actions": "1 to 3"
-      },
-      {
-        "name": "Force Bolt",
-        "slots": 1,
-        "level": 1,
-        "damage_roll": "1d4+1",
-        "damage_type": "force",
-        "range": 30,
-        "area": {},
-        "targets": 1,
-        "actions": "2"
-      },
-      {
-        "name": "Gouging Claw",
-        "slots": 1,
-        "level": 0,
-        "damage_roll": "2d6",
-        "damage_type": "slashing",
-        "range": 5,
-        "area": {},
-        "targets": 1,
-        "actions": "2"
-      },
-      {
-        "name": "Telekinetic Projectile",
-        "slots": 1,
-        "level": 0,
-        "damage_roll": "2d6",
-        "damage_type": "bludgeoning",
-        "range": 30,
-        "area": {},
-        "targets": 0,
-        "actions": "2"
-      }
-    ],
+    "spells": {
+      "force_barrage": 2,
+      "force_bolt": 1,
+      "gouging_claw": 1,
+      "telekinetic_projectile": 1
+    },
     "heals": null,
     "shield": 0,
     "sneak_attack": false

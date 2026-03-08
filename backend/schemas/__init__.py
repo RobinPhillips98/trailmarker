@@ -43,6 +43,7 @@ class Spell(BaseModel):
     save: Optional[str] = None
     targets: Optional[int] = 0
     actions: str
+    description: Optional[str] = None
 
 
 class Actions(BaseModel):
@@ -55,8 +56,7 @@ class Actions(BaseModel):
 
 class ActionsRequest(BaseModel):
     attacks: Optional[list[str]] = []
-    # spells: Optional[list[str]] = []
-    spells: Optional[list[Spell]] = None
+    spells: Optional[dict[str, int]] = {}
     heals: Optional[int] = None
     shield: Optional[int] = 0
     sneak_attack: Optional[bool] = False
