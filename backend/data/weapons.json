@@ -1,0 +1,186 @@
+{
+  "Club": {
+    "name": "Club",
+    "damage": "1d6",
+    "damageType": "bludgeoning",
+    "range": null,
+    "reload": null,
+    "traits": ["thrown-10"]
+  },
+  "Dagger": {
+    "name": "Dagger",
+    "damage": "1d4",
+    "damageType": "piercing",
+    "range": null,
+    "reload": null,
+    "traits": ["agile", "finesse", "thrown-10", "versatile-s"]
+  },
+  "Mace": {
+    "name": "Mace",
+    "damage": "1d6",
+    "damageType": "bludgeoning",
+    "range": null,
+    "reload": null,
+    "traits": ["shove"]
+  },
+  "Spear": {
+    "name": "Spear",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "range": null,
+    "reload": null,
+    "traits": ["thrown-20"]
+  },
+  "Staff": {
+    "name": "Staff",
+    "damage": "1d8",
+    "damageType": "bludgeoning",
+    "range": null,
+    "reload": null,
+    "traits": []
+  },
+  "Battle Axe": {
+    "name": "Battle Axe",
+    "damage": "1d8",
+    "damageType": "slashing",
+    "range": null,
+    "reload": null,
+    "traits": ["sweep"]
+  },
+  "Greataxe": {
+    "name": "Greataxe",
+    "damage": "1d12",
+    "damageType": "slashing",
+    "range": null,
+    "reload": null,
+    "traits": ["sweep"]
+  },
+  "Greatsword": {
+    "name": "Greatsword",
+    "damage": "1d12",
+    "damageType": "slashing",
+    "range": null,
+    "reload": null,
+    "traits": ["versatile-p"]
+  },
+  "Hatchet": {
+    "name": "Hatchet",
+    "damage": "1d6",
+    "damageType": "slashing",
+    "range": null,
+    "reload": null,
+    "traits": ["agile", "sweep", "thrown-10"]
+  },
+  "Light Hammer": {
+    "name": "Light Hammer",
+    "damage": "1d6",
+    "damageType": "bludgeoning",
+    "range": null,
+    "reload": null,
+    "traits": ["agile", "thrown-20"]
+  },
+  "Longsword": {
+    "name": "Longsword",
+    "damage": "1d8",
+    "damageType": "slashing",
+    "range": null,
+    "reload": null,
+    "traits": ["versatile-p"]
+  },
+  "Maul": {
+    "name": "Maul",
+    "damage": "1d12",
+    "damageType": "bludgeoning",
+    "range": null,
+    "reload": null,
+    "traits": ["shove"]
+  },
+  "Rapier": {
+    "name": "Rapier",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "range": null,
+    "reload": null,
+    "traits": ["deadly-d8", "finesse"]
+  },
+  "Scimitar": {
+    "name": "Scimitar",
+    "damage": "1d6",
+    "damageType": "slashing",
+    "range": null,
+    "reload": null,
+    "traits": ["forceful", "sweep"]
+  },
+  "Shortsword": {
+    "name": "Shortsword",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "range": null,
+    "reload": null,
+    "traits": ["agile", "finesse", "versatile-s"]
+  },
+  "Starknife": {
+    "name": "Starknife",
+    "damage": "1d4",
+    "damageType": "piercing",
+    "range": null,
+    "reload": null,
+    "traits": ["agile", "deadly-d6", "finesse", "thrown-20", "versatile-s"]
+  },
+  "Trident": {
+    "name": "Trident",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "range": null,
+    "reload": null,
+    "traits": ["thrown-20"]
+  },
+  "Warhammer": {
+    "name": "Warhammer",
+    "damage": "1d8",
+    "damageType": "bludgeoning",
+    "range": null,
+    "reload": null,
+    "traits": ["shove"]
+  },
+  "Crossbow": {
+    "name": "Crossbow",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "range": 120,
+    "reload": 1,
+    "traits": []
+  },
+  "Hand Crossbow": {
+    "name": "Hand Crossbow",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "range": 60,
+    "reload": 1,
+    "traits": []
+  },
+  "Javelin": {
+    "name": "Javelin",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "range": 30,
+    "reload": null,
+    "traits": ["thrown"]
+  },
+  "Longbow": {
+    "name": "Longbow",
+    "damage": "1d8",
+    "damageType": "piercing",
+    "range": 100,
+    "reload": 0,
+    "traits": ["deadly-d10", "volley-30"]
+  },
+  "Shortbow": {
+    "name": "Shortbow",
+    "damage": "1d6",
+    "damageType": "piercing",
+    "range": 60,
+    "reload": 0,
+    "traits": ["deadly-d10"]
+  }
+}
