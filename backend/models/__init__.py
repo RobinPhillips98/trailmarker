@@ -61,6 +61,9 @@ class Character(Base):
     spell_dc = Column(Integer)
     speed = Column(Integer, nullable=False)
     actions = Column(JSON)
+    proficiencies = Column(JSON)
+    extra_proficiencies = Column(JSON)
+    other_features = Column(ARRAY(String))
 
 
 class Encounter(Base):

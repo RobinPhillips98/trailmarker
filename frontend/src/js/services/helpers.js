@@ -35,7 +35,7 @@ export function splitCamelCase(str) {
  * @returns {boolean}
  */
 export function isEmpty(obj) {
-  return Object.keys(obj).length === 0;
+  return typeof obj !== "object" || Object.keys(obj).length === 0;
 }
 
 /**

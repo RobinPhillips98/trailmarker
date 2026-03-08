@@ -236,6 +236,13 @@ export const humanHeritages = [
   },
 ];
 
+export const otherFeatures = [
+  {
+    value: "thief",
+    label: "Thief",
+  },
+];
+
 /**
  * A list of the skills in Pathfinder
  */
@@ -260,63 +267,6 @@ export const skills = [
 ];
 
 /**
- * A list of the available weapon traits, formatted to be used as the options
- * of a select component.
- */
-export const weaponTraits = [
-  {
-    value: "agile",
-    label: "Agile",
-  },
-  {
-    value: "deadly-d6",
-    label: "Deadly d6",
-  },
-  {
-    value: "deadly-d8",
-    label: "Deadly d8",
-  },
-  {
-    value: "deadly-d10",
-    label: "Deadly d10",
-  },
-  {
-    value: "finesse",
-    label: "Finesse",
-  },
-  {
-    value: "forceful",
-    label: "Forceful",
-  },
-  {
-    value: "shove",
-    label: "Shove",
-  },
-
-  {
-    value: "sweep",
-    label: "Sweep",
-  },
-
-  {
-    value: "thrown",
-    label: "Thrown",
-  },
-  {
-    value: "versatile-s",
-    label: "Versatile S",
-  },
-  {
-    value: "versatile-p",
-    label: "Versatile P",
-  },
-  {
-    value: "volley",
-    label: "Volley",
-  },
-];
-
-/**
  * A list of the saving throws in Pathfinder
  */
 export const saves = ["fortitude", "reflex", "will"];
@@ -331,6 +281,156 @@ export const saveOptions = saves.map((save) => {
     label: toTitleCase(save),
   };
 });
+
+const simpleMeleeOptions = [
+  {
+    label: "Club",
+    value: "club",
+  },
+  {
+    label: "Dagger",
+    value: "dagger",
+  },
+  {
+    label: "Mace",
+    value: "mace",
+  },
+  {
+    label: "Spear",
+    value: "spear",
+  },
+  {
+    label: "Staff",
+    value: "staff",
+  },
+];
+
+const martialMeleeOptions = [
+  {
+    label: "Battle Axe",
+    value: "battle axe",
+  },
+  {
+    label: "Greataxe",
+    value: "greataxe",
+  },
+  {
+    label: "Greatsword",
+    value: "greatsword",
+  },
+  {
+    label: "Hatchet",
+    value: "hatchet",
+  },
+  {
+    label: "Light Hammer",
+    value: "light hammer",
+  },
+  {
+    label: "Longsword",
+    value: "longsword",
+  },
+  {
+    label: "Maul",
+    value: "maul",
+  },
+  {
+    label: "Rapier",
+    value: "rapier",
+  },
+  {
+    label: "Scimitar",
+    value: "scimitar",
+  },
+  {
+    label: "Shortsword",
+    value: "shortsword",
+  },
+  {
+    label: "Starknife",
+    value: "starknife",
+  },
+  {
+    label: "Trident",
+    value: "trident",
+  },
+  {
+    label: "Warhammer",
+    value: "warhammer",
+  },
+];
+
+const simpleRangedOptions = [
+  {
+    label: "Crossbow",
+    value: "crossbow",
+  },
+  {
+    label: "Hand Crossbow",
+    value: "hand crossbow",
+  },
+  {
+    label: "Javelin",
+    value: "javelin",
+  },
+];
+
+const martialRangedOptions = [
+  {
+    label: "Longbow",
+    value: "longbow",
+  },
+  {
+    label: "Shortbow",
+    value: "shortbow",
+  },
+];
+
+/**
+ * A list of all weapons in the Pathfinder 2E beginner box, formatted into
+ * option groups for a Select component.
+ */
+export const weaponOptions = [
+  {
+    label: "Simple Melee",
+    title: "simple-melee",
+    options: simpleMeleeOptions,
+  },
+  {
+    label: "Martial Melee",
+    title: "martial-melee",
+    options: martialMeleeOptions,
+  },
+  {
+    label: "Simple Ranged",
+    title: "simple-ranged",
+    options: simpleRangedOptions,
+  },
+  {
+    label: "Martial Ranged",
+    title: "martial-ranged",
+    options: martialRangedOptions,
+  },
+];
+
+/**
+ * A list of the weapon types in Pathfinder 2E, formatted to be the options of
+ * a Select component.
+ */
+export const weaponTypeOptions = [
+  {
+    label: "Simple",
+    value: "simple",
+  },
+  {
+    label: "Martial",
+    value: "martial",
+  },
+  {
+    label: "Fists",
+    value: "fists",
+  },
+];
 
 /**
  * A regex pattern used to verify a string is a valid damage roll

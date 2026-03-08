@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Card, Form, Input, Select } from "antd";
+import { Card, Form, Input, Select, Tooltip, Typography } from "antd";
+import { QuestionCircleOutlined } from "@ant-design/icons";
 
 import {
   ancestries,
@@ -8,6 +9,7 @@ import {
   dwarfHeritages,
   elfHeritages,
   humanHeritages,
+  otherFeatures,
 } from "../../characterHelpers";
 
 /**
@@ -21,6 +23,8 @@ import {
 export default function GeneralInfoSelection({ savedCharacter }) {
   const [ancestry, setAncestry] = useState(savedCharacter?.ancestry);
   const [heritages, setHeritages] = useState({});
+
+  const { Text } = Typography;
 
   function handleChangeAncestry(newAncestry) {
     setAncestry(newAncestry);
@@ -41,6 +45,15 @@ export default function GeneralInfoSelection({ savedCharacter }) {
         setHeritages({});
     }
   }, [ancestry]);
+
+  const otherFeaturesLabel = (
+    <>
+      <Text style={{ marginRight: 5 }}>Other Features</Text>
+      <Tooltip title="Features that may be used by the simulation but don't fit elsewhere">
+        <QuestionCircleOutlined />
+      </Tooltip>
+    </>
+  );
 
   return (
     <Card style={{ width: "100%" }}>
@@ -86,6 +99,9 @@ export default function GeneralInfoSelection({ savedCharacter }) {
         rules={[{ required: true, message: "Please select a class" }]}
       >
         <Select options={classes} style={{ width: "100%" }} />
+      </Form.Item>
+      <Form.Item label={otherFeaturesLabel} name="other_features">
+        <Select options={otherFeatures} mode="multiple" allowClear />
       </Form.Item>
     </Card>
   );

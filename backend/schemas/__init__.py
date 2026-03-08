@@ -130,6 +130,9 @@ class Character(Creature):
     heritage: str
     background: str
     class_: str = Field(..., alias="class")
+    proficiencies: Optional[dict[str, int]] = {}
+    extra_proficiencies: Optional[dict[str, int]] = {}
+    other_features: Optional[list[str]] = []
 
 
 class Enemy(Creature):
@@ -178,7 +181,7 @@ class CharacterUpdate(BaseModel):
     spell_attack_bonus: Optional[int] = None
     spell_dc: Optional[int] = None
     speed: int
-    actions: Optional[Actions]
+    actions: Optional[ActionsRequest]
     player: Optional[str] = ""
     xp: Optional[int] = 0
     ancestry: str

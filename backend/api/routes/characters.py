@@ -362,6 +362,9 @@ def convert_to_db_character(
         spell_dc=character.spell_dc,
         speed=character.speed,
         actions=actions_dict,
+        proficiencies=character.proficiencies,
+        extra_proficiencies=character.extra_proficiencies,
+        other_features=character.other_features,
     )
 
     return db_character
