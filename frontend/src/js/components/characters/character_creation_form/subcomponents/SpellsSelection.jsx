@@ -6,6 +6,10 @@ import SpellItem from "./SpellsSelection.Item";
 /**
  * A component to allow a user to add spells to a player character
  *
+ * This approach of converting back and forth from spells_list is necessary
+ * in order to use Form.List, since Form.List creates an array which must be
+ * transformed back and forth.
+ *
  * @param {object} props
  * @param {boolean} props.editing True if this is a saved character being
  *  edited, false if this is a new character.
@@ -13,28 +17,17 @@ import SpellItem from "./SpellsSelection.Item";
  * @returns {React.ReactElement}
  */
 export default function SpellsSelection({ editing, savedCharacter }) {
-  const form = Form.useFormInstance();
-
-  const initialSpells = editing
-    ? savedCharacter.actions.spells.map((spell) => ({
-        name: spell.name,
-        slots: spell.slots,
-        level: spell.level,
-        damage_roll: spell.damage_roll,
-        damage_type: spell.damage_type,
-        range: spell.range,
-        area: spell.area,
-        targets: spell.targets,
-        actions: spell.actions,
-        save: spell.save,
-      }))
-    : [];
+  const initialSpells =
+    editing && savedCharacter.actions?.spells
+      ? savedCharacter.actions?.spells.map((spell) => ({
+          key: spell.name.toLowerCase().replace(/ /g, "_"),
+          slots: spell.slots,
+        }))
+      : [];
 
   return (
     <Card title="Offensive Spells" style={{ width: "100%" }}>
-      {/* Allow user to add as many spells as they want, with each spell
-      having the same style of input */}
-      <Form.List name={["actions", "spells"]} initialValue={initialSpells}>
+      <Form.List name={["actions", "spells_list"]} initialValue={initialSpells}>
         {(fields, { add, remove }) => (
           <>
             {fields.map(({ key, name, ...restField }) => (
@@ -43,7 +36,6 @@ export default function SpellsSelection({ editing, savedCharacter }) {
                 name={name}
                 restField={restField}
                 remove={remove}
-                form={form}
               />
             ))}
             <Form.Item>

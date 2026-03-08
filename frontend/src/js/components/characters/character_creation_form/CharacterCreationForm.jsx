@@ -126,6 +126,13 @@ export default function CharacterCreationForm() {
    */
   async function onFinish(character) {
     try {
+      // Use form's spells_list to build object of spells and slots
+      if (character.actions?.spells_list) {
+        character.actions.spells = Object.fromEntries(
+          character.actions.spells_list.map(({ key, slots }) => [key, slots]),
+        );
+        delete character.actions.spells_list;
+      }
       // Set numerical proficiency values based on what user entered
       if (character.trained || character.expert) character.proficiencies = {};
       character.trained?.forEach(

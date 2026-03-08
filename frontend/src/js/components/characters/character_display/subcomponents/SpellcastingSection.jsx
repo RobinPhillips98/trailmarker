@@ -1,6 +1,6 @@
 import { Card, Col, Divider, Empty, List, Row, Typography } from "antd";
 
-import { toTitleCase, splitCamelCase } from "../../../../services/helpers";
+import { toTitleCase } from "../../../../services/helpers";
 
 /**
  * A component to display character spellcasting information, if any
@@ -83,44 +83,9 @@ export default function SpellcastingSection({ character }) {
                         <Text strong>Slots:</Text> {spell.slots}
                       </List.Item>
                     )}
-
-                    <List.Item>
-                      <Text strong>Damage:</Text> {spell.damage_roll}
-                    </List.Item>
-
-                    <List.Item>
-                      <Text strong>Type:</Text> {toTitleCase(spell.damage_type)}
-                    </List.Item>
-
-                    <List.Item>
-                      <Text strong>Range:</Text> {spell.range}
-                    </List.Item>
-
-                    <List.Item>
-                      <Text strong>Target:</Text> {spell.target}
-                    </List.Item>
-
-                    <List.Item>
-                      <Text strong>Actions:</Text> {spell.actions}
-                    </List.Item>
-
-                    {spell.save && (
-                      <List.Item>
-                        <Text strong>Save:</Text> {toTitleCase(spell.save)}
-                      </List.Item>
-                    )}
-
-                    {spell.area &&
-                      typeof spell.area === "object" &&
-                      Object.keys(spell.area).map((key) => (
-                        <List.Item key={key}>
-                          <Text strong>
-                            Area {toTitleCase(splitCamelCase(key))}:
-                          </Text>{" "}
-                          {spell.area[key]}
-                        </List.Item>
-                      ))}
                   </List>
+                  <Divider />
+                  <Text>{spell.description}</Text>
                 </Card>
               </Col>
             ))}
