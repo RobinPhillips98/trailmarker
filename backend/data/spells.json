@@ -1,5 +1,5 @@
 {
-  "Acid Grip": {
+  "acid_grip": {
     "name": "Acid Grip",
     "level": 2,
     "damage_roll": "2d8",
@@ -8,9 +8,10 @@
     "area": {},
     "save": "reflex",
     "targets": 1,
-    "actions": "2"
+    "actions": "2",
+    "description": "A taloned hand appears and grabs one target within 120 feet, burning it with acid. The target takes 2d8 acid damage plus 1d6 persistent acid damage. The target must attempt a basic Reflex save. If it succeeds, the target does not take the persistent acid damage. If it fails, the hand moves it 10 feet in a direction of your choice (20 feet on a critical failure)."
   },
-  "Breathe Fire": {
+  "breathe_fire": {
     "name": "Breathe Fire",
     "level": 1,
     "damage_roll": "2d6",
@@ -22,9 +23,10 @@
     },
     "save": "reflex",
     "targets": 0,
-    "actions": "2"
+    "actions": "2",
+    "description": "A gout of flame sprays from your mouth in a 15-foot cone. The fire deals 2d6 fire damage to each creature in the area. Each creature must roll a basic Reflex save."
   },
-  "Floating Flame": {
+  "floating_flame": {
     "name": "Floating Flame",
     "level": 2,
     "damage_roll": "3d6",
@@ -33,49 +35,54 @@
     "area": {},
     "save": "reflex",
     "targets": 1,
-    "actions": "2"
+    "actions": "2",
+    "description": "You create a flame in one square within 30 feet that moves at your command. The flame deals 3d6 fire damage to the creature in that square, and that creature must attempt a basic Reflex save. Once per round after you cast this spell, you can spend a single action to sustain it until the end of your next turn, up to 1 minute. When you do, you can make it levitate to another square within 10 feet and deal 3d6 fire damage each creature in its square along the way, with a basic Reflex save. Creatures that succeed on their Reflex save take no damage (instead of half)."
   },
-  "Force Barrage": {
+  "force_barrage": {
     "name": "Force Barrage",
     "level": 1,
     "damage_roll": "1d4+1",
     "damage_type": "force",
-    "range_": 120,
+    "range": 120,
     "area": {},
     "targets": 1,
-    "actions": "1 to 3"
+    "actions": "1 to 3",
+    "description": "You shoot a shard of magic toward one creature you can see within 120 feet. The missile automatically hits and deals 1d4+1 force damage. You can shoot two missiles if you cast this spell with 2 actions, or three missiles if you cast it with 3 actions. Choose the target for each missile individually."
   },
-  "Force Bolt": {
+  "force_bolt": {
     "name": "Force Bolt",
     "level": 1,
     "damage_roll": "1d4+1",
     "damage_type": "force",
-    "range_": 30,
+    "range": 30,
     "area": {},
     "targets": 1,
-    "actions": "2"
+    "actions": "2",
+    "description": "You fire an arrow shaped bolt of force from your fingertips at one creature within 30 feet. It automatically hits and deals 1d4+1 force damage to the target. Once you cast this spell, you can get it back by spending 10 minutes studying your spellbook."
   },
-  "Gouging Claw": {
+  "gouging_claw": {
     "name": "Gouging Claw",
     "level": 0,
     "damage_roll": "2d6",
     "damage_type": "slashing",
-    "range_": 5,
+    "range": 5,
     "area": {},
     "targets": 1,
-    "actions": "2"
+    "actions": "2",
+    "description": "Your arm hand transforms into a sharp claw, allowing you to make an attack against a single target that is next to you. Make a spell attack roll against the target's AC. If you hit the target takes 2d6 slashing damage and 2 persistent bleed damage. Double the damage and bleed on a critical hit."
   },
-  "Telekinetic Projectile": {
+  "telekinetic_projectile": {
     "name": "Telekinetic Projectile",
     "level": 0,
     "damage_roll": "2d6",
     "damage_type": "bludgeoning",
-    "range_": 30,
+    "range": 30,
     "area": {},
     "targets": 0,
-    "actions": "2"
+    "actions": "2",
+    "description": "You hurl a rock or other small object at one target within 30 feet. Make a spell attack roll against the target's AC. If you hit, the target takes 2d6 bludgeoning damage. On a critical hit, you deal double damage."
   },
-  "Vitality Lash": {
+  "vitality_lash": {
     "name": "Vitality Lash",
     "level": 0,
     "damage_roll": "2d6",
@@ -84,6 +91,7 @@
     "area": {},
     "save": "fortitude",
     "targets": 1,
-    "actions": "1"
+    "actions": "1",
+    "description": "You demolish one undead creature within 30 feet with divine power. You deal 2d6 vitality damage. The target must attempt a basic Fortitude save. If the creature critically fails the save, for 1 round it takes a –1 status penalty to melee attack rolls, damage rolls, and Athletics checks and DCs."
   }
 }

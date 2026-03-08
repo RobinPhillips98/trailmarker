@@ -22,6 +22,7 @@ from schemas import (
 from ..auth_helpers import get_current_user
 from ..character_helpers import (
     build_attack_list,
+    build_spell_list,
     convert_to_db_character,
     fetch_characters_from_db,
 )
@@ -193,6 +194,8 @@ async def update_character(
 
         update_data = character_update.dict(exclude_unset=True)
         update_data["actions"]["attacks"] = build_attack_list(character_update)
+        update_data["actions"]["spells"] = build_spell_list(character_update)
+
         for key, value in update_data.items():
             setattr(db_character, key, value)
 

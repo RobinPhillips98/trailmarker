@@ -41,7 +41,7 @@
   "speed": 25,
   "actions": {
     "attacks": ["longsword", "dagger", "shortbow"],
-    "spells": [],
+    "spells": {},
     "shield": 2
   },
   "user_id": 1,

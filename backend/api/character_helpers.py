@@ -43,6 +43,9 @@ def convert_to_db_character(
     data_path = "data"
     weapons_path = f"{data_path}/weapons.json"
     weapons_json = json.loads(Path(weapons_path).read_text())
+    spells_path = f"{data_path}/spells.json"
+    spells_json = json.loads(Path(spells_path).read_text())
+
     defense_dict = {
         "armor_class": character.defenses.armor_class,
         "saves": {
@@ -53,32 +56,19 @@ def convert_to_db_character(
     }
 
     attack_list = []
+    spell_list = []
 
     if character.actions.attacks:
         attack_list = build_attack_list(character, weapons_json)
+    if character.actions.spells:
+        spell_list = build_spell_list(character, spells_json)
 
     actions_dict = {
         "attacks": attack_list,
-        "spells": [],
+        "spells": spell_list,
         "heals": character.actions.heals,
         "shield": character.actions.shield,
     }
-
-    if character.actions.spells:
-        for spell in character.actions.spells:
-            spell_dict = {
-                "name": spell.name,
-                "slots": spell.slots,
-                "level": spell.level,
-                "damage_roll": spell.damage_roll,
-                "damage_type": spell.damage_type,
-                "range": spell.range_,
-                "area": spell.area,
-                "save": spell.save,
-                "targets": spell.targets,
-                "actions": spell.actions,
-            }
-            actions_dict["spells"].append(spell_dict)
 
     db_character = models.Character(
         user=user,
@@ -108,11 +98,13 @@ def convert_to_db_character(
 
 
 def build_attack_list(character, weapons_json=None):
-    attack_list = []
     if not weapons_json:
         data_path = "data"
         weapons_path = f"{data_path}/weapons.json"
         weapons_json = json.loads(Path(weapons_path).read_text())
+
+    attack_list = []
+
     for attack in character.actions.attacks:
         weapon_json = weapons_json[attack.lower()]
 
@@ -156,3 +148,20 @@ def build_attack_list(character, weapons_json=None):
         }
         attack_list.append(attack_dict)
     return attack_list
+
+
+def build_spell_list(character, spells_json=None):
+    if not spells_json:
+        data_path = "data"
+        spells_path = f"{data_path}/spells.json"
+        spells_json = json.loads(Path(spells_path).read_text())
+
+    spell_list = []
+
+    for spell in character.actions.spells.keys():
+        spell_json = spells_json[spell.lower()]
+        spell_dict = spell_json.copy()
+        spell_dict["slots"] = character.actions.spells[spell]
+        spell_list.append(spell_dict)
+
+    return spell_list
