@@ -17,9 +17,9 @@ import models
 from schemas import Character, Enemy, SimRequest, SimResponse
 
 from ..auth_helpers import get_current_user
+from ..character_helpers import fetch_characters_from_db
 from ..dependencies import db_dependency, run_simulation
 from ..exceptions import InternalServerError
-from ..helpers import fetch_characters_from_db
 from .enemies import get_enemy
 
 router = APIRouter()
