@@ -29,6 +29,7 @@ import GeneralInfoSelection from "./subcomponents/GeneralInfoSelection";
 import GeneralStatsSelection from "./subcomponents/GeneralStatsSelection";
 import SpellsSelection from "./subcomponents/SpellsSelection";
 import NotAuthorized from "../../status_pages/NotAuthorized";
+import { isEmpty } from "../../../services/helpers";
 
 /**
  * A component to allow a user to create or edit a player character
@@ -72,11 +73,36 @@ export default function CharacterCreationForm() {
         speed: savedCharacter.speed,
         perception: savedCharacter.perception,
         actions: {
-          attacks: savedCharacter.actions?.attacks,
+          attacks: savedCharacter.actions?.attacks.map((attack) =>
+            attack.name.toLowerCase(),
+          ),
           spells: savedCharacter.actions?.spells,
           heals: savedCharacter.actions?.heals,
           shield: savedCharacter.actions?.shield,
         },
+        trained: isEmpty(savedCharacter.proficiencies)
+          ? []
+          : Object.keys(savedCharacter.proficiencies).filter(
+              (proficiency) => savedCharacter.proficiencies[proficiency] === 2,
+            ),
+        expert: isEmpty(savedCharacter.proficiencies)
+          ? []
+          : Object.keys(savedCharacter.proficiencies).filter(
+              (proficiency) => savedCharacter.proficiencies[proficiency] === 4,
+            ),
+        extra_trained: isEmpty(savedCharacter.extra_proficiencies)
+          ? []
+          : Object.keys(savedCharacter.extra_proficiencies).filter(
+              (proficiency) =>
+                savedCharacter.extra_proficiencies[proficiency] === 2,
+            ),
+        extra_expert: isEmpty(savedCharacter.extra_proficiencies)
+          ? []
+          : Object.keys(savedCharacter.extra_proficiencies).filter(
+              (proficiency) =>
+                savedCharacter.extra_proficiencies[proficiency] === 4,
+            ),
+        other_features: savedCharacter.other_features,
       }
     : {
         level: "1",
@@ -92,7 +118,6 @@ export default function CharacterCreationForm() {
         speed: 0,
         perception: 0,
       };
-
   /**
    * Attempts to save the current character to the database, either patching an
    * existing character or posting a new character
@@ -101,6 +126,30 @@ export default function CharacterCreationForm() {
    */
   async function onFinish(character) {
     try {
+      // Set numerical proficiency values based on what user entered
+      if (character.trained || character.expert) character.proficiencies = {};
+      character.trained?.forEach(
+        (proficiency) => (character.proficiencies[proficiency] = 2),
+      );
+      delete character.trained;
+
+      character.expert?.forEach(
+        (proficiency) => (character.proficiencies[proficiency] = 4),
+      );
+      delete character.expert;
+
+      if (character.extra_trained || character.extra_expert)
+        character.extra_proficiencies = {};
+      character.extra_trained?.forEach(
+        (proficiency) => (character.extra_proficiencies[proficiency] = 2),
+      );
+      delete character.extra_trained;
+
+      character.extra_expert?.forEach(
+        (proficiency) => (character.extra_proficiencies[proficiency] = 4),
+      );
+      delete character.extra_expert;
+
       if (editing) {
         character.id = savedCharacter.id;
         await api.patch("/characters", character, {

@@ -1,11 +1,7 @@
-import { Button, Card, Form, Input, InputNumber, Select } from "antd";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { Card, Form, Select } from "antd";
+import {} from "@ant-design/icons";
 
-import {
-  damagePattern,
-  damageTypes,
-  weaponTraits,
-} from "../../characterHelpers";
+import { weaponOptions, weaponTypeOptions } from "../../characterHelpers";
 
 /**
  * A component to allow a user to add attacks to a player character
@@ -16,106 +12,24 @@ import {
  * @param {object} props.savedCharacter The character being edited, if any.
  * @returns {React.ReactElement}
  */
-export default function AttacksSelection({ editing, savedCharacter }) {
-  const initialAttacks = editing
-    ? savedCharacter.actions.attacks.map((attack) => ({
-        name: attack.name,
-        attackBonus: attack.attackBonus,
-        damage: attack.damage,
-        damageType: attack.damageType,
-        traits: attack.traits,
-      }))
-    : [];
-
+export default function AttacksSelection() {
   return (
     <Card title="Attacks" style={{ width: "100%" }}>
-      {/* Allow user to add as many attacks as they want, with each attack
-      having the same style of input */}
-      <Form.List name={["actions", "attacks"]} initialValue={initialAttacks}>
-        {(fields, { add, remove }) => (
-          <>
-            {fields.map(({ key, name, ...restField }) => (
-              <Card key={key} size="small" style={{ marginBottom: 12 }}>
-                <Form.Item
-                  {...restField}
-                  name={[name, "name"]}
-                  label="Name"
-                  rules={[{ required: true, message: "Please input a name" }]}
-                >
-                  <Input />
-                </Form.Item>
-                <Form.Item
-                  {...restField}
-                  name={[name, "attackBonus"]}
-                  label="Attack Bonus"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input an attack bonus",
-                    },
-                  ]}
-                >
-                  <InputNumber min={-5} max={30} />
-                </Form.Item>
-                <Form.Item
-                  {...restField}
-                  name={[name, "damage"]}
-                  label="Damage"
-                  rules={[
-                    { required: true, message: "Please input a damage" },
-                    {
-                      pattern: damagePattern,
-                      message:
-                        "Input must be a valid damage roll (ex. 1d4 or 1d8+4)",
-                    },
-                  ]}
-                >
-                  <Input placeholder="1d8+4" />
-                </Form.Item>
-                <Form.Item
-                  {...restField}
-                  name={[name, "damageType"]}
-                  label="Damage Type"
-                  rules={[
-                    { required: true, message: "Please input a damage type" },
-                  ]}
-                >
-                  {/* Weapon attacks only deal some damage types */}
-                  <Select options={damageTypes.slice(0, 3)} />
-                </Form.Item>
-
-                <Form.Item {...restField} name={[name, "range"]} label="Range">
-                  <InputNumber min={5} max={500} />
-                </Form.Item>
-                <Form.Item
-                  {...restField}
-                  name={[name, "traits"]}
-                  label="Traits"
-                >
-                  <Select mode="multiple" allowClear options={weaponTraits} />
-                </Form.Item>
-                <Button
-                  type="dashed"
-                  icon={<MinusOutlined />}
-                  onClick={() => remove(name)}
-                >
-                  Remove Attack
-                </Button>
-              </Card>
-            ))}
-            <Form.Item>
-              <Button
-                type="dashed"
-                onClick={() => add()}
-                block
-                icon={<PlusOutlined />}
-              >
-                Add Attack
-              </Button>
-            </Form.Item>
-          </>
-        )}
-      </Form.List>
+      <Form.Item name={["actions", "attacks"]} label="Weapons">
+        <Select options={weaponOptions} allowClear mode="multiple" />
+      </Form.Item>
+      <Form.Item name={"trained"} label="Trained Weapon Proficiencies">
+        <Select options={weaponTypeOptions} allowClear mode="multiple" />
+      </Form.Item>
+      <Form.Item name={"expert"} label="Expert Weapon Proficiencies">
+        <Select options={weaponTypeOptions} allowClear mode="multiple" />
+      </Form.Item>
+      <Form.Item name={"extra_trained"} label="Extra Trained Proficiencies">
+        <Select options={weaponOptions} allowClear mode="multiple" />
+      </Form.Item>
+      <Form.Item name={"extra_expert"} label="Extra Expert Proficiencies">
+        <Select options={weaponOptions} allowClear mode="multiple" />
+      </Form.Item>
     </Card>
   );
 }
