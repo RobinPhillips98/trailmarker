@@ -282,6 +282,45 @@ export const saveOptions = saves.map((save) => {
   };
 });
 
+const cantripOptions = [
+  { label: "Gouging Claw", value: "gouging_claw" },
+  { label: "Telekinetic Projectile", value: "telekinetic_projectile" },
+  { label: "Vitality Lash", value: "vitality_lash" },
+];
+
+const firstRankSpellOptions = [
+  { label: "Breathe Fire", value: "breathe_fire" },
+  { label: "Force Barrage", value: "force_barrage" },
+  { label: "Force Bolt", value: "force_bolt" },
+];
+
+const secondRankSpellOptions = [
+  { label: "Acid Grip", value: "acid_grip" },
+  { label: "Floating Flame", value: "floating_flame" },
+];
+
+/**
+ * A list of all spells, formatted into option groups by level for a Select
+ * component.
+ */
+export const spellOptions = [
+  {
+    label: "Cantrips",
+    title: "cantrips",
+    options: cantripOptions,
+  },
+  {
+    label: "1st-Rank Spells",
+    title: "1st-rank-spells",
+    options: firstRankSpellOptions,
+  },
+  {
+    label: "2nd-Rank Spells",
+    title: "2nd-rank-spells",
+    options: secondRankSpellOptions,
+  },
+];
+
 const simpleMeleeOptions = [
   {
     label: "Club",

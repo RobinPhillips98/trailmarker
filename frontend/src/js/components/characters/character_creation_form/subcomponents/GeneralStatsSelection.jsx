@@ -1,6 +1,6 @@
 import { Card, Form, InputNumber, Select } from "antd";
 
-import { isEmpty, levelOptions } from "../../../../services/helpers";
+import { levelOptions } from "../../../../services/helpers";
 
 /**
  * A component to allow a user to set general numerical stats for a player
@@ -12,9 +12,9 @@ import { isEmpty, levelOptions } from "../../../../services/helpers";
  * @returns {React.ReactElement}
  */
 export default function GeneralStatsSelection({ form }) {
-  const spells = Form.useWatch(["actions", "spells"], form);
+  const spellsList = Form.useWatch(["actions", "spells_list"], form);
 
-  const hasSpells = spells && !isEmpty(spells);
+  const hasSpells = spellsList && spellsList.length > 0;
 
   return (
     <Card style={{ width: "100%" }}>
