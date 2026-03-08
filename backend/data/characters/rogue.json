@@ -40,32 +40,7 @@
   "max_hit_points": 15,
   "speed": 30,
   "actions": {
-    "attacks": [
-      {
-        "name": "Rapier",
-        "attackBonus": 7,
-        "damage": "1d6+4",
-        "damageType": "piercing",
-        "range": null,
-        "traits": ["deadly-d8", "finesse"]
-      },
-      {
-        "name": "Shortsword",
-        "attackBonus": 7,
-        "damage": "1d6+4",
-        "damageType": "piercing",
-        "range": null,
-        "traits": ["agile", "finesse", "versatile-s"]
-      },
-      {
-        "name": "Dagger",
-        "attackBonus": 7,
-        "damage": "1d4+1",
-        "damageType": "piercing",
-        "range": null,
-        "traits": ["agile", "finesse", "versatile-s"]
-      }
-    ],
+    "attacks": ["rapier", "shortsword", "dagger"],
     "spells": []
   },
   "user_id": 1,
@@ -74,5 +49,16 @@
   "ancestry": "elf",
   "heritage": "whisper",
   "background": "criminal",
-  "class": "rogue"
+  "class": "rogue",
+  "proficiencies": {
+    "simple": 2
+  },
+  "extra_proficiencies": {
+    "longbow": 2,
+    "longsword": 2,
+    "rapier": 2,
+    "shortbow": 2,
+    "shortsword": 2
+  },
+  "other_features": ["thief"]
 }

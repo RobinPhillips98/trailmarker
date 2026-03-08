@@ -1,186 +1,209 @@
 {
-  "Club": {
+  "club": {
     "name": "Club",
+    "type": "simple",
+    "category": "melee",
     "damage": "1d6",
     "damageType": "bludgeoning",
     "range": null,
-    "reload": null,
     "traits": ["thrown-10"]
   },
-  "Dagger": {
+  "dagger": {
     "name": "Dagger",
+    "type": "simple",
+    "category": "melee",
     "damage": "1d4",
     "damageType": "piercing",
     "range": null,
-    "reload": null,
     "traits": ["agile", "finesse", "thrown-10", "versatile-s"]
   },
-  "Mace": {
+  "mace": {
     "name": "Mace",
+    "type": "simple",
+    "category": "melee",
     "damage": "1d6",
     "damageType": "bludgeoning",
     "range": null,
-    "reload": null,
     "traits": ["shove"]
   },
-  "Spear": {
+  "spear": {
     "name": "Spear",
+    "type": "simple",
+    "category": "melee",
     "damage": "1d6",
     "damageType": "piercing",
     "range": null,
-    "reload": null,
     "traits": ["thrown-20"]
   },
-  "Staff": {
+  "staff": {
     "name": "Staff",
+    "type": "simple",
+    "category": "melee",
     "damage": "1d8",
     "damageType": "bludgeoning",
     "range": null,
-    "reload": null,
     "traits": []
   },
-  "Battle Axe": {
+  "battle axe": {
     "name": "Battle Axe",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d8",
     "damageType": "slashing",
     "range": null,
-    "reload": null,
     "traits": ["sweep"]
   },
-  "Greataxe": {
+  "greataxe": {
     "name": "Greataxe",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d12",
     "damageType": "slashing",
     "range": null,
-    "reload": null,
     "traits": ["sweep"]
   },
-  "Greatsword": {
+  "greatsword": {
     "name": "Greatsword",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d12",
     "damageType": "slashing",
     "range": null,
-    "reload": null,
     "traits": ["versatile-p"]
   },
-  "Hatchet": {
+  "hatchet": {
     "name": "Hatchet",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d6",
     "damageType": "slashing",
     "range": null,
-    "reload": null,
     "traits": ["agile", "sweep", "thrown-10"]
   },
-  "Light Hammer": {
+  "light hammer": {
     "name": "Light Hammer",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d6",
     "damageType": "bludgeoning",
     "range": null,
-    "reload": null,
     "traits": ["agile", "thrown-20"]
   },
-  "Longsword": {
+  "longsword": {
     "name": "Longsword",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d8",
     "damageType": "slashing",
     "range": null,
-    "reload": null,
     "traits": ["versatile-p"]
   },
-  "Maul": {
+  "maul": {
     "name": "Maul",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d12",
     "damageType": "bludgeoning",
     "range": null,
-    "reload": null,
     "traits": ["shove"]
   },
-  "Rapier": {
+  "rapier": {
     "name": "Rapier",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d6",
     "damageType": "piercing",
     "range": null,
-    "reload": null,
     "traits": ["deadly-d8", "finesse"]
   },
-  "Scimitar": {
+  "scimitar": {
     "name": "Scimitar",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d6",
     "damageType": "slashing",
     "range": null,
-    "reload": null,
     "traits": ["forceful", "sweep"]
   },
-  "Shortsword": {
+  "shortsword": {
     "name": "Shortsword",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d6",
     "damageType": "piercing",
     "range": null,
-    "reload": null,
     "traits": ["agile", "finesse", "versatile-s"]
   },
-  "Starknife": {
+  "starknife": {
     "name": "Starknife",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d4",
     "damageType": "piercing",
     "range": null,
-    "reload": null,
     "traits": ["agile", "deadly-d6", "finesse", "thrown-20", "versatile-s"]
   },
-  "Trident": {
+  "trident": {
     "name": "Trident",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d8",
     "damageType": "piercing",
     "range": null,
-    "reload": null,
     "traits": ["thrown-20"]
   },
-  "Warhammer": {
+  "warhammer": {
     "name": "Warhammer",
+    "type": "martial",
+    "category": "melee",
     "damage": "1d8",
     "damageType": "bludgeoning",
     "range": null,
-    "reload": null,
     "traits": ["shove"]
   },
-  "Crossbow": {
+  "crossbow": {
     "name": "Crossbow",
+    "type": "simple",
+    "category": "ranged",
     "damage": "1d8",
     "damageType": "piercing",
     "range": 120,
-    "reload": 1,
     "traits": []
   },
-  "Hand Crossbow": {
+  "hand crossbow": {
     "name": "Hand Crossbow",
+    "type": "simple",
+    "category": "ranged",
     "damage": "1d6",
     "damageType": "piercing",
     "range": 60,
-    "reload": 1,
     "traits": []
   },
-  "Javelin": {
+  "javelin": {
     "name": "Javelin",
+    "type": "simple",
+    "category": "ranged",
     "damage": "1d6",
     "damageType": "piercing",
     "range": 30,
-    "reload": null,
     "traits": ["thrown"]
   },
-  "Longbow": {
+  "longbow": {
     "name": "Longbow",
+    "type": "martial",
+    "category": "ranged",
     "damage": "1d8",
     "damageType": "piercing",
     "range": 100,
-    "reload": 0,
     "traits": ["deadly-d10", "volley-30"]
   },
-  "Shortbow": {
+  "shortbow": {
     "name": "Shortbow",
+    "type": "martial",
+    "category": "ranged",
     "damage": "1d6",
     "damageType": "piercing",
     "range": 60,
-    "reload": 0,
     "traits": ["deadly-d10"]
   }
 }

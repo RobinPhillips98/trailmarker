@@ -40,32 +40,7 @@
   "max_hit_points": 24,
   "speed": 25,
   "actions": {
-    "attacks": [
-      {
-        "name": "Longsword",
-        "attackBonus": 9,
-        "damage": "1d8+4",
-        "damageType": "slashing",
-        "range": null,
-        "traits": ["versatile-p"]
-      },
-      {
-        "name": "Dagger",
-        "attackBonus": 9,
-        "damage": "1d4+4",
-        "damageType": "piercing",
-        "range": null,
-        "traits": ["agile", "finesse", "thrown", "versatile-s"]
-      },
-      {
-        "name": "Shortbow",
-        "attackBonus": 7,
-        "damage": "1d6",
-        "damageType": "piercing",
-        "range": null,
-        "traits": ["deadly-d10"]
-      }
-    ],
+    "attacks": ["longsword", "dagger", "shortbow"],
     "spells": [],
     "shield": 2
   },
@@ -75,5 +50,9 @@
   "ancestry": "human",
   "heritage": "warden",
   "background": "farmhand",
-  "class": "fighter"
+  "class": "fighter",
+  "proficiencies": {
+    "simple": 4,
+    "martial": 4
+  }
 }

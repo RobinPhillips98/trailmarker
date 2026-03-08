@@ -71,6 +71,22 @@ def drop_enemies_table(engine=engine_sync):
         raise
 
 
+def drop_characters_table(engine=engine_sync):
+    """Drop and recreate only the characters table in the database."""
+    print("Starting characters table operation...")
+    try:
+        print("Dropping characters table...")
+        Character.__table__.drop(engine)
+        print("Disposing engine...")
+        engine.dispose()
+        print("Recreating characters table...")
+        Character.__table__.create(engine)
+        print("Characters table recreated successfully")
+    except Exception as e:
+        print(f"Error in drop_characters_table: {str(e)}")
+        raise
+
+
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser()
@@ -82,6 +98,12 @@ def main():
         "--rebuild_enemies",
         action="store_true",
         help="Rebuild the enemies table in the database",
+    )
+    parser.add_argument(
+        "-c",
+        "--rebuild_characters",
+        action="store_true",
+        help="Rebuild the characterse table in the database",
     )
     args = parser.parse_args()
 
@@ -129,6 +151,25 @@ Dropping and recreating the enemies table only.
             print(f"Error dropping enemies table: {e}")
             raise
 
+    if args.rebuild_characters:
+        print(
+            """
+###############################################
+# Characters Table Rebuild                       #
+###############################################
+--rebuild_characters flag detected.
+Dropping and recreating the characters table only.
+###############################################
+            """
+        )
+        try:
+            print("Dropping characters table...")
+            drop_characters_table()
+            print("Characters table dropped and recreated successfully")
+        except Exception as e:
+            print(f"Error dropping characters table: {e}")
+            raise
+
     print("Creating database tables...")
     try:
         Base.metadata.create_all(bind=engine_sync)
@@ -159,6 +200,7 @@ Dropping and recreating the enemies table only.
                 print("Users already exist, skipping user creation")
             if (
                 args.rebuild
+                or args.rebuild_characters
                 or db.execute(select(Character).limit(1)).first() is None
             ):
                 print("Populating character data...")

@@ -5,6 +5,9 @@ route of the API including creating, reading, updating, and deleting characters
 
 """
 
+import json
+from pathlib import Path
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
@@ -263,6 +266,9 @@ def convert_to_db_character(
         models.Character: A representation of the character ready to be added
             to the database.
     """
+    data_path = "data"
+    weapons_path = f"{data_path}/weapons.json"
+    weapons_json = json.loads(Path(weapons_path).read_text())
     defense_dict = {
         "armor_class": character.defenses.armor_class,
         "saves": {
@@ -279,15 +285,48 @@ def convert_to_db_character(
     }
     if character.actions.attacks:
         for attack in character.actions.attacks:
+            weapon_json = weapons_json[attack.lower()]
+
+            proficiency_bonus = 0
+            type_ = weapon_json["type"].lower()
+            name = weapon_json["name"].lower()
+            if name in character.extra_proficiencies.keys():
+                proficiency_bonus = (
+                    character.level + character.extra_proficiencies[name]
+                )
+            elif type_ in character.proficiencies.keys():
+                proficiency_bonus = (
+                    character.level + character.proficiencies[type_]
+                )
+
+            dex = character.attribute_modifiers.dexterity
+            strength = character.attribute_modifiers.strength
+            if weapon_json["category"] == "ranged" or (
+                "finesse" in weapon_json["traits"] and dex > strength
+            ):
+                attack_bonus = proficiency_bonus + dex
+            else:
+                attack_bonus = proficiency_bonus + strength
+
+            damage = weapon_json["damage"]
+            if (
+                "thief" in character.other_features
+                and "finesse" in weapon_json["traits"]
+            ):
+                damage = f"{damage} + {dex}"
+            elif weapon_json["category"] == "melee" and strength > 0:
+                damage = f"{damage}+{strength}"
+
             attack_dict = {
-                "name": attack.name,
-                "attackBonus": attack.attackBonus,
-                "damage": attack.damage,
-                "damageType": attack.damageType,
-                "range": attack.range,
-                "traits": attack.traits,
+                "name": weapon_json["name"],
+                "attackBonus": attack_bonus,
+                "damage": damage,
+                "damageType": weapon_json["damageType"],
+                "range": weapon_json["range"],
+                "traits": weapon_json["traits"],
             }
             actions_dict["attacks"].append(attack_dict)
+
     if character.actions.spells:
         for spell in character.actions.spells:
             spell_dict = {
