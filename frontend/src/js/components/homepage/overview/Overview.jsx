@@ -120,7 +120,7 @@ export default function Overview(props) {
       setUseSaved(false);
       setCharactersSaved(false);
     }
-  }, [useSaved, token]);
+  }, [token]);
 
   useEffect(() => {
     /**

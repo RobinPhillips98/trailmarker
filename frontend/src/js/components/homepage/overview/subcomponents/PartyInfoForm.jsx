@@ -48,7 +48,7 @@ export default function PartyInfoForm(props) {
   const disabled = !user || !charactersSaved;
 
   let switchTooltip = "";
-  if (!user) switchTooltip = "Log in to create custom characters";
+  if (!user) switchTooltip = "Must be signed in to use custom characters";
   else if (!charactersSaved) {
     switchTooltip = "No characters saved!";
   } else {

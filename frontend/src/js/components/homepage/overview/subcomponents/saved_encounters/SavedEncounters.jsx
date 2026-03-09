@@ -1,6 +1,6 @@
 // Third-party libraries
 import { useContext, useEffect, useState } from "react";
-import { Button, Card, Modal, Tooltip } from "antd";
+import { App, Button, Card, Modal, Tooltip } from "antd";
 import { FolderOpenOutlined, LockOutlined } from "@ant-design/icons";
 
 // Personal helpers
@@ -24,6 +24,7 @@ export default function SavedEncounters({ handleLoad }) {
   const [encounters, setEncounters] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { message } = App.useApp();
   const { errorMessage } = useErrorMessage();
   const { user, token } = useContext(AuthContext);
 
@@ -31,7 +32,7 @@ export default function SavedEncounters({ handleLoad }) {
     setIsModalOpen(true);
   }
 
-  function handleClose() {
+  function closeModal() {
     setIsModalOpen(false);
   }
 
@@ -40,14 +41,19 @@ export default function SavedEncounters({ handleLoad }) {
    * @param {object} encounter
    */
   async function deleteEncounter(encounter) {
-    await api.delete(`encounters/${encounter.id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    setEncounters((prev) =>
-      prev.filter((currentEncounter) => currentEncounter !== encounter),
-    );
+    try {
+      await api.delete(`encounters/${encounter.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setEncounters((prev) =>
+        prev.filter((currentEncounter) => currentEncounter !== encounter),
+      );
+      message.success("Encounter deleted!");
+    } catch (error) {
+      errorMessage("Error deleting encounter", error);
+    }
   }
 
   useEffect(() => {
@@ -71,7 +77,9 @@ export default function SavedEncounters({ handleLoad }) {
 
   return (
     <div>
-      <Tooltip title={!user ? "Log in to open saved encounters" : null}>
+      <Tooltip
+        title={!user ? "Must be signed in to open saved encounters" : null}
+      >
         <Button
           style={{ marginBottom: 10 }}
           type="primary"
@@ -87,9 +95,9 @@ export default function SavedEncounters({ handleLoad }) {
         title="Saved Encounters"
         closable={{ "aria-label": "Custom Close Button" }}
         open={isModalOpen}
-        onCancel={handleClose}
+        onCancel={closeModal}
         footer={
-          <Button key="close" onClick={handleClose}>
+          <Button key="close" onClick={closeModal}>
             Close
           </Button>
         }
@@ -102,6 +110,7 @@ export default function SavedEncounters({ handleLoad }) {
             key={encounter.id}
           >
             <Encounter
+              closeModal={closeModal}
               encounter={encounter}
               handleLoad={handleLoad}
               handleDelete={deleteEncounter}

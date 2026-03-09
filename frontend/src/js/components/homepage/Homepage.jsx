@@ -1,9 +1,10 @@
 // Third-party libraries
 import { useEffect, useRef, useState } from "react";
-import { FloatButton, Typography } from "antd";
+import { App, FloatButton, Typography } from "antd";
 
 // Personal helpers
 import api from "../../api";
+import useErrorMessage from "../../services/hooks/useErrorMessage";
 
 // Components
 import Overview from "./overview/Overview";
@@ -26,7 +27,10 @@ export default function Homepage() {
   const [selectedEnemies, setSelectedEnemies] = useState(
     JSON.parse(sessionStorage.getItem("enemies")) ?? [],
   );
+
+  const { message } = App.useApp();
   const { Title } = Typography;
+  const { errorMessage } = useErrorMessage;
 
   const refs = [];
   for (let i = 0; i <= 8; i++) {
@@ -121,16 +125,21 @@ export default function Homepage() {
    * @param {object} encounter The encounter to be loaded
    */
   async function loadEncounter(encounter) {
-    clearEnemies();
-    const newEnemies = await Promise.all(
-      encounter.enemies.map(async (enemy) => {
-        const response = await api.get(`enemies/${enemy.id}`);
-        const currentEnemy = response.data;
-        currentEnemy.quantity = enemy.quantity;
-        return currentEnemy;
-      }),
-    );
-    setSelectedEnemies(newEnemies);
+    try {
+      clearEnemies();
+      const newEnemies = await Promise.all(
+        encounter.enemies.map(async (enemy) => {
+          const response = await api.get(`enemies/${enemy.id}`);
+          const currentEnemy = response.data;
+          currentEnemy.quantity = enemy.quantity;
+          return currentEnemy;
+        }),
+      );
+      setSelectedEnemies(newEnemies);
+      message.success("Encounter loaded!");
+    } catch (error) {
+      errorMessage("Error loading encounter", error);
+    }
   }
 
   return (
