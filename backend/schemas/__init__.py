@@ -306,6 +306,13 @@ class PathbuilderProfiencies(BaseModel):
     thievery: int
 
 
+class PathbuilderSpecificProficiencies(BaseModel):
+    trained: list[str]
+    expert: list[str]
+    master: list[str]
+    legendary: list[str]
+
+
 class PathbuilderWeapon(BaseModel):
     name: str
 
@@ -313,6 +320,7 @@ class PathbuilderWeapon(BaseModel):
 class PathbuilderSpellCasters(BaseModel):
     ability: str
     proficiency: int
+    spells: list[dict[str, int | list[str]]]
     prepared: list[dict[str, int | list[str]]]
 
 
@@ -335,6 +343,9 @@ class PathbuilderImport(BaseModel):
     attributes: PathbuilderAttributes
     proficiencies: PathbuilderProfiencies
     lores: list[list[str | int]]
+    specificProficiencies: PathbuilderSpecificProficiencies
+    feats: list[list[str | int | None]]
+    specials: list[str]
     weapons: list[PathbuilderWeapon]
     spellCasters: Optional[list[PathbuilderSpellCasters]] = None
     focus: Optional[dict[str, Any]] = None

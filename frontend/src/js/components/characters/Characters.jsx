@@ -125,7 +125,7 @@ export default function Characters() {
 
         // Set active tab to the character from navigation state if available
         if (location.state?.selectedCharacter) {
-          setActiveTab(location.state.selectedCharacter.id);
+          setActiveTab(location.state.selectedCharacter);
         } else if (sortedCharacters.length > 0) {
           setActiveTab(sortedCharacters[0].id);
         }

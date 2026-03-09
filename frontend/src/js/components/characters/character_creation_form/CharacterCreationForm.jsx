@@ -76,7 +76,7 @@ export default function CharacterCreationForm() {
         perception: savedCharacter.perception,
         actions: {
           attacks: savedCharacter.actions?.attacks.map((attack) =>
-            attack.name.toLowerCase(),
+            attack.name.toLowerCase().replace(" ", "_"),
           ),
           spells: savedCharacter.actions?.spells,
           heals: savedCharacter.actions?.heals,
@@ -174,7 +174,7 @@ export default function CharacterCreationForm() {
         });
       }
       navigate("/characters", {
-        state: { selectedCharacter: character.name },
+        state: { selectedCharacter: character.id },
       });
       message.success("Character saved!");
     } catch (error) {
