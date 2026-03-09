@@ -98,7 +98,7 @@ export default function EncounterControls(props) {
       <Row gutter={[16, 16]}>
         <Col xs={24}>
           <Tooltip
-            title={!user ? "Must log in to save encounters" : ""}
+            title={!user ? "Must be signed in to save encounters" : ""}
             placement="right"
           >
             <Space.Compact

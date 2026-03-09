@@ -5,8 +5,8 @@ export default function NotAuthorized() {
   return (
     <Result
       status="403"
-      title="403"
-      subTitle="Sorry, you are not authorized to access this page."
+      title="401"
+      subTitle="Sorry, you must be signed in to access this page."
       extra={
         <Button type="primary">
           <Link to="/">Back to Home</Link>

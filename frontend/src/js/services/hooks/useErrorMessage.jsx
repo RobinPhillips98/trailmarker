@@ -13,7 +13,13 @@ export default function useErrorMessage() {
   const errorMessage = useCallback(
     (msg, error) => {
       console.error(msg, error);
-      message.error(`${msg}: ${error?.response?.data?.detail ?? error}`);
+      let errorString = "";
+      if (typeof error?.response?.data?.detail === "object")
+        errorString = `${msg}: ${error?.status ?? "500"} ${error?.response?.statusText ?? error}`;
+      else {
+        errorString = `${msg}: ${error?.response?.data?.detail ?? error}`;
+      }
+      message.error(errorString);
     },
     [message],
   );

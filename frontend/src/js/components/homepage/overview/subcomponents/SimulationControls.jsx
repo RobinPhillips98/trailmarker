@@ -31,17 +31,18 @@ import { AuthContext } from "../../../../contexts/AuthContext";
  */
 export default function SimulationControls(props) {
   const { selectedEnemies, charactersSaved, refs } = props;
-  const [switched, setSwitched] = useState(true);
+  const { user } = useContext(AuthContext);
+
+  const switchDisabled = !user || !charactersSaved;
+  const [switched, setSwitched] = useState(switchDisabled);
 
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
   const { Text } = Typography;
 
   const simButtonDisabled = isEmpty(selectedEnemies);
-  const switchDisabled = !user || !charactersSaved;
 
   let switchTooltip = "";
-  if (!user) switchTooltip = "Log in to create custom characters";
+  if (!user) switchTooltip = "Must be signed in to use custom characters";
   else if (!charactersSaved) {
     switchTooltip = "No characters saved!";
   } else {
@@ -50,8 +51,9 @@ export default function SimulationControls(props) {
 
   // Switch needs to be set back to true when user logs out
   useEffect(() => {
-    if (!user) setSwitched(true);
-  }, [user]);
+    if (switchDisabled) setSwitched(true);
+    else setSwitched(false);
+  }, [switchDisabled]);
 
   /**
    * Runs the simulation by navigating to the simulation page.

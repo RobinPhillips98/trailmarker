@@ -5,6 +5,7 @@ import { DeleteOutlined, DownloadOutlined } from "@ant-design/icons";
  * A component for displaying information about a saved encounter
  *
  * @typedef {object} EncounterProps
+ * @property {function} closeModal The function to close the encounter modal
  * @property {function} handleLoad The function to overwrite the current
  *  encounter with this encounter
  * @property {function} handleDelete The function to delete this encounter
@@ -14,7 +15,7 @@ import { DeleteOutlined, DownloadOutlined } from "@ant-design/icons";
  * @returns {React.ReactElement}
  */
 export default function Encounter(props) {
-  const { handleLoad, handleDelete, encounter } = props;
+  const { closeModal, handleLoad, handleDelete, encounter } = props;
 
   const dataSource = encounter.enemies.map((enemy) => {
     return { ...enemy, ["key"]: enemy.id };
@@ -35,6 +36,7 @@ export default function Encounter(props) {
 
   function handleClickLoad() {
     handleLoad(encounter);
+    closeModal();
   }
 
   function handleClickDelete() {
