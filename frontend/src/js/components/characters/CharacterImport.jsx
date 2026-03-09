@@ -24,6 +24,7 @@ import { AuthContext } from "../../contexts/AuthContext";
  */
 export default function CharacterImport({ addCharacter }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [warningOpen, setWarningOpen] = useState(false);
 
   const { message } = App.useApp();
   const { token } = useContext(AuthContext);
@@ -73,6 +74,14 @@ export default function CharacterImport({ addCharacter }) {
         });
         addCharacter(response.data);
         message.success("Character imported successfully!");
+        if (!warningOpen) {
+          setWarningOpen(true);
+          message.warning(
+            "Please note the import is not always perfect. Some values may have to be manually adjusted.",
+            7.5,
+            () => setWarningOpen(false),
+          );
+        }
       } catch (error) {
         errorMessage("Error importing character", error);
         if (error?.status === 422)

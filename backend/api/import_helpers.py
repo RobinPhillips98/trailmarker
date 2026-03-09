@@ -59,21 +59,29 @@ def convert_import_to_character(
     }
 
     attacks = []
+    data_path = "data"
+    weapons_path = f"{data_path}/weapons.json"
+    weapons_json = json.loads(Path(weapons_path).read_text())
+    valid_weapons = [value.get("name") for value in weapons_json.values()]
     for weapon in imported_character.weapons:
-        attacks.append(weapon.name)
+        if weapon.name in valid_weapons:
+            attacks.append(weapon.name)
 
     spells = {}
+    num_heals = 0
     spell_bonuses = {
         "spell_attack_bonus": 0,
         "spell_dc": 0,
     }
     if imported_character.spellCasters:
-        spells = add_spells(imported_character, spell_bonuses, attributes_dict)
+        spells, num_heals = add_spells(
+            imported_character, spell_bonuses, attributes_dict
+        )
 
     actions_dict = {
         "attacks": attacks,
         "spells": spells,
-        "heals": 0,
+        "heals": num_heals,
         "shield": (
             int(imported_character.acTotal.shieldBonus)
             if imported_character.acTotal.shieldBonus
@@ -221,6 +229,8 @@ def add_spells(
 
     spells = defaultdict(int)
 
+    num_heals = 0
+
     data_path = "data"
     spells_path = f"{data_path}/spells.json"
     spells_json = json.loads(Path(spells_path).read_text())
@@ -233,6 +243,15 @@ def add_spells(
             if spell in valid_spells:
                 spell_name = spell.lower().replace(" ", "_")
                 spells[spell_name] += 1
+            elif spell.lower() == "heal":
+                num_heals += 1
+
+    for spellcaster_dict in imported_character.spellCasters:
+        if spellcaster_dict.name == "Cleric Font":
+            for spell_list in spellcaster_dict.spells:
+                for spell in spell_list["list"]:
+                    if spell.lower() == "heal":
+                        num_heals += 1
 
     """I know it looks like this is incredibly unoptimized, but in the vast
     majority of use cases, particularly in the Beginner Box version, both the
@@ -275,7 +294,7 @@ def add_spells(
                         spell_name = spell.lower().replace(" ", "_")
                         spells[spell_name] += 1
 
-    return spells
+    return [spells, num_heals]
 
 
 def calculate_spell_bonuses(

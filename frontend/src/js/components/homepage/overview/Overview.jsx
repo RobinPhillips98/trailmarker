@@ -1,6 +1,6 @@
 // Third-party libraries
 import { useState, useEffect, useContext } from "react";
-import { App, Col, Divider, Row } from "antd";
+import { Col, Divider, Row } from "antd";
 
 // Personal helpers
 import api from "../../../api";
@@ -39,6 +39,7 @@ export default function Overview(props) {
   const [useSaved, setUseSaved] = useState(false);
   const [colorBlind, setColorBlind] = useState(false);
   const [charactersSaved, setCharactersSaved] = useState(false);
+  const [characters, setCharacters] = useState([]);
   const [partySize, setPartySize] = useState(4);
   const [partyLevel, setPartyLevel] = useState(1);
   const [budget, setBudget] = useState({});
@@ -48,7 +49,6 @@ export default function Overview(props) {
   // Other variables
   const { token } = useContext(AuthContext);
   const { errorMessage } = useErrorMessage();
-  const { message } = App.useApp();
 
   const difficultyColors = colorBlind
     ? {
@@ -98,17 +98,11 @@ export default function Overview(props) {
           },
         });
         if (response.data.characters.length > 0) {
-          const characters = response.data.characters;
-          if (useSaved) {
-            setPartyLevel(characters.at(0).level);
-            setPartySize(characters.length);
-          }
+          const fetchedCharacters = response.data.characters;
+
+          setCharacters(fetchedCharacters);
           setCharactersSaved(true);
         } else {
-          if (useSaved) {
-            message.warning("No saved characters!");
-            setUseSaved(false);
-          }
           setCharactersSaved(false);
         }
       } catch (error) {
@@ -121,6 +115,16 @@ export default function Overview(props) {
       setCharactersSaved(false);
     }
   }, [token]);
+
+  useEffect(() => {
+    if (useSaved) {
+      setPartyLevel(characters.at(0).level);
+      setPartySize(characters.length);
+    } else {
+      setPartyLevel(1);
+      setPartySize(4);
+    }
+  }, [characters, useSaved]);
 
   useEffect(() => {
     /**
@@ -160,37 +164,41 @@ export default function Overview(props) {
       let accumXP = 0;
       selectedEnemies.forEach((currentEnemy) => {
         const levelDifference = currentEnemy.level - partyLevel;
-        switch (levelDifference) {
-          case -4:
-            accumXP += 10 * currentEnemy.quantity;
-            break;
-          case -3:
-            accumXP += 15 * currentEnemy.quantity;
-            break;
-          case -2:
-            accumXP += 20 * currentEnemy.quantity;
-            break;
-          case -1:
-            accumXP += 30 * currentEnemy.quantity;
-            break;
-          case 0:
-            accumXP += 40 * currentEnemy.quantity;
-            break;
-          case 1:
-            accumXP += 60 * currentEnemy.quantity;
-            break;
-          case 2:
-            accumXP += 80 * currentEnemy.quantity;
-            break;
-          case 3:
-            accumXP += 120 * currentEnemy.quantity;
-            break;
-          case 4:
-            accumXP += 160 * currentEnemy.quantity;
-            break;
-          default:
-            console.error("Invalid enemy level entered");
-            break;
+        if (levelDifference > 4) accumXP += 200 * currentEnemy.quantity;
+        else if (levelDifference <= 4) accumXP += 5 * currentEnemy.quantity;
+        else {
+          switch (levelDifference) {
+            case -4:
+              accumXP += 10 * currentEnemy.quantity;
+              break;
+            case -3:
+              accumXP += 15 * currentEnemy.quantity;
+              break;
+            case -2:
+              accumXP += 20 * currentEnemy.quantity;
+              break;
+            case -1:
+              accumXP += 30 * currentEnemy.quantity;
+              break;
+            case 0:
+              accumXP += 40 * currentEnemy.quantity;
+              break;
+            case 1:
+              accumXP += 60 * currentEnemy.quantity;
+              break;
+            case 2:
+              accumXP += 80 * currentEnemy.quantity;
+              break;
+            case 3:
+              accumXP += 120 * currentEnemy.quantity;
+              break;
+            case 4:
+              accumXP += 160 * currentEnemy.quantity;
+              break;
+            default:
+              console.error("Invalid enemy level entered");
+              break;
+          }
         }
       });
       setXP(accumXP);

@@ -95,8 +95,8 @@ class Defenses(BaseModel):
 
 class Attributes(BaseModel):
     strength: int
-    constitution: int
     dexterity: int
+    constitution: int
     intelligence: int
     wisdom: int
     charisma: int
@@ -318,6 +318,7 @@ class PathbuilderWeapon(BaseModel):
 
 
 class PathbuilderSpellCasters(BaseModel):
+    name: str
     ability: str
     proficiency: int
     spells: list[dict[str, int | list[str]]]

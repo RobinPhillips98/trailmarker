@@ -17,18 +17,14 @@ import {
  * character, such as their name, player name, ancestry, heritage, and class
  *
  * @param {object} props
- * @param {object} props.savedCharacter The character being edited, if any.
+ * @param {object} props.form The ant design form instance.
  * @returns {React.ReactElement}
  */
-export default function GeneralInfoSelection({ savedCharacter }) {
-  const [ancestry, setAncestry] = useState(savedCharacter?.ancestry);
+export default function GeneralInfoSelection({ form }) {
+  const ancestry = Form.useWatch("ancestry", form);
   const [heritages, setHeritages] = useState({});
 
   const { Text } = Typography;
-
-  function handleChangeAncestry(newAncestry) {
-    setAncestry(newAncestry);
-  }
 
   useEffect(() => {
     switch (ancestry) {
@@ -74,7 +70,6 @@ export default function GeneralInfoSelection({ savedCharacter }) {
       >
         <Select
           value={ancestry}
-          onChange={handleChangeAncestry}
           options={ancestries}
           style={{ width: "100%" }}
         />
