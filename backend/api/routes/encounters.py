@@ -10,7 +10,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
 import models
-from schemas import Encounter, Encounters
+from schemas import BasicResponse, Encounter, Encounters
 
 from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency
@@ -99,14 +99,14 @@ async def add_encounter(
 
 @router.delete(
     "/encounters/{encounter_id}",
-    response_model=object,
+    response_model=BasicResponse,
     status_code=status.HTTP_200_OK,
 )
 async def delete_encounter(
     encounter_id: int,
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
-) -> object:
+) -> BasicResponse:
     """Fetches an encounter by ID and deletes it from the database
 
     Args:
@@ -121,7 +121,7 @@ async def delete_encounter(
             belong to the current user
 
     Returns:
-        object: A response object confirming the encounter was deleted.
+        BasicResponse: A response object confirming the encounter was deleted.
     """
     stmt = (
         select(models.Encounter)

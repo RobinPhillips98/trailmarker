@@ -2,11 +2,12 @@
 
 import json
 from pathlib import Path
+from typing import Any
 
 from sqlalchemy.future import select
 
 import models
-from schemas import CharacterCreate, Characters
+from schemas import CharacterCreate, Characters, CharacterUpdate
 
 
 async def fetch_characters_from_db(user, db) -> Characters:
@@ -97,7 +98,22 @@ def convert_to_db_character(
     return db_character
 
 
-def build_attack_list(character, weapons_json=None):
+def build_attack_list(
+    character: CharacterCreate | CharacterUpdate,
+    weapons_json: dict[str, Any] = None,
+) -> list[dict[str, Any]]:
+    """Uses weapon names to build a list of attack objects from saved data.
+
+    Args:
+        character (CharacterCreate | CharacterUpdate): The character whose
+            attacks are being built
+        weapons_json (dict[str, Any], optional): The dictionary containing the
+            data with stats for each weapon. Defaults to None.
+
+    Returns:
+        list[dict[str, Any]]: A list of attack objects built from weapon data,
+            ready to be stored in the database
+    """
     if not weapons_json:
         data_path = "data"
         weapons_path = f"{data_path}/weapons.json"
@@ -150,7 +166,22 @@ def build_attack_list(character, weapons_json=None):
     return attack_list
 
 
-def build_spell_list(character, spells_json=None):
+def build_spell_list(
+    character: CharacterCreate | CharacterUpdate,
+    spells_json: dict[str, Any] = None,
+) -> list[dict[str, Any]]:
+    """Uses spell names to build a list of spell objects from saved data.
+
+    Args:
+        character (CharacterCreate | CharacterUpdate): The character whose
+            spells are being built
+        spells_json (dict[str, Any], optional): The dictionary containing
+         the data with stats for each spell. Defaults to None.
+
+    Returns:
+        list[dict[str, Any]]: A list of spell objects built from spell data,
+            ready to be stored in the database
+    """
     if not spells_json:
         data_path = "data"
         spells_path = f"{data_path}/spells.json"

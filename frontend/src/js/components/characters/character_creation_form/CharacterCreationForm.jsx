@@ -158,7 +158,7 @@ export default function CharacterCreationForm() {
         (proficiency) => (character.extra_proficiencies[proficiency] = 4),
       );
       delete character.extra_expert;
-
+      let character_id;
       if (editing) {
         character.id = savedCharacter.id;
         await api.patch("/characters", character, {
@@ -167,14 +167,15 @@ export default function CharacterCreationForm() {
           },
         });
       } else {
-        await api.post("/characters", character, {
+        const response = await api.post("/characters", character, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
+        character_id = response.data.id;
       }
       navigate("/characters", {
-        state: { selectedCharacter: character.id },
+        state: { selectedCharacter: character_id },
       });
       message.success("Character saved!");
     } catch (error) {

@@ -1,7 +1,7 @@
 import { Button, Card, Form } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
-import SpellItem from "./SpellsSelection.Item";
+import SpellItem from "./SpellItem";
 
 /**
  * A component to allow a user to add spells to a player character
