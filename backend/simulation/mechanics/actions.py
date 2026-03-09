@@ -369,8 +369,6 @@ class Attack(Action):
         total_penalty = penalty_per_attack * penalty
 
         effective_weight = base_weight - total_penalty
-        if self.range:
-            effective_weight += self.range / 5
         if effective_weight < 0:
             effective_weight = 0
         if total_penalty >= 8:  # a third attack is almost always a bad option
@@ -462,7 +460,7 @@ class Spell(Action):
         )
 
         if self.range:
-            self.weight += self.range / 5
+            self.weight += self.range / 10
 
     def calculate_weight(
         self,
@@ -510,9 +508,6 @@ class Spell(Action):
             weight += 20
         else:
             weight += self.bonus
-
-        if self.range:
-            weight += self.range / 5
 
         match (self.area_type):
             case "burst":

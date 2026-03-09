@@ -527,12 +527,14 @@ class Creature:
 
         self.log(f"{self} is now at {self.current_hit_points} hit points!")
 
-    def log(self, message: str) -> None:
+    def log(self, message: str | Any) -> None:
         """Adds `message` to the simulation log, or prints it to the console.
 
         Args:
             message (str): The message to be printed.
         """
+        if type(message) is not str:
+            message = str(message)
         if self.simulation:
             self.simulation.log(message)
         else:
