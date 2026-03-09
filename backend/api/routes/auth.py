@@ -21,6 +21,7 @@ from ..auth_helpers import (
     get_user,
 )
 from ..dependencies import db_dependency
+from ..exceptions import BadRequestException
 
 router = APIRouter()
 
@@ -39,15 +40,14 @@ async def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
         db (db_dependency): A SQLAlchemy database session
 
     Raises:
-        HTTPException: The given username already exists in the database.
+        BadRequestException: The given username already exists in the database.
 
     Returns:
         UserResponse: A dictionary containing information about the new user
     """
     db_user = await get_user(db, user.username)
     if db_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+        raise BadRequestException(
             detail="Username already registered.",
         )
     hashed_password = get_password_hash(user.password)
@@ -80,7 +80,7 @@ async def login_for_access_token(
     user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_400_BAD_REQUEST,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )

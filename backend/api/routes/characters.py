@@ -82,10 +82,10 @@ async def add_character(
             Defaults to Depends(get_current_user).
 
     Raises:
-    BadRequestException: On a duplicate character name for the same user.
-    http_err: A caught HTTP error
-    InternalServerError: A non-HTTP exception caught and raised as an HTTP
-        500 exception
+        BadRequestException: On a duplicate character name for the same user.
+        http_err: A caught HTTP error
+        InternalServerError: A non-HTTP exception caught and raised as an HTTP
+            500 exception
 
     Returns:
         Character: The character added to the database
@@ -107,7 +107,7 @@ async def add_character(
 @router.post(
     "/characters/import",
     response_model=Character,
-    status_code=status.HTTP_200_OK,
+    status_code=status.HTTP_201_CREATED,
 )
 async def import_character(
     imported_character: PathbuilderImport,
@@ -148,7 +148,7 @@ async def import_character(
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
-        print(f"Error in add_character: {str(e)}")
+        print(f"Error in import_character: {str(e)}")
         raise InternalServerError(message=str(e))
     return db_character
 
@@ -223,7 +223,7 @@ async def delete_character(
     character_id: int,
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
-) -> object:
+) -> BasicResponse:
     """Fetches a character by ID and deletes it from the database
 
     Args:
@@ -238,7 +238,7 @@ async def delete_character(
             belong to the current user
 
     Returns:
-        object: A response object confirming the character was deleted.
+        BasicResponse: A response object confirming the character was deleted.
     """
     stmt = (
         select(models.Character)

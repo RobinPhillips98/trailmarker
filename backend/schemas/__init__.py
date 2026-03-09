@@ -317,7 +317,7 @@ class PathbuilderWeapon(BaseModel):
     name: str
 
 
-class PathbuilderSpellCasters(BaseModel):
+class PathbuilderSpellCaster(BaseModel):
     name: str
     ability: str
     proficiency: int
@@ -348,6 +348,6 @@ class PathbuilderImport(BaseModel):
     feats: list[list[str | int | None]]
     specials: list[str]
     weapons: list[PathbuilderWeapon]
-    spellCasters: Optional[list[PathbuilderSpellCasters]] = None
+    spellCasters: Optional[list[PathbuilderSpellCaster]] = None
     focus: Optional[dict[str, Any]] = None
     acTotal: PathbuilderArmor

@@ -102,7 +102,7 @@ export default function Characters() {
       if (sortedCharacters.length > 0) {
         setActiveTab(sortedCharacters[0].id);
       }
-      message.success("Characted deleted!");
+      message.success("Character deleted!");
     } catch (error) {
       errorMessage("Error deleting character", error);
     }

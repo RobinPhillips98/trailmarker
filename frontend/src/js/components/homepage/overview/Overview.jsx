@@ -165,7 +165,7 @@ export default function Overview(props) {
       selectedEnemies.forEach((currentEnemy) => {
         const levelDifference = currentEnemy.level - partyLevel;
         if (levelDifference > 4) accumXP += 200 * currentEnemy.quantity;
-        else if (levelDifference <= 4) accumXP += 5 * currentEnemy.quantity;
+        else if (levelDifference <= -4) accumXP += 5 * currentEnemy.quantity;
         else {
           switch (levelDifference) {
             case -4:

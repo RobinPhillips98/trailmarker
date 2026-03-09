@@ -9,6 +9,7 @@ from schemas import (
     CharacterCreate,
     PathbuilderImport,
     PathbuilderSpecificProficiencies,
+    PathbuilderSpellCaster,
 )
 
 
@@ -220,7 +221,22 @@ def add_spells(
     imported_character: PathbuilderImport,
     spell_bonuses: dict[str, int],
     attributes_dict: dict[str, int],
-):
+) -> tuple[list[str], int]:
+    """
+    Builds spellcasting info, spells, and heals if the character has them.
+
+    Args:
+        imported_character (PathbuilderImport): An exported JSON file from
+            Pathbuilder2e representing a Pathfinder 2E character
+        spell_bonuses: A dictionary containing the character's spell attack
+            bonus and spell DC. Passed along to be filled in.
+        attributes_dict (dict[str, int]): The character's already calculated
+            attribute modifiers
+
+    Returns:
+        tuple[list[str], int]: A 2-tuple containing the character's spell list
+            and its number of heal spells prepared, if any.
+    """
     spellcaster = imported_character.spellCasters[0]
 
     calculate_spell_bonuses(
@@ -294,12 +310,29 @@ def add_spells(
                         spell_name = spell.lower().replace(" ", "_")
                         spells[spell_name] += 1
 
-    return [spells, num_heals]
+    return (spells, num_heals)
 
 
 def calculate_spell_bonuses(
-    spellcaster, imported_character, attributes_dict, spell_bonuses
-):
+    spellcaster: PathbuilderSpellCaster,
+    imported_character: PathbuilderImport,
+    attributes_dict: dict[str, int],
+    spell_bonuses: dict[str, int],
+) -> None:
+    """Calculates the characters spell attack bonus and spell DC
+
+    Args:
+        spellcaster (PathbuilderSpellCaster): A Pathbuilder spellcaster object
+        imported_character (PathbuilderImport): An exported JSON file from
+            Pathbuilder2e representing a Pathfinder 2E character
+        spell_bonuses: A dictionary containing the character's spell attack
+            bonus and spell DC. Passed along to be filled in.
+        attributes_dict (dict[str, int]): The character's already calculated
+            attribute modifiers
+
+    Raises:
+        ValueError: If `imported_character` has an invalid spellcasting ability
+    """
     spell_attack_bonus = spellcaster.proficiency + imported_character.level
 
     match spellcaster.ability:
@@ -316,7 +349,20 @@ def calculate_spell_bonuses(
     spell_bonuses["spell_dc"] = spell_attack_bonus + 10
 
 
-def add_extra_proficiencies(proficiencies: PathbuilderSpecificProficiencies):
+def add_extra_proficiencies(
+    proficiencies: PathbuilderSpecificProficiencies,
+) -> dict[str, int]:
+    """Builds a dictionary defining the extra proficiences of the character.
+
+    Args:
+        proficiencies (PathbuilderSpecificProficiencies): An object from the
+            Pathbuilder Import defining specific proficiencies the character
+            has.
+
+    Returns:
+        dict[str, int]: The dictionary defining the proficiencies.
+    """
+
     extra_proficiencies = {}
 
     for proficiency in proficiencies.trained:
@@ -333,6 +379,15 @@ def add_extra_proficiencies(proficiencies: PathbuilderSpecificProficiencies):
 def check_for_other_features(
     imported_character: PathbuilderImport,
 ) -> list[str]:
+    """Checks if the character has any other features needed by the simulation.
+
+    Args:
+        imported_character (PathbuilderImport): An exported JSON file from
+            Pathbuilder2e representing a Pathfinder 2E character
+
+    Returns:
+        list[str]: A list of the other features.
+    """
     other_features = []
     features_set = set()
     valid_features = {"Thief Racket"}
