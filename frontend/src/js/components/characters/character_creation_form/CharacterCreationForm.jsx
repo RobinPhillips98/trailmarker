@@ -56,10 +56,10 @@ export default function CharacterCreationForm() {
         name: savedCharacter.name,
         player: savedCharacter.player,
         xp: savedCharacter.xp,
-        ancestry: savedCharacter.ancestry,
-        heritage: savedCharacter.heritage,
-        background: savedCharacter.background,
-        class: savedCharacter.class,
+        ancestry: savedCharacter.ancestry.toLowerCase(),
+        heritage: savedCharacter.heritage.toLowerCase(),
+        background: savedCharacter.background.toLowerCase(),
+        class: savedCharacter.class.toLowerCase(),
         level: savedCharacter.level,
         max_hit_points: savedCharacter.max_hit_points,
         spell_attack_bonus: savedCharacter.spell_attack_bonus,
@@ -183,7 +183,13 @@ export default function CharacterCreationForm() {
   }
 
   function handleCancel() {
-    navigate("/characters");
+    if (editing) {
+      navigate("/characters", {
+        state: { selectedCharacter: savedCharacter.id },
+      });
+    } else {
+      navigate("/characters");
+    }
   }
 
   const title = editing ? "Edit Character" : "Character Creation";
@@ -213,12 +219,14 @@ export default function CharacterCreationForm() {
                 Save Character
               </Button>
             </Form.Item>
+
             <Form.Item label={null}>
               <Button onClick={handleCancel} icon={<CloseOutlined />}>
                 Cancel
               </Button>
             </Form.Item>
           </Space>
+
           <FloatButton.Group shape="square">
             <FloatButton
               type="primary"
@@ -233,18 +241,18 @@ export default function CharacterCreationForm() {
             />
             <FloatButton.BackTop />
           </FloatButton.Group>
+
           <Row gutter={16} align="middle">
             <Col xs={24} md={12}>
-              <GeneralInfoSelection
-                editing={editing}
-                savedCharacter={savedCharacter}
-              />
+              <GeneralInfoSelection form={form} />
             </Col>
+
             <Col xs={24} md={12}>
               <GeneralStatsSelection form={form} />
             </Col>
           </Row>
           <br />
+
           <Row gutter={16} align="middle">
             <Col xs={24} md={12}>
               <AttributeSelection
@@ -252,11 +260,13 @@ export default function CharacterCreationForm() {
                 savedCharacter={savedCharacter}
               />
             </Col>
+
             <Col xs={24} md={12}>
               <SavesSelection />
             </Col>
           </Row>
           <br />
+
           <Row>
             <Col span={24}>
               <SkillSelection
@@ -273,6 +283,7 @@ export default function CharacterCreationForm() {
                 savedCharacter={savedCharacter}
               />
             </Col>
+
             <Col xs={24} md={12}>
               <SpellsSelection
                 editing={editing}

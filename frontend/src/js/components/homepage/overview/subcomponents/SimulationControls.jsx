@@ -78,7 +78,7 @@ export default function SimulationControls(props) {
         <Tooltip
           title={
             simButtonDisabled
-              ? "Select enemies before running simulation"
+              ? "Must select enemies before running simulation"
               : null
           }
         >
