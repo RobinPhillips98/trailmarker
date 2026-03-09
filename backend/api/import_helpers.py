@@ -1,6 +1,9 @@
 """Defines helper functions used to import Pathbuilder2e characters."""
 
+import json
 import math
+from collections import defaultdict
+from pathlib import Path
 
 from schemas import CharacterCreate, PathbuilderImport
 
@@ -55,19 +58,29 @@ def convert_import_to_character(
     for weapon in imported_character.weapons:
         attacks.append(weapon.name)
 
+    spells = {}
+    spell_bonuses = {
+        "spell_attack_bonus": 0,
+        "spell_dc": 0,
+    }
+    if imported_character.spellCasters:
+        spells = add_spells(imported_character, spell_bonuses, attributes_dict)
+
     actions_dict = {
         "attacks": attacks,
-        "spells": [],
+        "spells": spells,
         "heals": 0,
-        "shield": int(imported_character.acTotal.shieldBonus),
+        "shield": (
+            int(imported_character.acTotal.shieldBonus)
+            if imported_character.acTotal.shieldBonus
+            else 0
+        ),
     }
 
     proficiencies = {
         "simple": imported_character.proficiencies.simple,
         "martial": imported_character.proficiencies.martial,
     }
-
-    print(proficiencies)
 
     character = CharacterCreate(
         name=imported_character.name,
@@ -79,11 +92,14 @@ def convert_import_to_character(
         background=imported_character.background,
         perception=perception,
         max_hit_points=(
-            attributes.bonushp
+            attributes.ancestryhp
             + attributes.bonushp
-            + attributes.classhp
+            + (imported_character.level * attributes.classhp)
+            + (imported_character.level * attributes_dict["constitution"])
             + (imported_character.level * attributes.bonushpPerLevel)
         ),
+        spell_attack_bonus=spell_bonuses["spell_attack_bonus"],
+        spell_dc=spell_bonuses["spell_dc"],
         speed=attributes.speed,
         attribute_modifiers=attributes_dict,
         skills=skills_dict,
@@ -178,3 +194,91 @@ def add_skills(
     )
 
     return skills_dict
+
+
+def calculate_spell_bonuses(
+    spellcaster, imported_character, attributes_dict, spell_bonuses
+):
+    spell_attack_bonus = spellcaster.proficiency + imported_character.level
+
+    match spellcaster.ability:
+        case "int":
+            spell_attack_bonus += attributes_dict["intelligence"]
+        case "wis":
+            spell_attack_bonus += attributes_dict["wisdom"]
+        case "cha":
+            spell_attack_bonus += attributes_dict["charisma"]
+        case _:
+            raise ValueError("Invalid spellcasting ability")
+
+    spell_bonuses["spell_attack_bonus"] = spell_attack_bonus
+    spell_bonuses["spell_dc"] = spell_attack_bonus + 10
+    return spell_attack_bonus
+
+
+def add_spells(
+    imported_character: PathbuilderImport,
+    spell_bonuses: dict[str, int],
+    attributes_dict: dict[str, int],
+):
+    spellcaster = imported_character.spellCasters[0]
+
+    calculate_spell_bonuses(
+        spellcaster, imported_character, attributes_dict, spell_bonuses
+    )
+
+    spells = defaultdict(int)
+
+    data_path = "data"
+    spells_path = f"{data_path}/spells.json"
+    spells_json = json.loads(Path(spells_path).read_text())
+    valid_spells = [value.get("name") for value in spells_json.values()]
+
+    for spell_list in spellcaster.prepared:
+        for spell in spell_list["list"]:
+            if spell in valid_spells:
+                spell_name = spell.lower().replace(" ", "_")
+                spells[spell_name] += 1
+
+    """I know it looks like this is incredibly unoptimized, but in the vast
+    majority of use cases, particularly in the Beginner Box version, both the
+    first and second loop will actually only have one iteration,
+    "for spell in focus_dict["focusCantrips"]:" will probably not have any
+    iterations, and "for spell in focus_dict["focusSpells"]:" will likely only
+    have a few iterations at most. I thought about just doing keys()[0] for
+    the first two, but made them loops just in case there is actually more than
+    one object within focus. For reference, focus will typically look something
+    like this:
+    "focus": {
+      "arcane": {
+        "int": {
+          "abilityBonus": 4,
+          "proficiency": 2,
+          "itemBonus": 0,
+          "focusCantrips": [],
+          "focusSpells": ["Force Bolt"]
+        }
+      }
+    }
+    Runtime complexity: O(x * y * (c + s)) where
+    x = the number of outer dictionaries,
+    y = the number of inner dictionaries,
+    c = the number of cantrips and
+    s = the number of spells.
+    However, typically: x = 1, y = 1, c = 0, and s <= 3, so effectively this is
+    1 * 1 * (0 + 3) <= 3 iterations
+    """
+    if imported_character.focus:
+        for key_1 in list(imported_character.focus.keys()):
+            for key_2 in list(imported_character.focus[key_1].keys()):
+                focus_dict = imported_character.focus[key_1][key_2]
+                for cantrip in focus_dict["focusCantrips"]:
+                    if cantrip in valid_spells:
+                        cantrip_name = cantrip.lower().replace(" ", "_")
+                        spells[cantrip_name] += 1
+                for spell in focus_dict["focusSpells"]:
+                    if spell in valid_spells:
+                        spell_name = spell.lower().replace(" ", "_")
+                        spells[spell_name] += 1
+
+    return spells

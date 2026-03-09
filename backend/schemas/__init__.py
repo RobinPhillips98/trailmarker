@@ -1,6 +1,6 @@
 """Defines the pydantic models used throughout the API."""
 
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -308,16 +308,17 @@ class PathbuilderProfiencies(BaseModel):
 
 class PathbuilderWeapon(BaseModel):
     name: str
-    # qty: int
-    # die: str
-    # damageType: str
-    # attack: int
-    # damageBonus: int
+
+
+class PathbuilderSpellCasters(BaseModel):
+    ability: str
+    proficiency: int
+    prepared: list[dict[str, int | list[str]]]
 
 
 class PathbuilderArmor(BaseModel):
     acTotal: int
-    shieldBonus: int
+    shieldBonus: Optional[int] = 0
 
 
 class PathbuilderImport(BaseModel):
@@ -335,4 +336,6 @@ class PathbuilderImport(BaseModel):
     proficiencies: PathbuilderProfiencies
     lores: list[list[str | int]]
     weapons: list[PathbuilderWeapon]
+    spellCasters: Optional[list[PathbuilderSpellCasters]] = None
+    focus: Optional[dict[str, Any]] = None
     acTotal: PathbuilderArmor
