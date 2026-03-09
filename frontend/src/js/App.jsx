@@ -30,6 +30,7 @@ export default function App() {
       colorBgLayout: "#0f1418",
       colorBgContainer: "#15181c",
       colorBgBase: "#0b0f12",
+      colorBgElevated: "#1e2126",
 
       colorText: "#E9E7E2",
       colorTextSecondary: "#B9B7B2",
