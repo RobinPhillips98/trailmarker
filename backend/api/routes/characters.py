@@ -28,7 +28,6 @@ from ..character_helpers import (
 )
 from ..dependencies import db_dependency
 from ..exceptions import (
-    BadRequestException,
     ForbiddenException,
     InternalServerError,
     NotFoundException,
@@ -91,20 +90,6 @@ async def add_character(
     Returns:
         Character: The character added to the database
     """
-
-    stmt = (
-        select(models.Character)
-        .options(selectinload(models.Character.user))
-        .where(models.Character.user_id == current_user.id)
-        .where(models.Character.name == character.name)
-    )
-    result = await db.execute(stmt)
-    character_check = result.scalar_one_or_none()
-    if character_check:
-        raise BadRequestException(
-            "Duplicate character names are not allowed. Please choose another name"  # noqa: E501
-        )
-
     try:
         db_character = convert_to_db_character(character, current_user)
 
@@ -150,19 +135,6 @@ async def import_character(
     Returns:
         Character: The character added to the database
     """
-    stmt = (
-        select(models.Character)
-        .options(selectinload(models.Character.user))
-        .where(models.Character.user_id == current_user.id)
-        .where(models.Character.name == imported_character.name)
-    )
-    result = await db.execute(stmt)
-    character_check = result.scalar_one_or_none()
-    if character_check:
-        raise BadRequestException(
-            "Duplicate character names are not allowed. Please choose another name"  # noqa: E501
-        )
-
     try:
         converted_character = convert_import_to_character(imported_character)
 

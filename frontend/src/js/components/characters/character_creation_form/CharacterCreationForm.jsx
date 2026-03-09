@@ -2,6 +2,7 @@
 import { useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
+  App,
   Button,
   Col,
   Form,
@@ -15,6 +16,7 @@ import { CloseOutlined, SaveOutlined } from "@ant-design/icons";
 
 // Personal Helpers
 import api from "../../../api";
+import { isEmpty } from "../../../services/helpers";
 import useErrorMessage from "../../../services/hooks/useErrorMessage";
 
 // Contexts
@@ -29,7 +31,6 @@ import GeneralInfoSelection from "./subcomponents/GeneralInfoSelection";
 import GeneralStatsSelection from "./subcomponents/GeneralStatsSelection";
 import SpellsSelection from "./subcomponents/SpellsSelection";
 import NotAuthorized from "../../status_pages/NotAuthorized";
-import { isEmpty } from "../../../services/helpers";
 
 /**
  * A component to allow a user to create or edit a player character
@@ -37,6 +38,7 @@ import { isEmpty } from "../../../services/helpers";
  * @returns {React.ReactElement}
  */
 export default function CharacterCreationForm() {
+  const { message } = App.useApp();
   const { token } = useContext(AuthContext);
   const { state } = useLocation();
   const { editing, savedCharacter } = state || {
@@ -174,6 +176,7 @@ export default function CharacterCreationForm() {
       navigate("/characters", {
         state: { selectedCharacter: character.name },
       });
+      message.success("Character saved!");
     } catch (error) {
       errorMessage("Error saving character", error);
     }

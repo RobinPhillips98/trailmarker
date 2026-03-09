@@ -1,7 +1,7 @@
 // Third-party libraries
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Button, FloatButton, Spin, Tabs, Typography } from "antd";
+import { App, Button, FloatButton, Space, Spin, Tabs, Typography } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
 // Personal helpers
@@ -14,6 +14,7 @@ import { AuthContext } from "../../contexts/AuthContext";
 // Components
 import CharacterDisplay from "./character_display/CharacterDisplay";
 import NotAuthorized from "../status_pages/NotAuthorized";
+import CharacterImport from "./CharacterImport";
 
 /**
  * The page for displaying saved characters, with options to edit saved
@@ -30,13 +31,14 @@ export default function Characters() {
   // Other variables
   const navigate = useNavigate();
   const location = useLocation();
+  const { message } = App.useApp();
   const { token } = useContext(AuthContext);
   const { errorMessage } = useErrorMessage();
 
   const { Title } = Typography;
 
   const characterTabs = characters.map((character) => ({
-    key: character.name,
+    key: character.id,
     label: character.name,
     children: (
       <CharacterDisplay
@@ -58,6 +60,29 @@ export default function Characters() {
   }
 
   /**
+   * Adds `character` to the display, sorts the display, and shows `character`
+   *
+   * @param {object} character The character to be added
+   */
+  function addCharacter(character) {
+    const newCharacters = characters.slice();
+    newCharacters.push(character);
+    const sortedCharacters = sortCharacters(newCharacters);
+    setCharacters(sortedCharacters);
+    setActiveTab(character.id);
+  }
+
+  /**
+   * Returns a copy of `characters` sorted by the `name` key of each character
+   *
+   * @param {object[]} characters The character array to be sorted
+   * @returns {object[]}
+   */
+  function sortCharacters(characters) {
+    return characters.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  /**
    * Deletes a character from the database and from the character list.
    *
    * @param {object} character
@@ -69,9 +94,15 @@ export default function Characters() {
           Authorization: `Bearer ${token}`,
         },
       });
-      setCharacters((prev) =>
-        prev.filter((currentCharacter) => currentCharacter !== character),
+      const newCharacters = characters.filter(
+        (currentCharacter) => currentCharacter !== character,
       );
+      const sortedCharacters = sortCharacters(newCharacters);
+      setCharacters(sortedCharacters);
+      if (sortedCharacters.length > 0) {
+        setActiveTab(sortedCharacters[0].id);
+      }
+      message.success("Characted deleted!");
     } catch (error) {
       errorMessage("Error deleting character", error);
     }
@@ -88,17 +119,15 @@ export default function Characters() {
             Authorization: `Bearer ${token}`,
           },
         });
-        const sortedCharacters = response.data.characters.sort((a, b) =>
-          a.name.localeCompare(b.name),
-        );
+        const sortedCharacters = sortCharacters(response.data.characters);
         setCharacters(sortedCharacters);
         setLoading(false);
 
         // Set active tab to the character from navigation state if available
         if (location.state?.selectedCharacter) {
-          setActiveTab(location.state.selectedCharacter);
+          setActiveTab(location.state.selectedCharacter.id);
         } else if (sortedCharacters.length > 0) {
-          setActiveTab(sortedCharacters[0].name);
+          setActiveTab(sortedCharacters[0].id);
         }
       } catch (error) {
         errorMessage("Error fetching characters", error);
@@ -111,14 +140,13 @@ export default function Characters() {
     return (
       <>
         <Title level={1}>Saved Characters</Title>
-        <Button
-          type="primary"
-          onClick={handleClick}
-          style={{ marginBottom: 10 }}
-          icon={<PlusOutlined />}
-        >
-          Create Character
-        </Button>
+
+        <Space style={{ marginBottom: 10 }}>
+          <Button type="primary" onClick={handleClick} icon={<PlusOutlined />}>
+            Create Character
+          </Button>
+          <CharacterImport addCharacter={addCharacter} />
+        </Space>
         <Spin spinning={loading}>
           <Tabs
             type="card"
