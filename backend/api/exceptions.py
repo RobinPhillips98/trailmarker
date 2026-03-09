@@ -3,6 +3,18 @@
 from fastapi import HTTPException, status
 
 
+class BadRequestException(HTTPException):
+    """Returns a 400 exception when a user makes a request that is invalid.
+
+    Attributes:
+        detail: The error message shown to the user
+    """
+
+    def __init__(self, detail: str = "Bad Request"):
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        self.detail = detail
+
+
 class ForbiddenException(HTTPException):
     """Returns a 403 exception when a user attempts an unauthorized action.
 
