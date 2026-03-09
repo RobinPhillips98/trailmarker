@@ -44,7 +44,7 @@
     "range": null,
     "traits": []
   },
-  "battle axe": {
+  "battle_axe": {
     "name": "Battle Axe",
     "type": "martial",
     "category": "melee",
@@ -80,7 +80,7 @@
     "range": null,
     "traits": ["agile", "sweep", "thrown-10"]
   },
-  "light hammer": {
+  "light_hammer": {
     "name": "Light Hammer",
     "type": "martial",
     "category": "melee",
@@ -170,7 +170,7 @@
     "range": 120,
     "traits": []
   },
-  "hand crossbow": {
+  "hand_crossbow": {
     "name": "Hand Crossbow",
     "type": "simple",
     "category": "ranged",

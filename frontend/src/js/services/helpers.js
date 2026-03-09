@@ -66,6 +66,77 @@ export function getRandom(arr, n) {
 }
 
 /**
+ * A list of the damage types in Pathfinder, formatted to be used as the
+ * options of a select component
+ */
+export const damageTypes = [
+  {
+    value: "bludgeoning",
+    label: "Bludgeoning",
+  },
+  {
+    value: "piercing",
+    label: "Piercing",
+  },
+  {
+    value: "slashing",
+    label: "Slashing",
+  },
+  {
+    value: "acid",
+    label: "Acid",
+  },
+  {
+    value: "cold",
+    label: "Cold",
+  },
+  {
+    value: "electricity",
+    label: "Electricity",
+  },
+  {
+    value: "fire",
+    label: "Fire",
+  },
+  {
+    value: "sonic",
+    label: "Sonic",
+  },
+  {
+    value: "vitality",
+    label: "Vitality",
+  },
+  {
+    value: "void",
+    label: "Void",
+  },
+  {
+    value: "force",
+    label: "Force",
+  },
+  {
+    value: "spirit",
+    label: "Spirit",
+  },
+  {
+    value: "mental",
+    label: "Mental",
+  },
+  {
+    value: "poison",
+    label: "Poison",
+  },
+  {
+    value: "bleed",
+    label: "Bleed",
+  },
+  {
+    value: "precision",
+    label: "Precision",
+  },
+];
+
+/**
  * Maximum quantity of an individual enemy
  */
 export const MAX_ENEMY_QUANTITY = 25;

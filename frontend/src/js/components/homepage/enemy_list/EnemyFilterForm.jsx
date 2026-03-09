@@ -12,7 +12,7 @@ import {
 import { ClearOutlined } from "@ant-design/icons";
 
 import { traitOptions } from "./enemyHelpers";
-import { damageTypes } from "../../characters/characterHelpers";
+import { damageTypes } from "../../../services/helpers";
 
 /**
  * A component to display a filter form for the enemy list

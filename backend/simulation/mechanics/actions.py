@@ -176,7 +176,9 @@ class Action:
             )
             damage_display += f" + {sneak_attack_roll}"
 
-        if degree_of_success == Degree.CRITICAL_SUCCESS:
+        if degree_of_success == Degree.CRITICAL_SUCCESS and not (
+            target.team == 2 and "critical-hits" in target.immunities
+        ):
             attacker.log(f"{attacker} dealt a critical hit to {target}!")
             damage *= 2
             damage_display += " doubled"

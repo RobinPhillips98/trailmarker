@@ -113,73 +113,6 @@ export const classes = [
 ];
 
 /**
- * A list of the damage types in Pathfinder, formatted to be used as the
- * options of a select component
- */
-export const damageTypes = [
-  {
-    value: "bludgeoning",
-    label: "Bludgeoning",
-  },
-  {
-    value: "piercing",
-    label: "Piercing",
-  },
-  {
-    value: "slashing",
-    label: "Slashing",
-  },
-  {
-    value: "acid",
-    label: "Acid",
-  },
-  {
-    value: "cold",
-    label: "Cold",
-  },
-  {
-    value: "electricity",
-    label: "Electricity",
-  },
-  {
-    value: "fire",
-    label: "Fire",
-  },
-  {
-    value: "sonic",
-    label: "Sonic",
-  },
-  {
-    value: "vitality",
-    label: "Vitality",
-  },
-  {
-    value: "void",
-    label: "Void",
-  },
-  {
-    value: "force",
-    label: "Force",
-  },
-  {
-    value: "spirit",
-    label: "Spirit",
-  },
-  {
-    value: "mental",
-    label: "Mental",
-  },
-  {
-    value: "poison",
-    label: "Poison",
-  },
-  {
-    value: "bleed",
-    label: "Bleed",
-  },
-];
-
-/**
  * A list of the available dwarf heritages, formatted to be used as the options
  *  of a select component.
  */
@@ -347,7 +280,7 @@ const simpleMeleeOptions = [
 const martialMeleeOptions = [
   {
     label: "Battle Axe",
-    value: "battle axe",
+    value: "battle_axe",
   },
   {
     label: "Greataxe",
@@ -363,7 +296,7 @@ const martialMeleeOptions = [
   },
   {
     label: "Light Hammer",
-    value: "light hammer",
+    value: "light_hammer",
   },
   {
     label: "Longsword",
@@ -406,7 +339,7 @@ const simpleRangedOptions = [
   },
   {
     label: "Hand Crossbow",
-    value: "hand crossbow",
+    value: "hand_crossbow",
   },
   {
     label: "Javelin",

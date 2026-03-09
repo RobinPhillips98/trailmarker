@@ -5,7 +5,11 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-from schemas import CharacterCreate, PathbuilderImport
+from schemas import (
+    CharacterCreate,
+    PathbuilderImport,
+    PathbuilderSpecificProficiencies,
+)
 
 
 def convert_import_to_character(
@@ -25,7 +29,7 @@ def convert_import_to_character(
 
     perception = (
         imported_character.proficiencies.perception
-        + imported_character.abilities.wis
+        + attributes_dict["wisdom"]
         + imported_character.level
     )
 
@@ -82,6 +86,12 @@ def convert_import_to_character(
         "martial": imported_character.proficiencies.martial,
     }
 
+    extra_proficiencies = add_extra_proficiencies(
+        imported_character.specificProficiencies
+    )
+
+    other_features = check_for_other_features(imported_character)
+
     character = CharacterCreate(
         name=imported_character.name,
         class_=imported_character.class_,
@@ -106,6 +116,8 @@ def convert_import_to_character(
         defenses=defense_dict,
         actions=actions_dict,
         proficiencies=proficiencies,
+        extra_proficiencies=extra_proficiencies,
+        other_features=other_features,
     )
 
     return character
@@ -178,13 +190,13 @@ def add_skills(
             break
         start_index += 1
 
-    for skill_name, profiency_bonus in list(
+    for skill_name, proficiency_bonus in list(
         dict(imported_character.proficiencies).items()
     )[start_index:]:
+        if proficiency_bonus > 0:
+            proficiency_bonus += imported_character.level
         skills_dict[skill_name] = (
-            profiency_bonus
-            + imported_character.level
-            + attributes_dict[attributes_map[skill_name]]
+            proficiency_bonus + attributes_dict[attributes_map[skill_name]]
         )
 
     skills_dict["lore"] = (
@@ -194,26 +206,6 @@ def add_skills(
     )
 
     return skills_dict
-
-
-def calculate_spell_bonuses(
-    spellcaster, imported_character, attributes_dict, spell_bonuses
-):
-    spell_attack_bonus = spellcaster.proficiency + imported_character.level
-
-    match spellcaster.ability:
-        case "int":
-            spell_attack_bonus += attributes_dict["intelligence"]
-        case "wis":
-            spell_attack_bonus += attributes_dict["wisdom"]
-        case "cha":
-            spell_attack_bonus += attributes_dict["charisma"]
-        case _:
-            raise ValueError("Invalid spellcasting ability")
-
-    spell_bonuses["spell_attack_bonus"] = spell_attack_bonus
-    spell_bonuses["spell_dc"] = spell_attack_bonus + 10
-    return spell_attack_bonus
 
 
 def add_spells(
@@ -234,7 +226,9 @@ def add_spells(
     spells_json = json.loads(Path(spells_path).read_text())
     valid_spells = [value.get("name") for value in spells_json.values()]
 
-    for spell_list in spellcaster.prepared:
+    spell_lists = spellcaster.prepared or spellcaster.spells
+
+    for spell_list in spell_lists:
         for spell in spell_list["list"]:
             if spell in valid_spells:
                 spell_name = spell.lower().replace(" ", "_")
@@ -282,3 +276,62 @@ def add_spells(
                         spells[spell_name] += 1
 
     return spells
+
+
+def calculate_spell_bonuses(
+    spellcaster, imported_character, attributes_dict, spell_bonuses
+):
+    spell_attack_bonus = spellcaster.proficiency + imported_character.level
+
+    match spellcaster.ability:
+        case "int":
+            spell_attack_bonus += attributes_dict["intelligence"]
+        case "wis":
+            spell_attack_bonus += attributes_dict["wisdom"]
+        case "cha":
+            spell_attack_bonus += attributes_dict["charisma"]
+        case _:
+            raise ValueError("Invalid spellcasting ability")
+
+    spell_bonuses["spell_attack_bonus"] = spell_attack_bonus
+    spell_bonuses["spell_dc"] = spell_attack_bonus + 10
+
+
+def add_extra_proficiencies(proficiencies: PathbuilderSpecificProficiencies):
+    extra_proficiencies = {}
+
+    for proficiency in proficiencies.trained:
+        name = proficiency.lower().replace(" ", "_")
+        extra_proficiencies[name] = 2
+
+    for proficiency in proficiencies.expert:
+        name = proficiency.lower().replace(" ", "_")
+        extra_proficiencies[name] = 4
+
+    return extra_proficiencies
+
+
+def check_for_other_features(
+    imported_character: PathbuilderImport,
+) -> list[str]:
+    other_features = []
+    features_set = set()
+    valid_features = {"Thief Racket"}
+    feature_conversions = {"Thief Racket": "thief"}
+
+    for feat_list in imported_character.feats:
+        if not valid_features.isdisjoint(feat_list):
+            features_set.update(valid_features.intersection(feat_list))
+
+    if not valid_features.isdisjoint(imported_character.specials):
+        features_set.update(
+            valid_features.intersection(imported_character.specials)
+        )
+
+    if features_set:
+        other_features = list(features_set)
+        other_features = [
+            feature_conversions[feature] for feature in other_features
+        ]
+
+    return other_features
