@@ -22,6 +22,7 @@ origins = [
     "http://localhost:5173",
     "https://trailmarker2e.com",
     "https://www.trailmarker2e.com",
+    os.getenv("FRONTEND_URL"),
 ]
 
 app.add_middleware(
