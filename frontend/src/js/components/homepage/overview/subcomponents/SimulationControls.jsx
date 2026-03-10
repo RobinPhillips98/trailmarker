@@ -109,7 +109,7 @@ export default function SimulationControls(props) {
               unCheckedChildren={<CloseOutlined />}
             />
           </Tooltip>
-          <Text style={{ marginLeft: 5 }}>Use generic characters</Text>
+          <Text style={{ marginLeft: 5 }}>Use Generic Characters</Text>
         </Card>
       </Col>
     </Row>

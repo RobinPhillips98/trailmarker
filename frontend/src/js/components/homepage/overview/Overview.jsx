@@ -47,7 +47,7 @@ export default function Overview(props) {
   const [difficulty, setDifficulty] = useState("");
 
   // Other variables
-  const { token } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const { errorMessage } = useErrorMessage();
 
   const difficultyColors = colorBlind
@@ -115,6 +115,11 @@ export default function Overview(props) {
       setCharactersSaved(false);
     }
   }, [token]);
+
+  useEffect(() => {
+    if (!user || !charactersSaved) setUseSaved(false);
+    else setUseSaved(true);
+  }, [user, charactersSaved]);
 
   useEffect(() => {
     if (useSaved) {
