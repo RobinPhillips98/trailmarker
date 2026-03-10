@@ -91,7 +91,7 @@
     "area": {},
     "save": "fortitude",
     "targets": 1,
-    "actions": "1",
+    "actions": "2",
     "description": "You demolish one undead creature within 30 feet with divine power. You deal 2d6 vitality damage. The target must attempt a basic Fortitude save. If the creature critically fails the save, for 1 round it takes a –1 status penalty to melee attack rolls, damage rolls, and Athletics checks and DCs."
   }
 }
