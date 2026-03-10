@@ -83,6 +83,9 @@ export default function SpellcastingSection({ character }) {
                         <Text strong>Slots:</Text> {spell.slots}
                       </List.Item>
                     )}
+                    <List.Item>
+                      <Text strong>Actions: </Text> {spell.actions}
+                    </List.Item>
                   </List>
                   <Divider />
                   <Text>{spell.description}</Text>

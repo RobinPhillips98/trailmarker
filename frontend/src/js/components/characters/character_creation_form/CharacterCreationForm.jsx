@@ -160,7 +160,8 @@ export default function CharacterCreationForm() {
       delete character.extra_expert;
       let character_id;
       if (editing) {
-        character.id = savedCharacter.id;
+        character.id = savedCharacter.id; // For request
+        character_id = savedCharacter.id; // For selecting correct tab
         await api.patch("/characters", character, {
           headers: {
             Authorization: `Bearer ${token}`,

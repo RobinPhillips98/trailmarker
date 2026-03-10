@@ -90,7 +90,7 @@ export default function PartyInfoForm(props) {
     >
       <Space direction="vertical" style={{ width: "100%" }} size="large">
         <Form labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
-          <Form.Item label="Use Saved Characters?">
+          <Form.Item label="Use Saved Characters">
             <Tooltip title={switchTooltip} placement="right">
               <Switch
                 checked={switched}
