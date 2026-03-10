@@ -459,7 +459,13 @@ class Creature:
         else:
             self.log(f"{self} has {self.current_hit_points} HP remaining!")
 
-    def spell_save(self, damage: int, spell: Spell, attacker: Self) -> None:
+    def spell_save(
+        self,
+        damage_rolls: list[int],
+        damage_bonus: int,
+        spell: Spell,
+        attacker: Self,
+    ) -> None:
         """Performs a basic saving throw against `spell`.
 
         Checks which saving throw bonus to use, rolls a saving throw against
@@ -468,7 +474,9 @@ class Creature:
         based on `damage` and the creature takes that amount of damage.
 
         Args:
-            damage (int): The base amount of damage to be taken
+            damage_rolls (list[int]): The base amount of damage to be taken,
+                passed in as a list of damage rolls
+            damage_bonus: int: The damage bonus of the spell, if any
             spell (Spell): The spell being saved against
             attacker (Self): The attacker casting the spell
 
@@ -490,8 +498,17 @@ class Creature:
         saving_throw = roll + save_bonus
         save_display = f"{roll} + {save_bonus}"
         self.log(
-            f"{self} rolled a {saving_throw} ({save_display}) {spell.save} save against {spell}!"  # noqa: E501
+            f"{self} rolled a {saving_throw} ({save_display}) {spell.save} save against {spell} (DC {attacker.spell_dc})!"  # noqa: E501
         )
+
+        damage = sum(damage_rolls) + damage_bonus
+        damage_display = f"{damage_rolls[0]}"
+
+        for damage_roll in damage_rolls[1:]:
+            damage_display += f" + {damage_roll}"
+
+        if damage_bonus:
+            damage_display += f" + {damage_bonus}"
 
         degree_of_success = calculate_dos(
             roll, saving_throw, attacker.spell_dc
@@ -503,14 +520,20 @@ class Creature:
                 return
             case Degree.SUCCESS:
                 damage_taken = math.floor(damage / 2)
-                self.log(f"{self} succeeded and takes {damage_taken} damage")
+                damage_display += " halved"
+                self.log(
+                    f"{self} succeeded and takes {damage_taken} ({damage_display}) damage"  # noqa: E501
+                )
             case Degree.FAILURE:
                 damage_taken = damage
-                self.log(f"{self} failed and takes {damage_taken} damage")
+                self.log(
+                    f"{self} failed and takes {damage_taken} ({damage_display}) damage"  # noqa: E501
+                )
             case Degree.CRITICAL_FAILURE:
                 damage_taken = damage * 2
+                damage_display += " doubled"
                 self.log(
-                    f"{self} critically failed. {damage_taken} damage taken!"
+                    f"{self} critically failed and takes {damage_taken} ({damage_display}) damage"  # noqa: E501
                 )
 
         self.take_damage(damage_taken, spell.damage_type)

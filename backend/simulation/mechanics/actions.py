@@ -557,7 +557,13 @@ class Spell(Action):
                 target = caster.pick_target(self)
                 targets.append(target)
             for target in targets:
-                self.attack(caster, target)
+                if self.save:
+                    damage_rolls = self._roll_for_damage()
+                    target.spell_save(
+                        damage_rolls, self.damage_bonus, self, caster
+                    )
+                else:
+                    self.attack(caster, target)
 
         if self.level >= 1:
             self.slots -= 1
@@ -591,9 +597,8 @@ class Spell(Action):
             targets = opponents
 
         damage_rolls = self._roll_for_damage()
-        damage = sum(damage_rolls) + self.damage_bonus
 
         target_names = ", ".join(map(str, targets))
         caster.log(f"{caster} attacks {target_names} with {self}!")
         for target in targets:
-            target.spell_save(damage, self, caster)
+            target.spell_save(damage_rolls, self.damage_bonus, self, caster)
