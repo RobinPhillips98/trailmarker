@@ -119,7 +119,7 @@ def convert_import_to_character(
         ),
         spell_attack_bonus=spell_bonuses["spell_attack_bonus"],
         spell_dc=spell_bonuses["spell_dc"],
-        speed=attributes.speed,
+        speed=attributes.speed + attributes.speedBonus,
         attribute_modifiers=attributes_dict,
         skills=skills_dict,
         defenses=defense_dict,

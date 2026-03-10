@@ -279,6 +279,7 @@ class PathbuilderAttributes(BaseModel):
     bonushp: int
     bonushpPerLevel: int
     speed: int
+    speedBonus: int
 
 
 class PathbuilderProfiencies(BaseModel):
