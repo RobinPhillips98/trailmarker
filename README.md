@@ -2,13 +2,16 @@
 
 A **Pathfinder 2e combat encounter simulator** that lets you build a party of characters, select enemies, and run repeated automated simulations to evaluate how your party may fare in combat — using the **Beginner Box** ruleset.
 
+**Live at [trailmarker2e.com](https://trailmarker2e.com)**
+
 ## ✨ Features
 
-- 🧙 **Party Management** — Create and manage player characters with stats from their character sheets (attacks, spells, skills, and more)
-- 👹 **Enemy Roster** — Browse enemies from the Beginner Box
-- ⚔️ **Combat Simulation** — Run 100 automated combat encounters between your party and a chosen set of enemies
-- 📊 **Simulation Results** — View win rate, average rounds, average deaths, and a full round-by-round combat log for each simulated encounter
-- 🔐 **User Accounts** — Register and log in to save your party and access simulation features
+- **Party Management** — Create and manage player characters with stats from their character sheets (attacks, spells, skills, and more)
+- **Pathbuilder Import** — Instantly import a character by uploading the JSON export from [Pathbuilder 2e](https://pathbuilder2e.com/)
+- **Enemy Roster** — Browse enemies from the Beginner Box
+- **Combat Simulation** — Run 100 automated combat encounters between your party and a chosen set of enemies
+- **Simulation Results** — View win rate, average rounds, average deaths, and a full round-by-round combat log for each simulated encounter
+- **User Accounts** — Register and log in to save a custom party across sessions
 
 ## 🎓 Academic Project
 
@@ -107,11 +110,10 @@ This will:
 
 ## 🎲 How It Works
 
-1. **Register / Log in** to create your account.
-2. **Add characters** to your party with their combat stats (HP, AC, attacks, saves, etc.).
-3. On the **homepage**, select enemies from the bestiary and specify how many of each.
-4. Click **Run Simulation** — the backend runs 100 combat encounters and returns the results.
-5. View your **win rate**, average rounds, average deaths, and read further into the **combat log** of any individual simulation.
+1. On the **homepage**, select enemies from the bestiary and specify how many of each.
+2. Click **Run Simulation** — no account required. The simulation will run using a set of generic characters if you have not set up a party. The backend runs 100 combat encounters and returns the results.
+3. **Optionally**, register and log in to save a custom party. Add characters by entering their combat stats manually or by uploading a JSON export from [Pathbuilder 2e](https://pathbuilder2e.com/).
+4. View your **win rate**, average rounds, average deaths, and read further into the **combat log** of any individual simulation.
 
 ## 📄 License
 
@@ -125,5 +127,6 @@ This project is not published, endorsed, or specifically approved by Paizo Inc.
 [Foundry VTT pf2e system](https://github.com/foundryvtt/pf2e), licensed under the
 [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0),
 and have been transformed and restructured for use in this project.
+
 
 See [`THIRD_PARTY_ATTRIBUTIONS.md`](./THIRD_PARTY_ATTRIBUTIONS.md) for full attribution details.
