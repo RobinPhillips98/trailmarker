@@ -26,12 +26,14 @@ import NotFound from "./components/status_pages/NotFound.jsx";
  */
 export default function App() {
   const { Header, Content, Footer } = Layout;
+  const elevatedColor = "#1e2126";
   const themeConfig = {
     token: {
       colorBgLayout: "#0f1418",
       colorBgContainer: "#15181c",
       colorBgBase: "#0b0f12",
-      colorBgElevated: "#1e2126",
+      colorBgElevated: elevatedColor,
+      colorBgSpotlight: elevatedColor,
 
       colorText: "#E9E7E2",
       colorTextSecondary: "#B9B7B2",
