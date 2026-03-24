@@ -1,10 +1,20 @@
 // Third-party libraries
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button, Card, Col, Row, Switch, Tooltip, Typography } from "antd";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Button,
+  Card,
+  Col,
+  Row,
+  Space,
+  Switch,
+  Tooltip,
+  Typography,
+} from "antd";
 import {
   CheckOutlined,
   CloseOutlined,
+  InfoCircleOutlined,
   LockOutlined,
   PlayCircleOutlined,
 } from "@ant-design/icons";
@@ -48,6 +58,14 @@ export default function SimulationControls(props) {
   } else {
     switchTooltip = "";
   }
+
+  const infoText = (
+    <Text>
+      Toggles whether the simulation runs using the{" "}
+      <Link to="/characters/generic">premade characters</Link> from the Beginner
+      Box, or saved custom characters.
+    </Text>
+  );
 
   // Switch needs to be set back to true when user logs out
   useEffect(() => {
@@ -100,16 +118,23 @@ export default function SimulationControls(props) {
 
       <Col xs={24} md={8}>
         <Card ref={refs[6]} title="Simulation Options">
-          <Tooltip title={switchTooltip}>
-            <Switch
-              checked={switched}
-              disabled={switchDisabled}
-              onChange={() => setSwitched(!switched)}
-              checkedChildren={<CheckOutlined />}
-              unCheckedChildren={<CloseOutlined />}
-            />
-          </Tooltip>
-          <Text style={{ marginLeft: 5 }}>Use Generic Characters</Text>
+          <Space>
+            <Tooltip title={switchTooltip}>
+              <Switch
+                checked={switched}
+                disabled={switchDisabled}
+                onChange={() => setSwitched(!switched)}
+                checkedChildren={<CheckOutlined />}
+                unCheckedChildren={<CloseOutlined />}
+              />
+            </Tooltip>
+            <Text style={{ marginLeft: 5 }}>
+              Run Simulation Using Generic Characters
+            </Text>
+            <Tooltip title={infoText}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Space>
         </Card>
       </Col>
     </Row>

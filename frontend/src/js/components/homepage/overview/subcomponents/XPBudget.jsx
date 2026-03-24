@@ -48,7 +48,7 @@ export default function XPBudget(props) {
           </div>
         ))}
         <Title level={5} style={{ marginBottom: 8 }}>
-          Colorblind friendly?
+          Colorblind Friendly Difficulty Labels
         </Title>
         <Switch
           checked={switched}

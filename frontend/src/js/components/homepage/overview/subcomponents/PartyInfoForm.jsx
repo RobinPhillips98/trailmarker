@@ -1,7 +1,11 @@
 // Third-party libraries
 import { useContext } from "react";
-import { Card, Form, Select, Space, Switch, Tooltip } from "antd";
-import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
+import { Card, Form, Select, Space, Switch, Tooltip, Typography } from "antd";
+import {
+  CheckOutlined,
+  CloseOutlined,
+  InfoCircleOutlined,
+} from "@ant-design/icons";
 
 // Personal helpers
 import { levelOptions } from "../../../../services/helpers";
@@ -44,6 +48,7 @@ export default function PartyInfoForm(props) {
   } = props;
 
   const { user } = useContext(AuthContext);
+  const { Text } = Typography;
 
   const disabled = !user || !charactersSaved;
 
@@ -54,6 +59,18 @@ export default function PartyInfoForm(props) {
   } else {
     switchTooltip = "";
   }
+
+  const infoText =
+    "Toggles whether the difficulty estimate uses the currently saved characters, or uses the settings chosen in the dropdowns below.";
+
+  const switchLabel = (
+    <Space>
+      <Text>Estimate Difficulty With Saved Characters</Text>
+      <Tooltip title={infoText}>
+        <InfoCircleOutlined />
+      </Tooltip>
+    </Space>
+  );
 
   const sizeOptions = [
     {
@@ -85,12 +102,12 @@ export default function PartyInfoForm(props) {
   return (
     <Card
       ref={ref}
-      title="Difficulty Calculation Settings"
+      title="Difficulty Estimate Settings"
       style={{ height: "100%" }}
     >
       <Space direction="vertical" style={{ width: "100%" }} size="large">
         <Form labelCol={{ span: 24 }} wrapperCol={{ span: 24 }}>
-          <Form.Item label="Use Saved Characters">
+          <Form.Item label={switchLabel}>
             <Tooltip title={switchTooltip} placement="right">
               <Switch
                 checked={switched}
