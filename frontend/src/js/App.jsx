@@ -6,17 +6,18 @@ import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 
 // Components
-import Register from "./components/user_authentication/Register.jsx";
-import Login from "./components/user_authentication/Login.jsx";
-import Homepage from "./components/homepage/Homepage.jsx";
+import ErrorBoundary from "./components/status_pages/ErrorBoundary.jsx";
 import NavBar from "./components/NavBar.jsx";
+import Homepage from "./components/homepage/Homepage.jsx";
 import Characters from "./components/characters/Characters.jsx";
 import CharacterCreationForm from "./components/characters/character_creation_form/CharacterCreationForm.jsx";
+import GenericCharacters from "./components/characters/GenericCharacters.jsx";
+import Register from "./components/user_authentication/Register.jsx";
+import Login from "./components/user_authentication/Login.jsx";
+import AccountSettings from "./components/user_authentication/account_settings/AccountSettings.jsx";
 import Simulation from "./components/simulation/Simulation.jsx";
 import PolicyNotice from "./components/PolicyNotice.jsx";
 import NotFound from "./components/status_pages/NotFound.jsx";
-import ErrorBoundary from "./components/status_pages/ErrorBoundary.jsx";
-import AccountSettings from "./components/user_authentication/account_settings/AccountSettings.jsx";
 
 /**
  * The core app component, orchestrating all other components.
@@ -72,17 +73,19 @@ export default function App() {
                   <Content>
                     <Routes>
                       <Route path="/" element={<Homepage />} />
-                      <Route path="/characters" element={<Characters />} />
-                      <Route
-                        path="/characters/create"
-                        element={<CharacterCreationForm />}
-                      />
-                      <Route path="/register" element={<Register />} />
-                      <Route path="/login" element={<Login />} />
-                      <Route
-                        path="/user/settings"
-                        element={<AccountSettings />}
-                      />
+                      <Route path="/characters">
+                        <Route index element={<Characters />} />
+                        <Route
+                          path="create"
+                          element={<CharacterCreationForm />}
+                        />
+                        <Route path="generic" element={<GenericCharacters />} />
+                      </Route>
+                      <Route path="/users">
+                        <Route path="register" element={<Register />} />
+                        <Route path="login" element={<Login />} />
+                        <Route path="settings" element={<AccountSettings />} />
+                      </Route>
                       <Route path="/simulation" element={<Simulation />} />
                       <Route path="/copyright" element={<PolicyNotice />} />
                       <Route path="*" element={<NotFound />} />

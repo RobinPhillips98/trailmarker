@@ -28,7 +28,7 @@ export default function EditUsername() {
         },
       });
       logoutWithRedirect(
-        "/login",
+        "/users/login",
         "Username updated successfully. Please login again",
       );
     } catch (error) {
