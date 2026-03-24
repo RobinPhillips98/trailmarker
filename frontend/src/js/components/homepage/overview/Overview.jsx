@@ -15,6 +15,7 @@ import CurrentDifficultyDisplay from "./subcomponents/CurrentDifficultyDisplay";
 import XPBudget from "./subcomponents/XPBudget";
 import EncounterControls from "./subcomponents/EncounterControls";
 import SimulationControls from "./subcomponents/SimulationControls";
+import FloatingDifficulty from "./subcomponents/FloatingDifficulty";
 
 /**
  * An overview with information and options for the current encounter
@@ -231,6 +232,12 @@ export default function Overview(props) {
 
   return (
     <div style={{ width: "100%" }}>
+      <FloatingDifficulty
+        difficulty={difficulty}
+        difficultyColors={difficultyColors}
+        xp={xp}
+      />
+
       <SimulationControls
         selectedEnemies={selectedEnemies}
         charactersSaved={charactersSaved}
