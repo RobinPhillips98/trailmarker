@@ -56,7 +56,7 @@ function AuthProvider({ children }) {
   const { message } = App.useApp();
   const location = useLocation();
   const locationRef = useRef(location.pathname);
-  const publicRoutes = ["/", "/login", "/register"];
+  const publicRoutes = ["/", "/users/login", "/users/register"];
 
   // Keep locationRef in sync with the current pathname
   useEffect(() => {
@@ -84,7 +84,7 @@ function AuthProvider({ children }) {
   // Navigate to /login and show a message after token is cleared
   useEffect(() => {
     if (!token && pendingMessage) {
-      if (!publicRoutes.includes(locationRef.current)) navigate("/login");
+      if (!publicRoutes.includes(locationRef.current)) navigate("/users/login");
       if (pendingMessage.type === "success")
         message.success(pendingMessage.text);
       if (pendingMessage.type === "warning")
@@ -169,7 +169,7 @@ function AuthProvider({ children }) {
   async function register(username, password) {
     try {
       await registerUser({ username, password });
-      navigate("/login");
+      navigate("/users/login");
     } catch (error) {
       console.error("Error registering", error);
       message.error(
@@ -188,7 +188,7 @@ function AuthProvider({ children }) {
     setPendingMessage({ type: "success", text: "Logged out!" });
   }
 
-  function logoutWithRedirect(destination = "/login", msg = "") {
+  function logoutWithRedirect(destination = "/users/login", msg = "") {
     setToken(null);
     setUser(null);
     localStorage.removeItem("token");

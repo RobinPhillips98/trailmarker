@@ -28,7 +28,7 @@ export default function EditPassword() {
         },
       });
       logoutWithRedirect(
-        "/login",
+        "/users/login",
         "Password updated successfully. Please login again",
       );
     } catch (error) {

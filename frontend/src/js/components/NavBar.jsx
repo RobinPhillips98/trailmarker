@@ -55,7 +55,7 @@ export default function NavBar() {
               ),
           },
           {
-            key: "/user",
+            key: "/settings",
             label: user.username,
             icon: <UserOutlined />,
             children: [
@@ -81,12 +81,12 @@ export default function NavBar() {
           },
           {
             key: "/register",
-            label: <Link to="/register">Register</Link>,
+            label: <Link to="/users/register">Register</Link>,
             icon: <UserAddOutlined />,
           },
           {
             key: "/login",
-            label: <Link to="/login">Login</Link>,
+            label: <Link to="/users/login">Login</Link>,
             icon: <LoginOutlined />,
           },
         ];
