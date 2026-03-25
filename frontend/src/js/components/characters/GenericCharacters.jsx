@@ -2,7 +2,7 @@ import { Divider, Tabs, Typography } from "antd";
 
 export default function GenericCharacters() {
   const { Text, Title } = Typography;
-  const path = "/assets";
+  const path = "/assets/docs";
   const sheets = [`Cleric`, `Fighter`, `Rogue`, `Wizard`];
 
   const tabs = sheets.map((sheet) => ({
