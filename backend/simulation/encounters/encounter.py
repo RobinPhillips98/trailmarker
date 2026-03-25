@@ -26,7 +26,11 @@ class Encounter:
     # Built-in Methods
 
     def __init__(
-        self, players: list[Player], enemies: list[Enemy], simulation=None
+        self,
+        players: list[Player],
+        enemies: list[Enemy],
+        simulation=None,
+        starting_distance: int = 50,
     ):
         """Initializes the encounter with the given players and enemies.
 
@@ -39,6 +43,8 @@ class Encounter:
             enemies (list[Enemy]): A list of the Enemies in the encounter.
             simulation (Simulation, optional): The simulation running the
                 encounter. Defaults to None.
+            starting_distance (int, Optional): The distance between the players
+                and enemies at the start of the encounter. Defaults to 50.
         """
         self.players: list[Player] = players
         self.enemies: list[Enemy] = enemies
@@ -58,7 +64,7 @@ class Encounter:
                 position_y += 1
 
         if enemies:
-            position_x = 10
+            position_x = starting_distance / 5
             position_y = 0
             for enemy in enemies:
                 enemy.position_x = position_x

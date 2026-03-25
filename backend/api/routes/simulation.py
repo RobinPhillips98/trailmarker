@@ -142,7 +142,7 @@ async def run_simulations(
             enemies.append(enemy_dict)
 
     for i in range(total_sims):
-        sim_data = run_simulation(players, enemies)
+        sim_data = run_simulation(players, enemies, request.parameters)
         sim_data["sim_num"] = i + 1
         if sim_data["winner"] == "players":
             response["wins"] += 1
