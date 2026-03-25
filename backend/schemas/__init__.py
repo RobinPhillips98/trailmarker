@@ -209,6 +209,10 @@ class SimEnemyInfo(BaseModel):
 
 class SimRequest(BaseModel):
     enemies: list[SimEnemyInfo]
+    parameters: Optional[dict[str, int | float]] = {
+        "starting_distance": 50,
+        "health_multiplier": 1.0,
+    }
 
 
 class SimData(BaseModel):

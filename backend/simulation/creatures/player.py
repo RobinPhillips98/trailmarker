@@ -1,5 +1,6 @@
 """Defines the Player subclass extending Creature, and its methods."""
 
+import math
 from typing import Any
 
 from .creature import Creature
@@ -16,15 +17,26 @@ class Player(Creature):
 
     # Built-in Methods
 
-    def __init__(self, player: dict[str, Any], simulation=None):
+    def __init__(
+        self,
+        player: dict[str, Any],
+        simulation=None,
+        health_multiplier: float = 1.0,
+    ):
         """Initializes the player based on the passed in dictionary.
 
         Args:
             player (dict[str, Any]): The data used to build the player
             simulation (Simulation, optional): The simulation the creature is
                 in. Defaults to None.
+            health_multiplier (float, optional): A multiplier applied to the
+                player's current hit points at the start of the encounter.
+                Defaults to 1.0.
         """
         super().__init__(player, simulation)
+        self.current_hit_points = math.floor(
+            self.current_hit_points * health_multiplier
+        )
         self.team = 1
         self.ancestry: str = player["ancestry"]
         self.heritage: str = player["heritage"]

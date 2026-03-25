@@ -8,7 +8,12 @@ from ..encounters.encounter import Encounter
 
 
 def run_simulation(
-    player_dicts: list[dict[str, Any]], enemy_dicts: list[dict[str, Any]]
+    player_dicts: list[dict[str, Any]],
+    enemy_dicts: list[dict[str, Any]],
+    parameters: dict[str, int] = {
+        "starting_distance": 50,
+        "health_multiplier": 1.0,
+    },
 ) -> dict[str, str | int | list[str]]:
     """Runs one simulation and returns a dictionary with the data from it.
 
@@ -21,12 +26,14 @@ def run_simulation(
         player_dicts (list[dict[str, Any]]): Dictionaries to initialize
             Players.
         enemy_dicts (list[dict[str, Any]]): Dictionaries to initialize Enemies.
+        parameters: Dictionary with various settings for fine-tuning the
+            simulation, such as starting distance and player health multiplier.
 
     Returns:
         dict[str, str | int | list[str]]: Dict with data from the simulation.
     """
 
-    simulation = _Simulation(player_dicts, enemy_dicts)
+    simulation = _Simulation(player_dicts, enemy_dicts, parameters)
     simulation.run()
     return {
         "winner": simulation.winner,
@@ -44,6 +51,8 @@ class _Simulation:
         winner: The winner of the simulation.
         players_killed: The number of players killed in the simulation.
         rounds: The number of rounds the simulation lasted.
+        starting_distance: The distance between the players and enemies at the
+            start of the simulation.
         sim_log: A list of messages to be displayed by the frontend, showing
             a play-by-play description of the actions taken in the simulation.
         players: The Player objects used in the simulation.
@@ -55,16 +64,18 @@ class _Simulation:
         self,
         player_dicts: list[dict[str, Any]],
         enemy_dicts: list[dict[str, Any]],
+        parameters: dict[str, int],
     ):
         self.winner: str = ""
         self.players_killed: int = 0
         self.rounds: int = 0
+        self.starting_distance = parameters["starting_distance"]
         self.sim_log: list[str] = []
 
         self.players: list[Player] = []
         self.enemies: list[Enemy] = []
         for player_dict in player_dicts:
-            player = Player(player_dict, self)
+            player = Player(player_dict, self, parameters["health_multiplier"])
             self.players.append(player)
         for enemy_dict in enemy_dicts:
             enemy = Enemy(enemy_dict, self)
@@ -74,7 +85,9 @@ class _Simulation:
 
     def run(self):
         """Runs one encounter, setting `self.winner` based on the results."""
-        encounter = Encounter(self.players, self.enemies, self)
+        encounter = Encounter(
+            self.players, self.enemies, self, self.starting_distance
+        )
         self.winner = encounter.run_encounter()
 
     def log(self, message: str):
