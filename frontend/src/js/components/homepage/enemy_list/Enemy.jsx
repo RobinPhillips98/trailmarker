@@ -1,22 +1,31 @@
 import { Button, Card, Space, Tag, Typography } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 
 import { isEmpty, MAX_ENEMY_QUANTITY } from "../../../services/helpers";
 
 /**
  * A component to display an enemy that can be added to the encounter
  *
- * @param {object} props
- * @param {function} props.handleAdd The function to add the given enemy to the
+ * @typedef {object} EnemyProps
+ * @property {function} props.handleAdd The function to add the given enemy to the
  *  encounter
- * @param {object} props.enemy The enemy to be displayed
+ * @property {function} props.handleDecrement The function to decrement the
+ *  quantity of the given enemy
+ * @property {object} props.enemy The enemy to be displayed
+ *
+ * @param {EnemyProps} props
  * @returns {React.ReactElement}
  */
-export default function Enemy({ handleAdd, enemy }) {
+export default function Enemy(props) {
+  const { handleAdd, handleDecrement, enemy } = props;
   const { Text } = Typography;
 
-  function handleClick() {
+  function handleClickAdd() {
     handleAdd(enemy);
+  }
+
+  function handleClickDecrement() {
+    handleDecrement(enemy);
   }
 
   return (
@@ -218,12 +227,22 @@ export default function Enemy({ handleAdd, enemy }) {
       <Button
         type="primary"
         icon={<PlusOutlined />}
-        onClick={handleClick}
+        onClick={handleClickAdd}
         block
         disabled={enemy.quantity >= MAX_ENEMY_QUANTITY}
-        style={{ marginTop: 12, flexShrink: 0 }}
       >
-        Add
+        Add {enemy.quantity ? `(${enemy.quantity})` : null}
+      </Button>
+      <Button
+        type="primary"
+        danger
+        icon={<MinusOutlined />}
+        onClick={handleClickDecrement}
+        block
+        disabled={!enemy.quantity}
+        style={{ marginTop: 12 }}
+      >
+        Remove
       </Button>
     </Card>
   );
