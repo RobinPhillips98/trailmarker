@@ -161,7 +161,11 @@ export default function Homepage() {
         ref={refs[5]}
       />
       <br />
-      <EnemyList handleAdd={addEnemy} refs={refs} />
+      <EnemyList
+        handleAdd={addEnemy}
+        handleDecrement={decrementQuantity}
+        refs={refs}
+      />
       <FloatButton.Group>
         <TutorialModal setTourOpen={setTourOpen} ref={refs[8]} />
         <FloatButton.BackTop />

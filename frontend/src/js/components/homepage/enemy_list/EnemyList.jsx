@@ -13,14 +13,20 @@ import EnemyFilterForm from "./EnemyFilterForm";
 /**
  * A component to display a list of all enemies from the database
  *
- * @param {object} props
- * @param {function} props.handleAdd The function to add an enemy to the
+ * @typedef {object} EnemyListProps
+ * @property {function} props.handleAdd The function to add an enemy to the
  *  encounter
- * @param {React.RefObject[]} props.refs References used by the opening tour to
+ * @property {function} props.handleDecrement The function to decrement the
+ *  quantity of the given enemy
+ * @property {React.RefObject[]} props.refs References used by the opening tour to
  * target components
+ *
+ * @param {EnemyListProps} props
  * @returns {React.ReactElement}
  */
-export default function EnemyList({ handleAdd, refs }) {
+export default function EnemyList(props) {
+  const { handleAdd, handleDecrement, refs } = props;
+
   const [enemies, setEnemies] = useState([]);
   const [displayEnemies, setDisplayEnemies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -171,7 +177,11 @@ export default function EnemyList({ handleAdd, refs }) {
                 xl={4}
                 style={{ height: "400px" }}
               >
-                <Enemy handleAdd={handleAdd} enemy={enemy} />
+                <Enemy
+                  handleAdd={handleAdd}
+                  handleDecrement={handleDecrement}
+                  enemy={enemy}
+                />
               </Col>
             ))}
           </Row>
