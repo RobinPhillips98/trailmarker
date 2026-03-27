@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   Col,
+  Divider,
   Row,
   Space,
   Switch,
@@ -24,6 +25,9 @@ import { isEmpty } from "../../../../services/helpers";
 
 // Contexts
 import { AuthContext } from "../../../../contexts/AuthContext";
+
+// Components
+import SimulationParameters from "../../../simulation/SimulationParameters";
 
 /**
  * A component to handle setting options for and starting the simulation.
@@ -45,6 +49,10 @@ export default function SimulationControls(props) {
 
   const switchDisabled = !user || !charactersSaved;
   const [switched, setSwitched] = useState(switchDisabled);
+  const [parameters, setParameters] = useState({
+    starting_distance: 50,
+    health_multiplier: 1.0,
+  });
 
   const navigate = useNavigate();
   const { Text } = Typography;
@@ -78,7 +86,11 @@ export default function SimulationControls(props) {
    */
   function handleClick() {
     navigate("/simulation/", {
-      state: { enemies: selectedEnemies, pregen_chars: switched },
+      state: {
+        enemies: selectedEnemies,
+        pregen_chars: switched,
+        parameters: parameters,
+      },
     });
   }
 
@@ -117,7 +129,11 @@ export default function SimulationControls(props) {
       </Col>
 
       <Col xs={24} md={8}>
-        <Card ref={refs[6]} title="Simulation Options">
+        <Card
+          ref={refs[6]}
+          title="Simulation Options"
+          style={{ height: 250, overflow: "auto" }}
+        >
           <Space>
             <Tooltip title={switchTooltip}>
               <Switch
@@ -135,6 +151,11 @@ export default function SimulationControls(props) {
               <InfoCircleOutlined />
             </Tooltip>
           </Space>
+          <Divider />
+          <SimulationParameters
+            parameters={parameters}
+            setParameters={setParameters}
+          />
         </Card>
       </Col>
     </Row>
