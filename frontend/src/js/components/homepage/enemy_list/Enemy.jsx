@@ -17,7 +17,7 @@ import { isEmpty, MAX_ENEMY_QUANTITY } from "../../../services/helpers";
  * @returns {React.ReactElement}
  */
 export default function Enemy(props) {
-  const { handleAdd, handleDecrement, enemy } = props;
+  const { handleAdd, handleDecrement, enemy, quantity = 0 } = props;
   const { Text } = Typography;
 
   function handleClickAdd() {
@@ -229,9 +229,9 @@ export default function Enemy(props) {
         icon={<PlusOutlined />}
         onClick={handleClickAdd}
         block
-        disabled={enemy.quantity >= MAX_ENEMY_QUANTITY}
+        disabled={quantity >= MAX_ENEMY_QUANTITY}
       >
-        Add {enemy.quantity ? `(${enemy.quantity})` : null}
+        Add {quantity ? `(${quantity})` : null}
       </Button>
       <Button
         type="primary"
@@ -239,7 +239,7 @@ export default function Enemy(props) {
         icon={<MinusOutlined />}
         onClick={handleClickDecrement}
         block
-        disabled={!enemy.quantity}
+        disabled={!quantity}
         style={{ marginTop: 12 }}
       >
         Remove
