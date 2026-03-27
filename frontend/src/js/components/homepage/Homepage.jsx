@@ -5,6 +5,7 @@ import { App, FloatButton, Typography } from "antd";
 // Personal helpers
 import api from "../../api";
 import useErrorMessage from "../../services/hooks/useErrorMessage";
+import { MAX_ENEMY_QUANTITY } from "../../services/helpers";
 
 // Components
 import Overview from "./overview/Overview";
@@ -44,57 +45,71 @@ export default function Homepage() {
 
   /**
    * Adds the given enemy to the encounter, or if it's already in the encounter,
-   * increments its quantity
+   * increments its quantity (up to MAX_ENEMY_QUANTITY).
    *
    * @param {object} enemy The enemy to be added
    */
   function addEnemy(enemy) {
-    const exists = selectedEnemies.some(
-      (currentEnemy) => currentEnemy.id === enemy.id,
-    );
-    if (!exists) {
-      enemy["quantity"] = 1;
-      setSelectedEnemies((prev) => [...prev, enemy]);
-    } else {
-      incrementQuantity(enemy);
-    }
-  }
-
-  /**
-   * Increases the quantity of `enemy` by 1.
-   *
-   * Directly modifies enemy.quantity to ensure MAX_ENEMY_QUANTITY check in
-   * Enemy.jsx works properly
-   *
-   * @param {object} enemy The enemy being altered
-   */
-  function incrementQuantity(enemy) {
     setSelectedEnemies((prev) => {
-      prev.map((currentEnemy) => {
-        if (currentEnemy.id === enemy.id) currentEnemy.quantity++;
+      const existing = prev.find((e) => e.id === enemy.id);
+
+      if (!existing) {
+        return [...prev, { ...enemy, quantity: 1 }];
+      }
+
+      return prev.map((e) => {
+        if (e.id !== enemy.id) return e;
+        else {
+          const newQuantity = Math.min(
+            MAX_ENEMY_QUANTITY,
+            (e.quantity ?? 0) + 1,
+          );
+          return { ...e, quantity: newQuantity };
+        }
       });
-      return [...prev];
     });
   }
 
   /**
-   * Decreases the quantity of `enemy` by 1
+   * Increases the quantity of `enemy` by 1 (up to MAX_ENEMY_QUANTITY).
    *
-   * Directly modifies enemy.quantity to ensure MAX_ENEMY_QUANTITY check in
-   * Enemy.jsx works properly
+   * @param {object} enemy The enemy being altered
+   */
+  function incrementQuantity(enemy) {
+    setSelectedEnemies((prev) =>
+      prev.map((e) => {
+        if (e.id !== enemy.id) return e;
+        else {
+          const nextQuantity = Math.min(
+            MAX_ENEMY_QUANTITY,
+            (e.quantity ?? 0) + 1,
+          );
+          return { ...e, quantity: nextQuantity };
+        }
+      }),
+    );
+  }
+
+  /**
+   * Decreases the quantity of `enemy` by 1. If it hits 0, removes it.
    *
    * @param {object} enemy The enemy being altered
    */
   function decrementQuantity(enemy) {
-    if (enemy.quantity === 1) removeEnemy(enemy);
-    else {
-      setSelectedEnemies((prev) => {
-        prev.map((currentEnemy) => {
-          if (currentEnemy.id === enemy.id) currentEnemy.quantity--;
-        });
-        return [...prev];
-      });
-    }
+    setSelectedEnemies((prev) => {
+      const existing = prev.find((e) => e.id === enemy.id);
+      if (!existing) return prev;
+
+      const currentQuantity = existing.quantity ?? 0;
+
+      if (currentQuantity <= 1) {
+        return prev.filter((e) => e.id !== enemy.id);
+      }
+
+      return prev.map((e) =>
+        e.id === enemy.id ? { ...e, quantity: currentQuantity - 1 } : e,
+      );
+    });
   }
 
   /**
@@ -103,17 +118,13 @@ export default function Homepage() {
    * @param {object} enemy The enemy being altered
    */
   function removeEnemy(enemy) {
-    enemy.quantity = 0;
-    setSelectedEnemies((prev) =>
-      prev.filter((currentEnemy) => currentEnemy !== enemy),
-    );
+    setSelectedEnemies((prev) => prev.filter((e) => e.id !== enemy.id));
   }
 
   /**
    * Removes all enemies from the encounter.
    */
   function clearEnemies() {
-    selectedEnemies.forEach((enemy) => (enemy.quantity = 0));
     setSelectedEnemies([]);
     sessionStorage.removeItem("enemies");
   }
@@ -164,6 +175,7 @@ export default function Homepage() {
       <EnemyList
         handleAdd={addEnemy}
         handleDecrement={decrementQuantity}
+        selectedEnemies={selectedEnemies}
         refs={refs}
       />
       <FloatButton.Group>

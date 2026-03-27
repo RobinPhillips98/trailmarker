@@ -25,7 +25,7 @@ import EnemyFilterForm from "./EnemyFilterForm";
  * @returns {React.ReactElement}
  */
 export default function EnemyList(props) {
-  const { handleAdd, handleDecrement, refs } = props;
+  const { handleAdd, handleDecrement, selectedEnemies, refs } = props;
 
   const [enemies, setEnemies] = useState([]);
   const [displayEnemies, setDisplayEnemies] = useState([]);
@@ -33,6 +33,10 @@ export default function EnemyList(props) {
 
   const { Title } = Typography;
   const { errorMessage } = useErrorMessage();
+
+  const quantityById = new Map(
+    (selectedEnemies ?? []).map((e) => [e.id, e.quantity ?? 0]),
+  );
 
   const [form] = Form.useForm();
   const name = Form.useWatch("name", form);
@@ -167,23 +171,28 @@ export default function EnemyList(props) {
       <Spin spinning={loading}>
         <div ref={refs[4]} style={{ height: "60vh", overflow: "auto" }}>
           <Row gutter={[16, 16]}>
-            {displayEnemies.map((enemy) => (
-              <Col
-                key={enemy.id}
-                xs={24}
-                sm={12}
-                md={8}
-                lg={6}
-                xl={4}
-                style={{ height: "400px" }}
-              >
-                <Enemy
-                  handleAdd={handleAdd}
-                  handleDecrement={handleDecrement}
-                  enemy={enemy}
-                />
-              </Col>
-            ))}
+            {displayEnemies.map((enemy) => {
+              const quantity = quantityById.get(enemy.id) ?? 0;
+
+              return (
+                <Col
+                  key={enemy.id}
+                  xs={24}
+                  sm={12}
+                  md={8}
+                  lg={6}
+                  xl={4}
+                  style={{ height: "400px" }}
+                >
+                  <Enemy
+                    handleAdd={handleAdd}
+                    handleDecrement={handleDecrement}
+                    enemy={enemy}
+                    quantity={quantity}
+                  />
+                </Col>
+              );
+            })}
           </Row>
           {displayEnemies.length === 0 && !loading && (
             <Empty description="No enemies found" />
