@@ -3,10 +3,13 @@ import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
   Button,
+  Card,
   Collapse,
+  Divider,
   FloatButton,
   Grid,
   List,
+  Space,
   Spin,
   Switch,
   Typography,
@@ -24,6 +27,9 @@ import useErrorMessage from "../../services/hooks/useErrorMessage";
 
 // Contexts
 import { AuthContext } from "../../contexts/AuthContext";
+
+// Components
+import SimulationParameters from "./SimulationParameters";
 
 /**
  * A page to display the results of a simulation.
@@ -48,6 +54,7 @@ export default function Simulation() {
   const [loaded, setLoaded] = useState(false);
   const [run, setRun] = useState(false);
   const [switched, setSwitched] = useState(false);
+  const [randomSimData, setRandomSimData] = useState([]);
 
   // Other variables
   const { token } = useContext(AuthContext);
@@ -57,7 +64,8 @@ export default function Simulation() {
     enemies: null,
     pregen_chars: null,
   };
-  const { Paragraph, Title } = Typography;
+  const [parameters, setParameters] = useState(state?.parameters ?? null);
+  const { Paragraph, Text, Title } = Typography;
   const { errorMessage } = useErrorMessage();
 
   const simTitle = switched
@@ -85,8 +93,9 @@ export default function Simulation() {
 
   // useEffect calls
 
+  // Calls the simulation on page load, or when run again is pressed
   useEffect(() => {
-    if (!enemies || pregen_chars == null) return;
+    if (!enemies || pregen_chars == null || !parameters) return;
 
     const request = {
       enemies: enemies.map((enemy) => {
@@ -96,12 +105,13 @@ export default function Simulation() {
         };
       }),
       pregen_chars: pregen_chars,
+      parameters: parameters,
     };
     /**
-     * Uses the `enemies` object obtained from useLocation to make a POST
-     * request to the simulation API endpoint, then sets simData, wins,
-     * totalSims, winsRatio, avgDeaths, avgRounds, and totalPlayers using the
-     * data returned by the simulation in order to display the results.
+     * Uses the `state` obtained from useLocation to make a POST * request to
+     * the simulation API endpoint, then sets `simData`, `wins`, `totalSims`,
+     * winsRatio`, `avgDeaths`, `avgRounds`, and `totalPlayers` using the data
+     * returned by the simulation in order to display the results.
      */
     async function callSimulation() {
       try {
@@ -127,16 +137,24 @@ export default function Simulation() {
     callSimulation();
   }, [run, token]);
 
-  if (!enemies || pregen_chars == null)
+  // Sets random sim data only when the simulation loads
+  useEffect(() => {
+    if (loaded) {
+      const randomData = getRandom(simData, 10).sort(
+        (a, b) => a.sim_num - b.sim_num,
+      );
+      setRandomSimData(randomData);
+    }
+  }, [loaded]);
+
+  if (!enemies || pregen_chars == null) {
     throw new Error(
       'Null state passed in. Did you click "Run Simulation" on the homepage?',
     );
+  }
 
+  // If we have sim data to display, set up the simulation log display
   if (loaded) {
-    const randomSimData = getRandom(simData, 10).sort(
-      (a, b) => a.sim_num - b.sim_num,
-    );
-
     const simDataToUse = switched ? simData : randomSimData;
 
     const simDataDisplay = simDataToUse.map((sim, i) => {
@@ -211,13 +229,31 @@ export default function Simulation() {
     return (
       <>
         <Title>Simulation Results</Title>
-        <Button
-          type="primary"
-          onClick={handleClick}
-          icon={<PlayCircleOutlined />}
-        >
-          Run Again
-        </Button>
+
+        <Card title="Simulation Controls" style={{ width: "25%" }}>
+          <Button
+            type="primary"
+            onClick={handleClick}
+            icon={<PlayCircleOutlined />}
+            style={{ marginBottom: 10 }}
+          >
+            Run Again
+          </Button>
+          <SimulationParameters
+            parameters={parameters}
+            setParameters={setParameters}
+          />
+          <Space style={{ marginTop: 10 }}>
+            <Text>Show data for all simulations?</Text>
+            <Switch
+              checked={switched}
+              onChange={handleChange}
+              checkedChildren={<CheckOutlined />}
+              unCheckedChildren={<CloseOutlined />}
+            />
+          </Space>
+        </Card>
+
         <Title level={2}>
           Players won {wins}/{totalSims} simulations ({winsRatio.toFixed(0)}%)
         </Title>
@@ -227,13 +263,9 @@ export default function Simulation() {
           </List.Item>
           <List.Item>Average Number of Rounds: {avgRounds}</List.Item>
         </List>
-        <Title level={2}>Show data for all simulations?</Title>
-        <Switch
-          checked={switched}
-          onChange={handleChange}
-          checkedChildren={<CheckOutlined />}
-          unCheckedChildren={<CloseOutlined />}
-        />
+
+        <Divider />
+
         <Title level={2}>{simTitle}:</Title>
         <Collapse
           accordion
