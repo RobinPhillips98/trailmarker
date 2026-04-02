@@ -519,7 +519,7 @@ class Creature:
                 self.log(f"{self} critically succeeded. No damage taken!")
                 return
             case Degree.SUCCESS:
-                damage_taken = math.floor(damage / 2)
+                damage_taken = damage // 2
                 damage_display += " halved"
                 self.log(
                     f"{self} succeeded and takes {damage_taken} ({damage_display}) damage"  # noqa: E501

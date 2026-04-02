@@ -19,7 +19,8 @@ app = FastAPI(
 )
 
 origins = [
-    "http://localhost:5173",
+    "http://localhost:5173",  # Local dev server
+    "http://localhost:8080",  # Local production test server
     "https://trailmarker2e.com",
     "https://www.trailmarker2e.com",
     os.getenv("FRONTEND_URL"),
