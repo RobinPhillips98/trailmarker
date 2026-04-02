@@ -64,7 +64,7 @@ class Encounter:
                 position_y += 1
 
         if enemies:
-            position_x = starting_distance / 5
+            position_x = starting_distance // 5
             position_y = 0
             for enemy in enemies:
                 enemy.position_x = position_x

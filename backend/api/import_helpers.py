@@ -1,7 +1,6 @@
 """Defines helper functions used to import Pathbuilder2e characters."""
 
 import json
-import math
 from collections import defaultdict
 from pathlib import Path
 
@@ -146,12 +145,12 @@ def add_attribute_modifiers(
     """
     abilities = imported_character.abilities
     attributes_dict = {
-        "strength": math.floor((abilities.str_ - 10) / 2),
-        "dexterity": math.floor((abilities.dex - 10) / 2),
-        "constitution": math.floor((abilities.con - 10) / 2),
-        "wisdom": math.floor((abilities.wis - 10) / 2),
-        "charisma": math.floor((abilities.cha - 10) / 2),
-        "intelligence": math.floor((abilities.int_ - 10) / 2),
+        "strength": (abilities.str_ - 10) // 2,
+        "dexterity": (abilities.dex - 10) // 2,
+        "constitution": (abilities.con - 10) // 2,
+        "wisdom": (abilities.wis - 10) // 2,
+        "charisma": (abilities.cha - 10) // 2,
+        "intelligence": (abilities.int_ - 10) // 2,
     }
 
     return attributes_dict
