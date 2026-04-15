@@ -140,12 +140,12 @@ export default function CharacterImport({ addCharacter }) {
           </li>
           <li>Click &quot;View JSON&quot;</li>
           <li>
-            Highlight all the text on the page that opens (you can click in the
-            page then press Ctrl+A to easily do so) then copy the text
+            Press Ctrl + S or right click and select &quot;Save Page As&quot;,
+            choose a name for the file, and save the file.
           </li>
           <li>
-            Open a blank text file in your text editor of choice, paste in the
-            file contents, and save the file as [file_name].json
+            Return here, click the &quot;Upload Pathbuilder JSON&quot; button,
+            browse to the file you&apos;ve just saved and upload it.
           </li>
         </ol>
         <p>Note: Pathbuilder2e is not affiliated with Trailmarker</p>
