@@ -60,8 +60,8 @@ export default function NavBar() {
             icon: <UserOutlined />,
             children: [
               {
-                key: "/user/settings",
-                label: <Link to="/user/settings">Account Settings</Link>,
+                key: "/users/settings",
+                label: <Link to="/users/settings">Account Settings</Link>,
                 icon: <UserSwitchOutlined />,
               },
               {
