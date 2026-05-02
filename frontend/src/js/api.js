@@ -9,9 +9,7 @@ const api = axios.create({
 
 /**
  * Sets up an Axios response interceptor that calls the provided logout
- * function whenever a 401 Unauthorized response is received, unless the
- * request was made to the login endpoint (where a 401 is an expected
- * failure, not an expired session).
+ * function whenever a 401 Unauthorized response is received
  *
  * @param {function} onUnauthorized - Callback to invoke on 401 responses
  * @returns {number} The interceptor ID (can be used to eject it later)
@@ -20,15 +18,7 @@ export function setupAuthInterceptor(onUnauthorized) {
   return api.interceptors.response.use(
     (response) => response,
     (error) => {
-      const isLoginRequest = error.config?.url === "/auth/token";
-      const isUserSelfRequest =
-        error.config?.url === "/users/" &&
-        ["delete", "patch"].includes(error.config?.method);
-      if (
-        error.response?.status === 401 &&
-        !isLoginRequest &&
-        !isUserSelfRequest
-      ) {
+      if (error.response?.status === 401) {
         onUnauthorized();
       }
       return Promise.reject(error);
