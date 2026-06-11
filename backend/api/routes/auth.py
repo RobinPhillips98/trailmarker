@@ -23,7 +23,7 @@ from ..auth_helpers import (
 from ..dependencies import db_dependency
 from ..exceptions import BadRequestException
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=UserResponse)

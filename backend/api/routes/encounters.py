@@ -20,12 +20,10 @@ from ..exceptions import (
     NotFoundException,
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/encounters", tags=["encounters"])
 
 
-@router.get(
-    "/encounters", response_model=Encounters, status_code=status.HTTP_200_OK
-)
+@router.get("/", response_model=Encounters, status_code=status.HTTP_200_OK)
 async def get_encounters(
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
@@ -57,9 +55,7 @@ async def get_encounters(
 
 
 @router.post(
-    "/encounters",
-    response_model=Encounter,
-    status_code=status.HTTP_201_CREATED,
+    "/", response_model=Encounter, status_code=status.HTTP_201_CREATED
 )
 async def add_encounter(
     encounter: Encounter,
@@ -92,13 +88,13 @@ async def add_encounter(
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
-        print(f"Error in add_encounters: {str(e)}")
+        print(f"Error in add_encounter: {str(e)}")
         raise InternalServerError(message=str(e))
     return db_encounter
 
 
 @router.delete(
-    "/encounters/{encounter_id}",
+    "/{encounter_id}",
     response_model=BasicResponse,
     status_code=status.HTTP_200_OK,
 )
