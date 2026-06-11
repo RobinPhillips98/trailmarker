@@ -6,10 +6,8 @@ API, including getting the current user.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
 
-from models import Character, Encounter, User
+from models import User
 from schemas import BasicResponse, UserDelete, UserResponse, UserUpdate
 
 from ..auth_helpers import (
@@ -130,33 +128,6 @@ async def delete_user(
         )
 
     try:
-        # First, delete all characters associated with user
-        stmt = (
-            select(Character)
-            .options(selectinload(Character.user))
-            .where(Character.user_id == current_user.id)
-        )
-
-        result = await db.execute(stmt)
-        characters = result.scalars()
-
-        for character in characters:
-            await db.delete(character)
-
-        # Next, delete all encounters associated with the user
-        stmt = (
-            select(Encounter)
-            .options(selectinload(Encounter.user))
-            .where(Encounter.user_id == current_user.id)
-        )
-
-        result = await db.execute(stmt)
-        encounters = result.scalars()
-
-        for encounter in encounters:
-            await db.delete(encounter)
-
-        # Finally, delete the user
         await db.delete(current_user)
         await db.commit()
 
