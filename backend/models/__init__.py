@@ -13,8 +13,12 @@ class User(Base):
     username = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
 
-    encounters = relationship("Encounter", back_populates="user")
-    characters = relationship("Character", back_populates="user")
+    encounters = relationship(
+        "Encounter", back_populates="user", passive_deletes=True
+    )
+    characters = relationship(
+        "Character", back_populates="user", passive_deletes=True
+    )
 
 
 class Enemy(Base):
@@ -42,8 +46,9 @@ class Character(Base):
     __tablename__ = "characters"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    user = relationship("User", back_populates="characters")
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
     name = Column(String, nullable=False)
     player = Column(String)
     xp = Column(Integer)
@@ -65,12 +70,21 @@ class Character(Base):
     extra_proficiencies = Column(JSON)
     other_features = Column(ARRAY(String))
 
+    user = relationship(
+        "User", back_populates="characters", passive_deletes=True
+    )
+
 
 class Encounter(Base):
     __tablename__ = "encounters"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    user = relationship("User", back_populates="encounters")
+    user_id = Column(
+        Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
     name = Column(String)
     enemies = Column(JSON)
+
+    user = relationship(
+        "User", back_populates="encounters", passive_deletes=True
+    )
