@@ -93,7 +93,7 @@ export default function Overview(props) {
      */
     async function getPartyInfoFromServer() {
       try {
-        const response = await api.get("/characters", {
+        const response = await api.get("/characters/", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

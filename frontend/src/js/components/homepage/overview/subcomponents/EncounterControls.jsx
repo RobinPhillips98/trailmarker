@@ -64,7 +64,7 @@ export default function EncounterControls(props) {
       enemies: enemy_array,
     };
     try {
-      await api.post("/encounters", encounter, {
+      await api.post("/encounters/", encounter, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

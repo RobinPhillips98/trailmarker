@@ -13,10 +13,10 @@ from schemas import Enemies, Enemy
 
 from ..dependencies import db_dependency
 
-router = APIRouter()
+router = APIRouter(prefix="/enemies", tags=["enemies"])
 
 
-@router.get("/enemies", response_model=Enemies, status_code=status.HTTP_200_OK)
+@router.get("/", response_model=Enemies, status_code=status.HTTP_200_OK)
 async def get_enemies(db: db_dependency) -> Enemies:
     """Fetches all enemies from the database.
 
@@ -34,7 +34,7 @@ async def get_enemies(db: db_dependency) -> Enemies:
 
 
 @router.get(
-    "/enemies/{enemy_id}", response_model=Enemy, status_code=status.HTTP_200_OK
+    "/{enemy_id}", response_model=Enemy, status_code=status.HTTP_200_OK
 )
 async def get_enemy(enemy_id: int, db: db_dependency) -> Enemy:
     """Fetches the enemy with ID `enemy_id` from the database

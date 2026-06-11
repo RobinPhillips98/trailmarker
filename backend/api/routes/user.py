@@ -21,10 +21,10 @@ from ..auth_helpers import (
 from ..dependencies import db_dependency
 from ..exceptions import BadRequestException, InternalServerError
 
-router = APIRouter()
+router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/users/me/", response_model=UserResponse)
+@router.get("/me/", response_model=UserResponse)
 async def read_user(current_user: User = Depends(get_current_user)) -> User:
     """Fetches the currently logged in user from the database if it exists.
 
@@ -38,9 +38,7 @@ async def read_user(current_user: User = Depends(get_current_user)) -> User:
     return current_user
 
 
-@router.patch(
-    "/users/", response_model=UserResponse, status_code=status.HTTP_200_OK
-)
+@router.patch("/", response_model=UserResponse, status_code=status.HTTP_200_OK)
 async def update_user(
     request: UserUpdate,
     db: db_dependency,
@@ -101,7 +99,7 @@ async def update_user(
 
 
 @router.delete(
-    "/users/", response_model=BasicResponse, status_code=status.HTTP_200_OK
+    "/", response_model=BasicResponse, status_code=status.HTTP_200_OK
 )
 async def delete_user(
     request: UserDelete,

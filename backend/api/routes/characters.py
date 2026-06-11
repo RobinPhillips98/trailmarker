@@ -34,12 +34,10 @@ from ..exceptions import (
 )
 from ..import_helpers import convert_import_to_character
 
-router = APIRouter()
+router = APIRouter(prefix="/characters", tags=["characters"])
 
 
-@router.get(
-    "/characters", response_model=Characters, status_code=status.HTTP_200_OK
-)
+@router.get("/", response_model=Characters, status_code=status.HTTP_200_OK)
 async def get_characters(
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
@@ -64,9 +62,7 @@ async def get_characters(
 
 
 @router.post(
-    "/characters",
-    response_model=Character,
-    status_code=status.HTTP_201_CREATED,
+    "/", response_model=Character, status_code=status.HTTP_201_CREATED
 )
 async def add_character(
     character: CharacterCreate,
@@ -105,7 +101,7 @@ async def add_character(
 
 
 @router.post(
-    "/characters/import",
+    "/import",
     response_model=Character,
     status_code=status.HTTP_201_CREATED,
 )
@@ -153,9 +149,7 @@ async def import_character(
     return db_character
 
 
-@router.patch(
-    "/characters", response_model=Character, status_code=status.HTTP_200_OK
-)
+@router.patch("/", response_model=Character, status_code=status.HTTP_200_OK)
 async def update_character(
     character_update: CharacterUpdate,
     db: db_dependency,
@@ -215,7 +209,7 @@ async def update_character(
 
 
 @router.delete(
-    "/characters/{character_id}",
+    "/{character_id}",
     response_model=BasicResponse,
     status_code=status.HTTP_200_OK,
 )

@@ -39,7 +39,7 @@ app.include_router(enemies.router)
 app.include_router(encounters.router)
 app.include_router(simulation.router)
 app.include_router(user.router)
-app.include_router(auth.router, prefix="/auth")
+app.include_router(auth.router)
 
 
 @app.on_event("startup")

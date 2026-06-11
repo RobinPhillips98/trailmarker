@@ -114,7 +114,7 @@ export default function Characters() {
      */
     async function fetchCharacters() {
       try {
-        const response = await api.get("/characters", {
+        const response = await api.get("/characters/", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
