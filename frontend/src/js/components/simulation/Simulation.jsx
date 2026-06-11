@@ -116,8 +116,8 @@ export default function Simulation() {
     async function callSimulation() {
       try {
         const response = pregen_chars
-          ? await api.post("/simulation_pregen", request)
-          : await api.post("/simulation", request, {
+          ? await api.post("/simulation/pregen", request)
+          : await api.post("/simulation/", request, {
               headers: {
                 Authorization: `Bearer ${token}`,
               },

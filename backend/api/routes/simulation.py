@@ -22,12 +22,10 @@ from ..dependencies import db_dependency, run_simulation
 from ..exceptions import InternalServerError
 from .enemies import get_enemy
 
-router = APIRouter()
+router = APIRouter(prefix="/simulation", tags=["simulation"])
 
 
-@router.post(
-    "/simulation", response_model=SimResponse, status_code=status.HTTP_200_OK
-)
+@router.post("/", response_model=SimResponse, status_code=status.HTTP_200_OK)
 async def init_sim_with_auth(
     request: SimRequest,
     db: db_dependency,
@@ -64,7 +62,7 @@ async def init_sim_with_auth(
 
 
 @router.post(
-    "/simulation_pregen",
+    "/pregen",
     response_model=SimResponse,
     status_code=status.HTTP_200_OK,
 )

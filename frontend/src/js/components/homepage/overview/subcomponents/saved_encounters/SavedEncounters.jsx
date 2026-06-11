@@ -62,7 +62,7 @@ export default function SavedEncounters({ handleLoad }) {
      */
     async function fetchEncounters() {
       try {
-        const response = await api.get("/encounters", {
+        const response = await api.get("/encounters/", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
