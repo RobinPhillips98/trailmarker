@@ -7,10 +7,10 @@ from typing import Any
 from sqlalchemy.future import select
 
 import models
-from schemas import CharacterCreate, Characters, CharacterUpdate
+from schemas import Character, CharacterCreate, CharacterUpdate
 
 
-async def fetch_characters_from_db(user, db) -> Characters:
+async def fetch_characters_from_db(user, db) -> list[Character]:
     """Fetches all characters owned by `user`
 
     Args:
@@ -18,14 +18,11 @@ async def fetch_characters_from_db(user, db) -> Characters:
         db: A SQLAlchemy database session
 
     Returns:
-        Characters: A list of Character objects
+        list[Character]: A list of Character objects
     """
-    query = select(models.Character)
-    query = query.where(models.Character.user_id == user.id)
-    result = await db.execute(query)
-    characters = result.scalars().all()
-    character_list = [e.__dict__ for e in characters]
-    return Characters(characters=character_list)
+    stmt = select(models.Character).where(models.Character.user_id == user.id)
+    characters = (await db.scalars(stmt)).all()
+    return characters
 
 
 def convert_to_db_character(

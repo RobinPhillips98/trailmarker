@@ -98,8 +98,8 @@ export default function Overview(props) {
             Authorization: `Bearer ${token}`,
           },
         });
-        if (response.data.characters.length > 0) {
-          const fetchedCharacters = response.data.characters;
+        if (response.data.length > 0) {
+          const fetchedCharacters = response.data;
 
           setCharacters(fetchedCharacters);
           setCharactersSaved(true);

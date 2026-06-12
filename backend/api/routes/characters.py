@@ -6,15 +6,12 @@ route of the API including creating, reading, updating, and deleting characters
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
 
 import models
 from schemas import (
     BasicResponse,
     Character,
     CharacterCreate,
-    Characters,
     CharacterUpdate,
     PathbuilderImport,
 )
@@ -37,11 +34,13 @@ from ..import_helpers import convert_import_to_character
 router = APIRouter(prefix="/characters", tags=["characters"])
 
 
-@router.get("/", response_model=Characters, status_code=status.HTTP_200_OK)
+@router.get(
+    "/", response_model=list[Character], status_code=status.HTTP_200_OK
+)
 async def get_characters(
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
-) -> Characters:
+) -> list[Character]:
     """Fetches all characters owned by the current user
 
     Args:
@@ -50,7 +49,7 @@ async def get_characters(
              Defaults to Depends(get_current_user).
 
     Returns:
-        Characters: A list of Character objects
+        list[Character]: A list of Character objects
     """
     try:
         return await fetch_characters_from_db(current_user, db)
@@ -58,6 +57,49 @@ async def get_characters(
         raise http_err
     except Exception as e:
         print(f"Error in get_characters: {str(e)}")
+        raise InternalServerError(message=str(e))
+
+
+@router.get(
+    "/{character_id}", response_model=Character, status_code=status.HTTP_200_OK
+)
+async def get_character(
+    character_id: int,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_user),
+) -> Character:
+    """Fetches a character by ID
+
+    Args:
+        character_id (int): The ID of the character to be fetched
+        db (db_dependency): A SQLAlchemy database session
+        current_user (models.User, optional): The currently logged in user.
+             Defaults to Depends(get_current_user).
+
+    Raises:
+        NotFoundException: A 404 exception if the character is not found.
+        ForbiddenException: A 403 exception if the character does not
+            belong to the current user
+        http_err: A caught HTTP error
+        InternalServerError: A non-HTTP exception caught and raised as an HTTP
+            500 exception
+    Returns:
+        Character: The character object matching `character_id`
+    """
+    try:
+        character = await db.get(models.Character, character_id)
+
+        if character is None:
+            raise NotFoundException(route="character")
+
+        if character.user_id != current_user.id:
+            raise ForbiddenException(action="view", route="character")
+
+        return character
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in get_character: {str(e)}")
         raise InternalServerError(message=str(e))
 
 
@@ -149,19 +191,24 @@ async def import_character(
     return db_character
 
 
-@router.patch("/", response_model=Character, status_code=status.HTTP_200_OK)
+@router.patch(
+    "/{character_id}", response_model=Character, status_code=status.HTTP_200_OK
+)
 async def update_character(
+    character_id: int,
     character_update: CharacterUpdate,
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
 ) -> Character:
     """Updates a given character in the database.
 
-    Uses the ID contained in `character_update` to fetch a character from the
-    database and then uses the rest of `character_update` to overwrite that
-    character's data with the data in `character_update`.
+    Uses `character_id` to fetch a character from the database and then uses
+    `character_update` to overwrite that character's data with the data
+    provided in `character_update`. Only fields included in the request will be
+    updated - all other fields will be left as they are.
 
     Args:
+        character_id (int): The ID of the character to be updated.
         character_update (CharacterUpdate): A dictionary containing the data to
             be added or changes for the character.
         db (db_dependency): A SQLAlchemy database session
@@ -180,7 +227,7 @@ async def update_character(
         Character: The updated character's data
     """
     try:
-        db_character = await db.get(models.Character, character_update.id)
+        db_character = await db.get(models.Character, character_id)
 
         if db_character is None:
             raise NotFoundException(route="character")
@@ -188,7 +235,7 @@ async def update_character(
         if db_character.user_id != current_user.id:
             raise ForbiddenException(action="update", route="character")
 
-        update_data = character_update.dict(exclude_unset=True)
+        update_data = character_update.model_dump(exclude_unset=True)
         update_data["actions"]["attacks"] = build_attack_list(character_update)
         update_data["actions"]["spells"] = build_spell_list(character_update)
 
@@ -198,7 +245,7 @@ async def update_character(
         await db.commit()
         await db.refresh(db_character)
 
-        updated_character = Character.from_orm(db_character)
+        updated_character = Character.model_validate(db_character)
         return updated_character
 
     except HTTPException as http_err:
@@ -234,14 +281,7 @@ async def delete_character(
     Returns:
         BasicResponse: A response object confirming the character was deleted.
     """
-    stmt = (
-        select(models.Character)
-        .options(selectinload(models.Character.user))
-        .where(models.Character.id == character_id)
-    )
-
-    result = await db.execute(stmt)
-    character = result.scalar_one_or_none()
+    character = await db.get(models.Character, character_id)
 
     if not character:
         raise NotFoundException(route="character")
