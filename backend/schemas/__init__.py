@@ -11,13 +11,18 @@ class BasicResponse(BaseModel):
 
 # Encounters
 class Encounter(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     name: str
     enemies: list[dict[str, str | int]]
 
 
-class Encounters(BaseModel):
-    encounters: list[Encounter]
+class EncounterUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    name: Optional[str] = None
+    enemies: Optional[list[dict[str, str | int]]] = None
 
 
 # Stats
@@ -142,7 +147,7 @@ class Enemy(Creature):
     resistances: dict[str, int]
 
 
-class CharacterCreate(BaseModel):
+class CreatureCreate(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     name: str
@@ -156,6 +161,11 @@ class CharacterCreate(BaseModel):
     spell_dc: Optional[int] = None
     speed: int
     actions: Optional[ActionsRequest]
+
+
+class CharacterCreate(CreatureCreate):
+    model_config = ConfigDict(populate_by_name=True)
+
     player: Optional[str] = ""
     xp: Optional[int] = 0
     ancestry: str
@@ -167,27 +177,49 @@ class CharacterCreate(BaseModel):
     other_features: Optional[list[str]] = []
 
 
-class CharacterUpdate(BaseModel):
+class EnemyCreate(CreatureCreate):
     model_config = ConfigDict(populate_by_name=True)
 
-    id: int
-    name: str
-    level: int
-    perception: int
-    skills: Skills
-    attribute_modifiers: Attributes
-    defenses: Defenses
-    max_hit_points: int
+    traits: list[str]
+    immunities: list[str]
+    weaknesses: dict[str, int]
+    resistances: dict[str, int]
+
+
+class CreatureUpdate(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    name: Optional[str] = None
+    level: Optional[int] = None
+    perception: Optional[int] = None
+    skills: Optional[Skills] = None
+    attribute_modifiers: Optional[Attributes] = None
+    defenses: Optional[Defenses] = None
+    max_hit_points: Optional[int] = None
     spell_attack_bonus: Optional[int] = None
     spell_dc: Optional[int] = None
-    speed: int
+    speed: Optional[int] = None
     actions: Optional[ActionsRequest]
+
+
+class EnemyUpdate(CreatureUpdate):
+    model_config = ConfigDict(populate_by_name=True)
+
+    traits: Optional[list[str]] = None
+    immunities: Optional[list[str]] = None
+    weaknesses: Optional[dict[str, int]] = None
+    resistances: Optional[dict[str, int]] = None
+
+
+class CharacterUpdate(CreatureUpdate):
+    model_config = ConfigDict(populate_by_name=True)
+
     player: Optional[str] = ""
     xp: Optional[int] = 0
-    ancestry: str
-    heritage: str
-    background: str
-    class_: str = Field(..., alias="class")
+    ancestry: Optional[str] = None
+    heritage: Optional[str] = None
+    background: Optional[str] = None
+    class_: Optional[str] = Field(None, alias="class")
     proficiencies: Optional[dict[str, int]] = {}
     extra_proficiencies: Optional[dict[str, int]] = {}
     other_features: Optional[list[str]] = []

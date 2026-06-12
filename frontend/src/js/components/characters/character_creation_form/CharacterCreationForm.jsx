@@ -162,7 +162,7 @@ export default function CharacterCreationForm() {
       if (editing) {
         character.id = savedCharacter.id; // For request
         character_id = savedCharacter.id; // For selecting correct tab
-        await api.patch("/characters/", character, {
+        await api.patch(`/characters/${character_id}`, character, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

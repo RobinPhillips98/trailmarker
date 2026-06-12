@@ -119,7 +119,7 @@ export default function Characters() {
             Authorization: `Bearer ${token}`,
           },
         });
-        const sortedCharacters = sortCharacters(response.data.characters);
+        const sortedCharacters = sortCharacters(response.data);
         setCharacters(sortedCharacters);
         setLoading(false);
 

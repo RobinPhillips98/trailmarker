@@ -7,10 +7,9 @@ route of the API, including creating, reading, and deleting encounters.
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
 
 import models
-from schemas import BasicResponse, Encounter, Encounters
+from schemas import BasicResponse, Encounter, EncounterUpdate
 
 from ..auth_helpers import get_current_user
 from ..dependencies import db_dependency
@@ -23,11 +22,13 @@ from ..exceptions import (
 router = APIRouter(prefix="/encounters", tags=["encounters"])
 
 
-@router.get("/", response_model=Encounters, status_code=status.HTTP_200_OK)
+@router.get(
+    "/", response_model=list[Encounter], status_code=status.HTTP_200_OK
+)
 async def get_encounters(
     db: db_dependency,
     current_user: models.User = Depends(get_current_user),
-) -> Encounters:
+) -> list[Encounter]:
     """Fetches all encounters owned by the current user
 
     Args:
@@ -36,22 +37,59 @@ async def get_encounters(
              Defaults to Depends(get_current_user).
 
     Returns:
-        Encounters: A list of encounter objects
+        list[Encounter]: A list of encounter objects
     """
     try:
-        query = select(models.Encounter).options(
-            selectinload(models.Encounter.user)
+        stmt = select(models.Encounter).where(
+            models.Encounter.user_id == current_user.id
         )
-        query = query.where(models.Encounter.user_id == current_user.id)
-        result = await db.execute(query)
-        encounters = result.scalars().all()
-        encounter_list = [e.__dict__ for e in encounters]
+        encounters = (await db.scalars(stmt)).all()
+        return encounters
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
         print(f"Error in get_encounters: {str(e)}")
         raise InternalServerError(message=str(e))
-    return Encounters(encounters=encounter_list)
+
+
+@router.get(
+    "/{encounter_id}", response_model=Encounter, status_code=status.HTTP_200_OK
+)
+async def get_encounter(
+    encounter_id: int,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_user),
+) -> Encounter:
+    """Fetches an encounter by ID
+
+    Args:
+        encounter_id (int): The ID of the encounter to be fetched
+        db (db_dependency): A SQLAlchemy database session
+        current_user (models.User, optional): The currently logged in user.
+             Defaults to Depends(get_current_user).
+
+    Raises:
+        NotFoundException: A 404 exception if the encounter is not found.
+        ForbiddenException: A 403 exception if the encounter does not
+            belong to the current user
+    Returns:
+        Encounter: The encounter with the specified ID
+    """
+    try:
+        encounter = await db.get(models.Encounter, encounter_id)
+
+        if not encounter:
+            raise NotFoundException(route="encounter")
+
+        if encounter.user_id != current_user.id:
+            raise ForbiddenException(action="view", route="encounter")
+
+        return Encounter.model_validate(encounter)
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in get_encounter: {str(e)}")
+        raise InternalServerError(message=str(e))
 
 
 @router.post(
@@ -85,12 +123,48 @@ async def add_encounter(
         db.add(db_encounter)
         await db.commit()
         await db.refresh(db_encounter)
+
+        created_encounter = Encounter.model_validate(db_encounter)
+        return created_encounter
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
         print(f"Error in add_encounter: {str(e)}")
         raise InternalServerError(message=str(e))
-    return db_encounter
+
+
+@router.patch(
+    "/{encounter_id}", response_model=Encounter, status_code=status.HTTP_200_OK
+)
+async def update_encounter(
+    encounter_id: int,
+    encounter_update: EncounterUpdate,
+    db: db_dependency,
+    current_user: models.User = Depends(get_current_user),
+) -> Encounter:
+    try:
+        db_encounter = await db.get(models.Encounter, encounter_id)
+
+        if db_encounter is None:
+            raise NotFoundException(route="encounter")
+
+        if db_encounter.user_id != current_user.id:
+            raise ForbiddenException(action="update", route="encounter")
+
+        update_data = encounter_update.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_encounter, key, value)
+
+        await db.commit()
+        await db.refresh(db_encounter)
+
+        updated_encounter = Encounter.model_validate(db_encounter)
+        return updated_encounter
+    except HTTPException as http_err:
+        raise http_err
+    except Exception as e:
+        print(f"Error in update_encounter: {str(e)}")
+        raise InternalServerError(message=str(e))
 
 
 @router.delete(
@@ -119,14 +193,7 @@ async def delete_encounter(
     Returns:
         BasicResponse: A response object confirming the encounter was deleted.
     """
-    stmt = (
-        select(models.Encounter)
-        .options(selectinload(models.Encounter.user))
-        .where(models.Encounter.id == encounter_id)
-    )
-
-    result = await db.execute(stmt)
-    encounter = result.scalar_one_or_none()
+    encounter = await db.get(models.Encounter, encounter_id)
 
     if not encounter:
         raise NotFoundException(route="encounter")

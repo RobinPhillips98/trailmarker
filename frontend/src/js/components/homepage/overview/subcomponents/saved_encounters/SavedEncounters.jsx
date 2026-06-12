@@ -67,7 +67,7 @@ export default function SavedEncounters({ handleLoad }) {
             Authorization: `Bearer ${token}`,
           },
         });
-        setEncounters(response.data.encounters);
+        setEncounters(response.data);
       } catch (error) {
         errorMessage("Error fetching encounters", error);
       }
