@@ -57,8 +57,8 @@ export default function EnemyList(props) {
   async function fetchEnemies() {
     try {
       const response = await api.get("/enemies/");
-      setEnemies(response.data.enemies);
-      setDisplayEnemies(response.data.enemies);
+      setEnemies(response.data);
+      setDisplayEnemies(response.data);
       setLoading(false);
     } catch (error) {
       errorMessage("Error fetching enemies", error);
