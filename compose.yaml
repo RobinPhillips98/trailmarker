@@ -32,9 +32,13 @@ services:
       - server
 
   db:
+    env_file:
+      - ./backend/.env
     build:
       context: ./backend
       dockerfile: DockerfileDatabase
+    ports:
+      - "5433:5432"
     volumes:
       - ./backend:/script
     working_dir: /script
