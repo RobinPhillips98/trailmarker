@@ -67,7 +67,9 @@ def get_filenames() -> list[str]:
         list[str]: The list of filenames.
     """
     repo = Github().get_repo("foundryvtt/pf2e")
-    files = repo.get_contents("packs/pf2e/menace-under-otari-bestiary")
+    files = repo.get_contents(
+        "packs/pf2e/menace-under-otari-bestiary", ref="v13-dev"
+    )
     exclusions = [
         "central-spears-bb.json",
         "envenomed-lock-bb.json",

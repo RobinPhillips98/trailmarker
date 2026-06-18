@@ -42,6 +42,11 @@ app.include_router(user.router)
 app.include_router(auth.router)
 
 
+@app.get("/")
+async def root():
+    return {"message": "Server is running!"}
+
+
 @app.on_event("startup")
 async def startup():
     async with engine.begin() as conn:
