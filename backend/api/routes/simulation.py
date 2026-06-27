@@ -11,7 +11,6 @@ stats about the simulations.
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.future import select
 
 import models
 from schemas import Character, Enemy, SimRequest, SimResponse
@@ -91,10 +90,8 @@ async def init_sim_with_pregens(
         SimResponse: Overall data and data from each simulation.
     """
     try:
-        query = select(models.User)
-        query = query.where(models.User.id == 1)
-        result = await db.execute(query)
-        user = result.scalar_one_or_none()
+        # Admin user with pregens has ID of 1
+        user = await db.get(models.User, 1)
         return await run_simulations(user, request, db)
 
     except HTTPException as http_err:
@@ -128,7 +125,7 @@ async def run_simulations(
     }
     players = []
     result = await fetch_characters_from_db(user, db)
-    characters = result.characters
+    characters = [Character.model_validate(character) for character in result]
     for character in characters:
         players.append(convert_to_player_dict(character))
 
