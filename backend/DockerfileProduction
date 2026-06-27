@@ -1,4 +1,4 @@
-# Stage 2: Build Backend Dependencies
+# Stage 1: Build Backend Dependencies
 FROM python:3.14 AS backend-builder
 
 WORKDIR /app
@@ -15,7 +15,7 @@ COPY ./pyproject.toml ./poetry.lock* /app/
 # Install dependencies (production only)
 RUN poetry install --no-interaction --no-ansi --only=main --no-root
 
-# Stage 3: Final Runtime Image
+# Stage 2: Final Runtime Image
 FROM python:3.14
 
 WORKDIR /app
