@@ -1,6 +1,7 @@
 """Initializes and launches the server itself."""
 
 import os
+from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI
@@ -12,7 +13,23 @@ from db import engine
 
 is_production = os.getenv("ENVIRONMENT") == "production"
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Lifespan context manager for FastAPI application.
+
+    This function is called when the FastAPI application starts and stops. It
+    creates the database tables defined in the models if they do not already
+    exist when the application starts.
+
+    """
+    async with engine.begin() as conn:
+        await conn.run_sync(models.Base.metadata.create_all)
+    yield
+
+
 app = FastAPI(
+    lifespan=lifespan,
     docs_url=None if is_production else "/docs",
     redoc_url=None if is_production else "/redoc",
     debug=not is_production,
@@ -45,12 +62,6 @@ app.include_router(auth.router)
 @app.get("/")
 async def root():
     return {"message": "Server is running!"}
-
-
-@app.on_event("startup")
-async def startup():
-    async with engine.begin() as conn:
-        await conn.run_sync(models.Base.metadata.create_all)
 
 
 if __name__ == "__main__":
