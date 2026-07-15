@@ -28,7 +28,7 @@ async def get_enemies(db: db_dependency) -> list[Enemy]:
         list[Enemy]: A list of enemy objects
     """
     try:
-        stmt = select(models.Enemy)
+        stmt = select(models.Enemy).order_by(models.Enemy.name)
         enemies = (await db.scalars(stmt)).all()
         return enemies
     except Exception as e:
@@ -131,7 +131,6 @@ async def update_enemy(
         for key, value in update_data.items():
             setattr(db_enemy, key, value)
 
-        db.add(db_enemy)
         await db.commit()
         await db.refresh(db_enemy)
 

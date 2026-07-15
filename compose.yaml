@@ -30,6 +30,8 @@ services:
       - NODE_ENV=development
     depends_on:
       - server
+    stdin_open: true
+    tty: true
 
   db:
     env_file:

@@ -1,4 +1,23 @@
-FROM python:latest
-COPY . /app
+FROM python:3.14
+
+# Prevents Python from writing .pyc files to disk inside the container.
+ENV PYTHONDONTWRITEBYTECODE=1
+# Ensures that Python output is sent straight to the terminal without being buffered.
+ENV PYTHONUNBUFFERED=1
+
+# Install build tools needed for psycopg2 (pg_config + compiler)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Sets up working directory and installs poetry
 WORKDIR /app
-RUN pip install poetry
+RUN pip install --no-cache-dir poetry
+
+# Copy only dependency files first for better layer caching
+COPY pyproject.toml poetry.lock* /app/
+
+# Install into container Python, not a Poetry venv
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi --no-root
