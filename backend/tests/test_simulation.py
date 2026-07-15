@@ -1,7 +1,7 @@
 import pytest
 
-from ..simulation.core.simulation import run_simulation
-from .sample_data import test_enemies, test_party
+from simulation.core.simulation import run_simulation
+from tests.sample_data import test_enemies, test_party
 
 total_sims = 100
 

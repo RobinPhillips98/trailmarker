@@ -6,8 +6,23 @@ route of the API including creating, reading, updating, and deleting characters
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import models
+from api.auth_helpers import get_current_user
+from api.character_helpers import (
+    build_attack_list,
+    build_spell_list,
+    convert_to_db_character,
+    fetch_characters_from_db,
+)
+from api.exceptions import (
+    ForbiddenException,
+    InternalServerError,
+    NotFoundException,
+)
+from api.import_helpers import convert_import_to_character
+from db import get_db
 from schemas import (
     BasicResponse,
     Character,
@@ -16,21 +31,6 @@ from schemas import (
     PathbuilderImport,
 )
 
-from ..auth_helpers import get_current_user
-from ..character_helpers import (
-    build_attack_list,
-    build_spell_list,
-    convert_to_db_character,
-    fetch_characters_from_db,
-)
-from ..dependencies import db_dependency
-from ..exceptions import (
-    ForbiddenException,
-    InternalServerError,
-    NotFoundException,
-)
-from ..import_helpers import convert_import_to_character
-
 router = APIRouter(prefix="/characters", tags=["characters"])
 
 
@@ -38,13 +38,13 @@ router = APIRouter(prefix="/characters", tags=["characters"])
     "/", response_model=list[Character], status_code=status.HTTP_200_OK
 )
 async def get_characters(
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> list[Character]:
     """Fetches all characters owned by the current user
 
     Args:
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 
@@ -65,14 +65,14 @@ async def get_characters(
 )
 async def get_character(
     character_id: int,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> Character:
     """Fetches a character by ID
 
     Args:
         character_id (int): The ID of the character to be fetched
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 
@@ -108,14 +108,14 @@ async def get_character(
 )
 async def add_character(
     character: CharacterCreate,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> Character:
     """Adds `character` to the database, attached to `current_user`
 
     Args:
         character (CharacterCreate): The character to be added to the database
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
             Defaults to Depends(get_current_user).
 
@@ -149,7 +149,7 @@ async def add_character(
 )
 async def import_character(
     imported_character: PathbuilderImport,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> Character:
     """Adds a character imported from Pathbuilder to the database
@@ -160,7 +160,7 @@ async def import_character(
     Args:
         imported_character (PathbuilderImport): An exported JSON file from
             Pathbuilder2e representing a Pathfinder 2E character
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 
@@ -197,7 +197,7 @@ async def import_character(
 async def update_character(
     character_id: int,
     character_update: CharacterUpdate,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> Character:
     """Updates a given character in the database.
@@ -211,7 +211,7 @@ async def update_character(
         character_id (int): The ID of the character to be updated.
         character_update (CharacterUpdate): A dictionary containing the data to
             be added or changes for the character.
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 
@@ -262,14 +262,14 @@ async def update_character(
 )
 async def delete_character(
     character_id: int,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> BasicResponse:
     """Fetches a character by ID and deletes it from the database
 
     Args:
         character_id (int): The ID of the character to be deleted
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 

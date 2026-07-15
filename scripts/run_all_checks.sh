@@ -11,7 +11,7 @@ echo 'Running black...'
 poetry run black --line-length=79 . --check
 
 echo 'Running unit tests...'
-poetry run pytest -x
+poetry run python -m pytest -x
 
 echo 'Running frontend tests...'
 

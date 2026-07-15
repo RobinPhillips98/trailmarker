@@ -1,7 +1,7 @@
-from ..simulation.creatures.creature import Creature
-from ..simulation.creatures.enemy import Enemy
-from ..simulation.creatures.player import Player
-from .sample_data import (
+from simulation.creatures.creature import Creature
+from simulation.creatures.enemy import Enemy
+from simulation.creatures.player import Player
+from tests.sample_data import (
     test_creature,
     test_enemy,
     test_enemy_3,

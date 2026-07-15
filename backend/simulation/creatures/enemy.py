@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from .creature import Creature
+from simulation.creatures.creature import Creature
 
 
 class Enemy(Creature):

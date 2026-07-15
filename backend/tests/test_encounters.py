@@ -1,9 +1,9 @@
 import pytest
 
-from ..simulation.creatures.enemy import Enemy
-from ..simulation.creatures.player import Player
-from ..simulation.encounters.encounter import Encounter
-from .sample_data import test_enemy, test_player
+from simulation.creatures.enemy import Enemy
+from simulation.creatures.player import Player
+from simulation.encounters.encounter import Encounter
+from tests.sample_data import test_enemy, test_player
 
 
 @pytest.mark.repeat(25)

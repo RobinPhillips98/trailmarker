@@ -6,18 +6,18 @@ API, including getting the current user.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import User
-from schemas import BasicResponse, UserDelete, UserResponse, UserUpdate
-
-from ..auth_helpers import (
+from api.auth_helpers import (
     get_current_user,
     get_password_hash,
     get_user,
     verify_password,
 )
-from ..dependencies import db_dependency
-from ..exceptions import BadRequestException, InternalServerError
+from api.exceptions import BadRequestException, InternalServerError
+from db import get_db
+from models import User
+from schemas import BasicResponse, UserDelete, UserResponse, UserUpdate
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -39,7 +39,7 @@ async def read_user(current_user: User = Depends(get_current_user)) -> User:
 @router.patch("/", response_model=UserResponse, status_code=status.HTTP_200_OK)
 async def update_user(
     request: UserUpdate,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> UserResponse:
     """Updates the current user's username or password.
@@ -47,8 +47,8 @@ async def update_user(
     Args:
         request (UserUpdate): A dictionary containing the new username or
             password, as well as the old password for verification.
-        db (db_dependency): A SQLAlchemy database session
-        current_user (models.User, optional): The currently logged in user.
+        db (AsyncSession): A SQLAlchemy database session
+        current_user (User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 
     Raises:
@@ -101,7 +101,7 @@ async def update_user(
 )
 async def delete_user(
     request: UserDelete,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> BasicResponse:
     """Deletes the current user's account and all records associated with it.
@@ -109,8 +109,8 @@ async def delete_user(
     Args:
         request (UserDelete): A request containing the user's password, for
             verification.
-        db (db_dependency): A SQLAlchemy database session
-        current_user (models.User, optional): The currently logged in user.
+        db (AsyncSession): A SQLAlchemy database session
+        current_user (User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 
     Raises:

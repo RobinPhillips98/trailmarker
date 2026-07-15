@@ -11,15 +11,15 @@ stats about the simulations.
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import models
+from api.auth_helpers import get_current_user
+from api.character_helpers import fetch_characters_from_db
+from api.exceptions import InternalServerError
+from db import get_db
 from schemas import Character, Enemy, SimRequest, SimResponse
-
-from ..auth_helpers import get_current_user
-from ..character_helpers import fetch_characters_from_db
-from ..dependencies import db_dependency, run_simulation
-from ..exceptions import InternalServerError
-from .enemies import get_enemy
+from simulation.core.simulation import run_simulation
 
 router = APIRouter(prefix="/simulation", tags=["simulation"])
 
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/simulation", tags=["simulation"])
 @router.post("/", response_model=SimResponse, status_code=status.HTTP_200_OK)
 async def init_sim_with_auth(
     request: SimRequest,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> SimResponse:
     """Runs simulations using current user's party and requested enemies.
@@ -39,7 +39,7 @@ async def init_sim_with_auth(
 
     Args:
         request (SimRequest): List of enemy IDs and the quantity of each enemy.
-        db (db_dependency): A SQLAlchemy database session.
+        db (AsyncSession): A SQLAlchemy database session.
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 
@@ -67,7 +67,7 @@ async def init_sim_with_auth(
 )
 async def init_sim_with_pregens(
     request: SimRequest,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
 ) -> SimResponse:
     """Runs simulations using a pre-made party and requested enemies.
 
@@ -80,7 +80,7 @@ async def init_sim_with_pregens(
 
     Args:
         request (SimRequest): List of enemy IDs and the quantity of each enemy.
-        db (db_dependency): A SQLAlchemy database session.
+        db (AsyncSession): A SQLAlchemy database session.
 
     Raises:
         http_err: Any HTTPException, raised as-is.
@@ -102,14 +102,14 @@ async def init_sim_with_pregens(
 
 
 async def run_simulations(
-    user: models.User, request: SimRequest, db: db_dependency
+    user: models.User, request: SimRequest, db: AsyncSession = Depends(get_db)
 ) -> SimResponse:
     """Driver to handle running the simulation using the passed in `user`.
 
     Args:
         user (models.User): The user whose characters should be used.
         request (SimRequest): List of enemy IDs and the quantity of each enemy.
-        db (db_dependency): A SQLAlchemy database session.
+        db (AsyncSession): A SQLAlchemy database session.
 
     Returns:
         SimResponse: Overall data and data from each simulation.
@@ -131,7 +131,12 @@ async def run_simulations(
 
     enemies = []
     for enemy in request.enemies:
-        db_enemy = await get_enemy(enemy.id, db)
+        db_enemy = await db.get(models.Enemy, enemy.id)
+        if not db_enemy:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Enemy with ID {enemy.id} not found",
+            )
         enemy_dict = convert_to_enemy_dict(db_enemy)
         for i in range(enemy.quantity):
             enemies.append(enemy_dict)
@@ -151,7 +156,7 @@ async def run_simulations(
     total_rounds = sum(data["rounds"] for data in response["sim_data"])
     response["average_rounds"] = total_rounds / total_sims
 
-    return response
+    return SimResponse.model_validate(response)
 
 
 def convert_to_player_dict(character: Character) -> dict[str, Any]:

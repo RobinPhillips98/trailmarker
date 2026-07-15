@@ -6,18 +6,18 @@ route of the API, including creating, reading, and deleting encounters.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 import models
-from schemas import BasicResponse, Encounter, EncounterUpdate
-
-from ..auth_helpers import get_current_user
-from ..dependencies import db_dependency
-from ..exceptions import (
+from api.auth_helpers import get_current_user
+from api.exceptions import (
     ForbiddenException,
     InternalServerError,
     NotFoundException,
 )
+from db import get_db
+from schemas import BasicResponse, Encounter, EncounterUpdate
 
 router = APIRouter(prefix="/encounters", tags=["encounters"])
 
@@ -26,13 +26,13 @@ router = APIRouter(prefix="/encounters", tags=["encounters"])
     "/", response_model=list[Encounter], status_code=status.HTTP_200_OK
 )
 async def get_encounters(
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> list[Encounter]:
     """Fetches all encounters owned by the current user
 
     Args:
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 
@@ -57,14 +57,14 @@ async def get_encounters(
 )
 async def get_encounter(
     encounter_id: int,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> Encounter:
     """Fetches an encounter by ID
 
     Args:
         encounter_id (int): The ID of the encounter to be fetched
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 
@@ -97,14 +97,14 @@ async def get_encounter(
 )
 async def add_encounter(
     encounter: Encounter,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> Encounter:
     """Adds `encounter` to the database
 
     Args:
         encounter (Encounter): The encounter to be added to the database
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 
@@ -139,7 +139,7 @@ async def add_encounter(
 async def update_encounter(
     encounter_id: int,
     encounter_update: EncounterUpdate,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> Encounter:
     try:
@@ -174,14 +174,14 @@ async def update_encounter(
 )
 async def delete_encounter(
     encounter_id: int,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> BasicResponse:
     """Fetches an encounter by ID and deletes it from the database
 
     Args:
         encounter_id (int): The ID of the encounter to be deleted
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         current_user (models.User, optional): The currently logged in user.
              Defaults to Depends(get_current_user).
 

@@ -9,25 +9,27 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import User
-from schemas import Token, UserCreate, UserResponse
-
-from ..auth_helpers import (
+from api.auth_helpers import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     authenticate_user,
     create_access_token,
     get_password_hash,
     get_user,
 )
-from ..dependencies import db_dependency
-from ..exceptions import BadRequestException
+from api.exceptions import BadRequestException
+from db import get_db
+from models import User
+from schemas import Token, UserCreate, UserResponse
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=UserResponse)
-async def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
+async def register_user(
+    user: UserCreate, db: AsyncSession = Depends(get_db)
+) -> UserResponse:
     """Adds a given user to the database.
 
     Takes in a `user` and checks that its username doesn't already exist in the
@@ -37,7 +39,7 @@ async def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
     Args:
         user (UserCreate): An object containing information about a new user,
             including their username and password.
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
 
     Raises:
         BadRequestException: The given username already exists in the database.
@@ -61,13 +63,13 @@ async def register_user(user: UserCreate, db: db_dependency) -> UserResponse:
 
 @router.post("/token")
 async def login_for_access_token(
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
     form_data: OAuth2PasswordRequestForm = Depends(),
 ) -> Token:
     """Validates a username and password and returns a JWT on success.
 
     Args:
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         form_data (OAuth2PasswordRequestForm, optional): An OAuth form holding
             a user's username and password. Defaults to Depends().
 
