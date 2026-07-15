@@ -537,6 +537,8 @@ test_enemy_2 = {
     },
     "traits": ["common", "sm", "goblin", "humanoid"],
     "immunities": [],
+    "weaknesses": {},
+    "resistances": {},
 }
 
 test_enemy_3 = {
@@ -618,6 +620,8 @@ test_enemy_3 = {
     },
     "traits": ["common", "sm", "goblin", "humanoid"],
     "immunities": [],
+    "weaknesses": {},
+    "resistances": {},
 }
 
 test_enemy_sneak = {
