@@ -9,19 +9,34 @@ jobs:
   static-analysis-check:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: TEST
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d TEST"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/TEST
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-            python-version: '3.13' 
+          python-version: "3.13"
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
-
-      - name: Checkout code
-        uses: actions/checkout@v4
+          node-version: "24"
 
       - name: Install poetry
         run: |
@@ -30,23 +45,22 @@ jobs:
 
       - name: Install python dependencies (in pyproject.toml)
         run: |
-            cd backend
-            poetry install
+          cd backend
+          poetry install
 
       - name: Check backend code quality using black, isort, and flake8
         run: |
-            # bash scripts/check.sh
-            cd backend
-            echo 'Running flake8...'
-            poetry run flake8
+          cd backend
+          echo 'Running flake8...'
+          poetry run flake8
 
-            echo 'Running isort...'
-            poetry run isort . --check-only
+          echo 'Running isort...'
+          poetry run isort . --check-only
 
-            echo 'Running black...'
-            poetry run black --line-length=79 . --check
+          echo 'Running black...'
+          poetry run black --line-length=79 . --check
 
-            echo 'Completed checks'
+          echo 'Completed checks'
 
       - name: Install frontend dependencies
         run: |
