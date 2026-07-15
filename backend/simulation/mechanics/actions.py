@@ -5,7 +5,15 @@ import random
 import re
 from typing import Any
 
-from ..mechanics.misc import Degree, Die, calculate_dos, d6, d8, d10, d20
+from simulation.mechanics.misc import (
+    Degree,
+    Die,
+    calculate_dos,
+    d6,
+    d8,
+    d10,
+    d20,
+)
 
 
 class Action:

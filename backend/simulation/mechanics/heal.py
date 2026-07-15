@@ -2,8 +2,8 @@
 
 from math import inf
 
-from .actions import Action
-from .misc import d8
+from simulation.mechanics.actions import Action
+from simulation.mechanics.misc import d8
 
 
 class Heal(Action):

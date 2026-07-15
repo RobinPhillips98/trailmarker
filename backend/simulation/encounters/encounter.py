@@ -2,9 +2,9 @@
 
 from operator import attrgetter
 
-from ..creatures.creature import Creature
-from ..creatures.enemy import Enemy
-from ..creatures.player import Player
+from simulation.creatures.creature import Creature
+from simulation.creatures.enemy import Enemy
+from simulation.creatures.player import Player
 
 
 class Encounter:

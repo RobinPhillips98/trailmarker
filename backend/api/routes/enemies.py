@@ -1,28 +1,27 @@
 """Functions for API calls related to enemies
 
 Defines functions that are called when a request is made to the /enemies
-route of the API, including reading enemies.
-
+route of the API.
 """
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 import models
 from api.exceptions import InternalServerError, NotFoundException
+from db import get_db
 from schemas import BasicResponse, Enemy, EnemyCreate, EnemyUpdate
-
-from ..dependencies import db_dependency
 
 router = APIRouter(prefix="/enemies", tags=["enemies"])
 
 
 @router.get("/", response_model=list[Enemy], status_code=status.HTTP_200_OK)
-async def get_enemies(db: db_dependency) -> list[Enemy]:
+async def get_enemies(db: AsyncSession = Depends(get_db)) -> list[Enemy]:
     """Fetches all enemies from the database.
 
     Args:
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
 
     Returns:
         list[Enemy]: A list of enemy objects
@@ -39,12 +38,14 @@ async def get_enemies(db: db_dependency) -> list[Enemy]:
 @router.get(
     "/{enemy_id}", response_model=Enemy, status_code=status.HTTP_200_OK
 )
-async def get_enemy(enemy_id: int, db: db_dependency) -> Enemy:
+async def get_enemy(
+    enemy_id: int, db: AsyncSession = Depends(get_db)
+) -> Enemy:
     """Fetches the enemy with ID `enemy_id` from the database
 
     Args:
         enemy_id (int): The ID of the enemy to be fetched
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
 
     Returns:
         Enemy: An ORM model representing an enemy
@@ -62,13 +63,15 @@ async def get_enemy(enemy_id: int, db: db_dependency) -> Enemy:
 
 
 @router.post("/", response_model=Enemy, status_code=status.HTTP_201_CREATED)
-async def create_enemy(enemy: EnemyCreate, db: db_dependency) -> Enemy:
+async def create_enemy(
+    enemy: EnemyCreate, db: AsyncSession = Depends(get_db)
+) -> Enemy:
     """Creates a new enemy in the database.
 
     Args:
         enemy (EnemyCreate): An EnemyCreate object containing the data for the
             new enemy
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
 
     Returns:
         Enemy: The newly created enemy object
@@ -106,7 +109,9 @@ async def create_enemy(enemy: EnemyCreate, db: db_dependency) -> Enemy:
     "/{enemy_id}", response_model=Enemy, status_code=status.HTTP_200_OK
 )
 async def update_enemy(
-    enemy_id: int, enemy_update: EnemyUpdate, db: db_dependency
+    enemy_id: int,
+    enemy_update: EnemyUpdate,
+    db: AsyncSession = Depends(get_db),
 ) -> Enemy:
     """Updates the enemy with ID `enemy_id` in the database with the data in
     `enemy_update`.
@@ -115,7 +120,7 @@ async def update_enemy(
         enemy_id (int): The ID of the enemy to be updated.
         enemy_update (EnemyUpdate): An EnemyUpdate object containing the data
             to be added or changes for the enemy.
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
 
     Raises:
         NotFoundException: If no enemy with ID `enemy_id` is found in the
@@ -150,13 +155,13 @@ async def update_enemy(
 )
 async def delete_enemy(
     enemy_id: int,
-    db: db_dependency,
+    db: AsyncSession = Depends(get_db),
 ) -> BasicResponse:
     """Fetches an enemy by ID and deletes it from the database
 
     Args:
         enemy_id (int): The ID of the enemy to be deleted
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
 
     Raises:
         NotFoundException: If no enemy with ID `enemy_id` is found in the

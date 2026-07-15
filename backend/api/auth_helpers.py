@@ -14,12 +14,12 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from db import get_db
 from models import User
 from schemas import TokenData
-
-from .dependencies import db_dependency
 
 load_dotenv()
 
@@ -56,11 +56,11 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 
-async def get_user(db: db_dependency, username: str) -> User:
+async def get_user(db: AsyncSession, username: str) -> User:
     """Fetches the user from the database whose username matches `username`
 
     Args:
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         username (str): The username of the user to be fetched
 
     Returns:
@@ -72,7 +72,7 @@ async def get_user(db: db_dependency, username: str) -> User:
 
 
 async def authenticate_user(
-    db: db_dependency, username: str, password: str
+    db: AsyncSession, username: str, password: str
 ) -> User:
     """Checks whether `username` and `password` matches a saved user
 
@@ -80,7 +80,7 @@ async def authenticate_user(
     then hashes the user's password and checks it against the saved hash
 
     Args:
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         username (str): The username to be authenticated
         password (str): The password to be authenticated
 
@@ -117,12 +117,12 @@ def create_access_token(
 
 
 async def get_current_user(
-    db: db_dependency, token: str = Depends(oauth2_scheme)
+    db: AsyncSession = Depends(get_db), token: str = Depends(oauth2_scheme)
 ) -> User:
     """Fetches the currently logged in user from the database
 
     Args:
-        db (db_dependency): A SQLAlchemy database session
+        db (AsyncSession): A SQLAlchemy database session
         token (str, optional): The user's JSON Web Token.
             Defaults to Depends(oauth2_scheme).
 

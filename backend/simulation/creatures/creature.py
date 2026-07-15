@@ -3,9 +3,9 @@
 import math
 from typing import Any, Self
 
-from ..mechanics.actions import Action, Attack, Spell
-from ..mechanics.heal import Heal
-from ..mechanics.misc import Degree, calculate_dos, d20
+from simulation.mechanics.actions import Action, Attack, Spell
+from simulation.mechanics.heal import Heal
+from simulation.mechanics.misc import Degree, calculate_dos, d20
 
 
 class Creature:

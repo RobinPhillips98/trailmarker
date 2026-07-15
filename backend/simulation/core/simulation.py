@@ -2,9 +2,9 @@
 
 from typing import Any
 
-from ..creatures.enemy import Enemy
-from ..creatures.player import Player
-from ..encounters.encounter import Encounter
+from simulation.creatures.enemy import Enemy
+from simulation.creatures.player import Player
+from simulation.encounters.encounter import Encounter
 
 
 def run_simulation(
