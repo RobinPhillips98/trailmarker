@@ -1,14 +1,42 @@
 import asyncio
+import os
 
-import pytest
-from sqlalchemy.orm.session import close_all_sessions
-from sqlalchemy_utils import drop_database
+# Set test DB env before importing app/db modules that create engines.
+os.environ["ENVIRONMENT"] = "test"
+os.environ["DATABASE_URL"] = "postgres://postgres:postgres@localhost:5432/TEST"
 
-from tests.utils import (
+import pytest  # noqa: E402
+from sqlalchemy import create_engine, text  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy.orm.session import close_all_sessions  # noqa: E402
+from sqlalchemy_utils import drop_database  # noqa: E402
+
+from db import get_db  # noqa: E402
+from server import app  # noqa: E402
+from tests.utils import (  # noqa: E402
     TEST_DATABASE_URL,
     dispose_test_engines,
     initialize_test_database,
+    override_get_db,
 )
+
+
+def terminate_test_db_connections(db_url: str, db_name: str):
+    admin_url = db_url.rsplit("/", 1)[0] + "/postgres"
+    engine = create_engine(admin_url, isolation_level="AUTOCOMMIT")
+    with engine.connect() as conn:
+        conn.execute(
+            text(
+                """
+                SELECT pg_terminate_backend(pid)
+                FROM pg_stat_activity
+                WHERE datname = :db_name
+                  AND pid <> pg_backend_pid()
+                """
+            ),
+            {"db_name": db_name},
+        )
+    engine.dispose()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -17,4 +45,15 @@ def create_and_delete_database():
     yield
     close_all_sessions()
     asyncio.run(dispose_test_engines())
+    terminate_test_db_connections(
+        TEST_DATABASE_URL, TEST_DATABASE_URL.rsplit("/", 1)[-1]
+    )
     drop_database(TEST_DATABASE_URL)
+
+
+@pytest.fixture(scope="module")
+def client():
+    app.dependency_overrides[get_db] = override_get_db
+    with TestClient(app) as test_client:
+        yield test_client
+    app.dependency_overrides.clear()

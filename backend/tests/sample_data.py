@@ -106,79 +106,7 @@ test_player = {
     "class": "fighter",
 }
 
-
-test_enemy = {
-    "id": 25,
-    "name": "Goblin Warrior",
-    "level": -1,
-    "perception": 2,
-    "skills": {
-        "acrobatics": 5,
-        "arcana": None,
-        "athletics": 2,
-        "crafting": None,
-        "deception": None,
-        "diplomacy": None,
-        "intimidation": None,
-        "lore": None,
-        "medicine": None,
-        "nature": 1,
-        "occultism": None,
-        "performance": None,
-        "religion": None,
-        "society": None,
-        "stealth": 5,
-        "survival": None,
-        "thievery": None,
-    },
-    "attribute_modifiers": {
-        "strength": 0,
-        "constitution": 1,
-        "dexterity": 3,
-        "intelligence": 0,
-        "wisdom": -1,
-        "charisma": 1,
-    },
-    "defenses": {
-        "armor_class": 16,
-        "saves": {"fortitude": 5, "reflex": 7, "will": 3},
-    },
-    "max_hit_points": 6,
-    "spell_attack_bonus": None,
-    "spell_dc": None,
-    "speed": 25,
-    "actions": {
-        "attacks": [
-            {
-                "name": "Shortsword",
-                "attackBonus": 7,
-                "damage": "1d6",
-                "damageType": "slashing",
-                "range": None,
-                "traits": ["agile", "finesse", "versatile-p"],
-            },
-            {
-                "name": "Shortbow",
-                "attackBonus": 7,
-                "damage": "1d6",
-                "damageType": "piercing",
-                "range": 60,
-                "traits": ["deadly-d10", "reload-0"],
-            },
-        ],
-        "spells": [],
-        "heals": 0,
-        "shield": 0,
-        "sneak_attack": False,
-    },
-    "traits": ["small", "goblin", "humanoid"],
-    "immunities": [],
-    "weaknesses": {},
-    "resistances": {},
-}
-
 test_player_2 = {
-    "id": 2,
     "name": "Kyra",
     "level": 1,
     "perception": 7,
@@ -479,8 +407,77 @@ test_player_4 = {
 }
 
 
+test_enemy = {
+    "name": "Goblin Warrior",
+    "level": -1,
+    "perception": 2,
+    "skills": {
+        "acrobatics": 5,
+        "arcana": None,
+        "athletics": 2,
+        "crafting": None,
+        "deception": None,
+        "diplomacy": None,
+        "intimidation": None,
+        "lore": None,
+        "medicine": None,
+        "nature": 1,
+        "occultism": None,
+        "performance": None,
+        "religion": None,
+        "society": None,
+        "stealth": 5,
+        "survival": None,
+        "thievery": None,
+    },
+    "attribute_modifiers": {
+        "strength": 0,
+        "constitution": 1,
+        "dexterity": 3,
+        "intelligence": 0,
+        "wisdom": -1,
+        "charisma": 1,
+    },
+    "defenses": {
+        "armor_class": 16,
+        "saves": {"fortitude": 5, "reflex": 7, "will": 3},
+    },
+    "max_hit_points": 6,
+    "spell_attack_bonus": None,
+    "spell_dc": None,
+    "speed": 25,
+    "actions": {
+        "attacks": [
+            {
+                "name": "Shortsword",
+                "attackBonus": 7,
+                "damage": "1d6",
+                "damageType": "slashing",
+                "range": None,
+                "traits": ["agile", "finesse", "versatile-p"],
+            },
+            {
+                "name": "Shortbow",
+                "attackBonus": 7,
+                "damage": "1d6",
+                "damageType": "piercing",
+                "range": 60,
+                "traits": ["deadly-d10", "reload-0"],
+            },
+        ],
+        "spells": [],
+        "heals": 0,
+        "shield": 0,
+        "sneak_attack": False,
+    },
+    "traits": ["small", "goblin", "humanoid"],
+    "immunities": [],
+    "weaknesses": {},
+    "resistances": {},
+}
+
+
 test_enemy_2 = {
-    "id": 23,
     "name": "Goblin Commando",
     "level": 1,
     "perception": 5,
@@ -542,7 +539,6 @@ test_enemy_2 = {
 }
 
 test_enemy_3 = {
-    "id": 24,
     "name": "Goblin Igniter",
     "level": 1,
     "perception": 4,
@@ -625,7 +621,6 @@ test_enemy_3 = {
 }
 
 test_enemy_sneak = {
-    "id": 12,
     "name": "Drow Sneak",
     "level": 2,
     "perception": 6,
@@ -680,7 +675,7 @@ test_enemy_sneak = {
                 "damage": "1d6",
                 "damageType": "piercing",
                 "range": 60,
-                "traits": ["reload-1"],
+                "traits": [],
             },
         ],
         "spells": [],
@@ -695,7 +690,6 @@ test_enemy_sneak = {
 }
 
 test_spider = {
-    "id": 21,
     "name": "Giant Spider",
     "level": 1,
     "perception": 7,

@@ -9,6 +9,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 import models
+from api.creature_helpers import (
+    build_attack_list,
+    build_spell_list,
+    convert_to_db_enemy,
+)
 from api.exceptions import InternalServerError, NotFoundException
 from db import get_db
 from schemas import BasicResponse, Enemy, EnemyCreate, EnemyUpdate
@@ -53,7 +58,7 @@ async def get_enemy(
     try:
         enemy = await db.get(models.Enemy, enemy_id)
         if not enemy:
-            raise NotFoundException("Enemy not found")
+            raise NotFoundException("Enemy")
         return enemy
     except HTTPException as http_err:
         raise http_err
@@ -77,23 +82,7 @@ async def create_enemy(
         Enemy: The newly created enemy object
     """
     try:
-        db_enemy = models.Enemy(
-            name=enemy.name,
-            level=enemy.level,
-            perception=enemy.perception,
-            skills=enemy.skills,
-            attribute_modifiers=enemy.attribute_modifiers,
-            defenses=enemy.defenses,
-            max_hit_points=enemy.max_hit_points,
-            spell_attack_bonus=enemy.spell_attack_bonus,
-            spell_dc=enemy.spell_dc,
-            speed=enemy.speed,
-            actions=enemy.actions,
-            traits=enemy.traits,
-            immunities=enemy.immunities,
-            weaknesses=enemy.weaknesses,
-            resistances=enemy.resistances,
-        )
+        db_enemy = convert_to_db_enemy(enemy)
         db.add(db_enemy)
         await db.commit()
         await db.refresh(db_enemy)
@@ -130,9 +119,11 @@ async def update_enemy(
     try:
         db_enemy = await db.get(models.Enemy, enemy_id)
         if not db_enemy:
-            raise NotFoundException("Enemy not found")
+            raise NotFoundException("Enemy")
 
         update_data = enemy_update.model_dump(exclude_unset=True)
+        update_data["actions"]["attacks"] = build_attack_list(enemy_update)
+        update_data["actions"]["spells"] = build_spell_list(enemy_update)
         for key, value in update_data.items():
             setattr(db_enemy, key, value)
 
@@ -174,12 +165,12 @@ async def delete_enemy(
     try:
         enemy = await db.get(models.Enemy, enemy_id)
         if not enemy:
-            raise NotFoundException("Enemy not found")
+            raise NotFoundException("Enemy")
 
         await db.delete(enemy)
         await db.commit()
 
-        return {"message": "Enemy deleted successfully"}
+        return {"message": "Enemy deleted successfully."}
     except HTTPException as http_err:
         raise http_err
     except Exception as e:

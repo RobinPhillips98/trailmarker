@@ -27,6 +27,13 @@ dependencies = [
 
 [tool.isort]
 profile = "black"
+skip = ["tests/conftest.py"]
+
+[tool.flake8]
+per-file-ignores = ["tests/conftest.py:E402"]
+
+[tool.black]
+line-length = 79
 
 [tool.poetry]
 package-mode = false

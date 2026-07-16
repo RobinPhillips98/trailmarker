@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import models
 from api.auth_helpers import get_current_user
-from api.character_helpers import fetch_characters_from_db
+from api.creature_helpers import fetch_characters_from_db
 from api.exceptions import InternalServerError
 from db import get_db
 from schemas import Character, Enemy, SimRequest, SimResponse
