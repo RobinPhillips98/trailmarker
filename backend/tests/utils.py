@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import NullPool
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from models import Base, Character, Enemy, User
@@ -11,7 +12,6 @@ from tests.sample_data import (
     test_enemy,
     test_enemy_2,
     test_enemy_3,
-    test_enemy_sneak,
     test_player,
     test_player_2,
     test_player_3,
@@ -24,23 +24,29 @@ TEST_DATABASE_URL_ASYNC = TEST_DATABASE_URL.replace(
     "postgresql+asyncpg://",
     1,
 )
+
 test_engine = create_engine(TEST_DATABASE_URL)
-test_async_engine = create_async_engine(TEST_DATABASE_URL_ASYNC, echo=False)
+
+test_async_engine = create_async_engine(
+    TEST_DATABASE_URL_ASYNC, echo=False, poolclass=NullPool
+)
+
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
     bind=test_engine,
 )
+
 AsyncSessionLocal = async_sessionmaker(
     bind=test_async_engine,
     expire_on_commit=False,
 )
+
 database_initialized = False
 
 
 def build_character_kwargs(character_data: dict, user_id: int) -> dict:
     payload = character_data.copy()
-    payload.pop("id", None)
     payload.pop("user_id", None)
     payload["user_id"] = user_id
     if "class" in payload:
@@ -85,7 +91,6 @@ class TestDatabase:
             Enemy(**test_enemy),
             Enemy(**test_enemy_2),
             Enemy(**test_enemy_3),
-            Enemy(**test_enemy_sneak),
         ]
 
         # Create all characters with the test user

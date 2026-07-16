@@ -6,6 +6,6 @@ echo 'Running isort...'
 poetry run isort . --check-only
 
 echo 'Running black...'
-poetry run black --line-length=79 . --check
+poetry run black . --check
 
 echo 'Completed checks'

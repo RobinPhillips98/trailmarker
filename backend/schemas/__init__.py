@@ -161,6 +161,8 @@ class CreatureCreate(BaseModel):
     spell_dc: Optional[int] = None
     speed: int
     actions: Optional[ActionsRequest]
+    proficiencies: Optional[dict[str, int]] = {}
+    extra_proficiencies: Optional[dict[str, int]] = {}
 
 
 class CharacterCreate(CreatureCreate):
@@ -172,8 +174,6 @@ class CharacterCreate(CreatureCreate):
     heritage: str
     background: str
     class_: str = Field(..., alias="class")
-    proficiencies: Optional[dict[str, int]] = {}
-    extra_proficiencies: Optional[dict[str, int]] = {}
     other_features: Optional[list[str]] = []
 
 
@@ -184,6 +184,7 @@ class EnemyCreate(CreatureCreate):
     immunities: list[str]
     weaknesses: dict[str, int]
     resistances: dict[str, int]
+    use_finesse: Optional[bool] = False
 
 
 class CreatureUpdate(BaseModel):
@@ -199,7 +200,10 @@ class CreatureUpdate(BaseModel):
     spell_attack_bonus: Optional[int] = None
     spell_dc: Optional[int] = None
     speed: Optional[int] = None
-    actions: Optional[ActionsRequest]
+    actions: Optional[ActionsRequest] = None
+    proficiencies: Optional[dict[str, int]] = {}
+    extra_proficiencies: Optional[dict[str, int]] = {}
+    other_features: Optional[list[str]] = []
 
 
 class EnemyUpdate(CreatureUpdate):
@@ -209,6 +213,7 @@ class EnemyUpdate(CreatureUpdate):
     immunities: Optional[list[str]] = None
     weaknesses: Optional[dict[str, int]] = None
     resistances: Optional[dict[str, int]] = None
+    use_finesse: Optional[bool] = None
 
 
 class CharacterUpdate(CreatureUpdate):
@@ -220,9 +225,6 @@ class CharacterUpdate(CreatureUpdate):
     heritage: Optional[str] = None
     background: Optional[str] = None
     class_: Optional[str] = Field(None, alias="class")
-    proficiencies: Optional[dict[str, int]] = {}
-    extra_proficiencies: Optional[dict[str, int]] = {}
-    other_features: Optional[list[str]] = []
 
 
 class Enemies(BaseModel):

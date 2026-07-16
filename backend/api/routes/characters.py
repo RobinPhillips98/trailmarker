@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import models
 from api.auth_helpers import get_current_user
-from api.character_helpers import (
+from api.creature_helpers import (
     build_attack_list,
     build_spell_list,
     convert_to_db_character,
