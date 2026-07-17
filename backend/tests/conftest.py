@@ -1,5 +1,6 @@
 import asyncio
 import os
+import uuid
 
 # Set test DB env before importing app/db modules that create engines.
 os.environ["ENVIRONMENT"] = "test"
@@ -19,6 +20,8 @@ from tests.utils import (  # noqa: E402
     initialize_test_database,
     override_get_db,
 )
+
+TEST_PASSWORD = "testpassword"
 
 
 def terminate_test_db_connections(db_url: str, db_name: str):
@@ -51,9 +54,104 @@ def create_and_delete_database():
     drop_database(TEST_DATABASE_URL)
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def client():
     app.dependency_overrides[get_db] = override_get_db
     with TestClient(app) as test_client:
         yield test_client
     app.dependency_overrides.clear()
+
+
+def _register_and_login(client, username: str, password: str) -> str:
+    register_response = client.post(
+        "/auth/register",
+        json={"username": username, "password": password},
+    )
+    assert register_response.status_code == 200
+
+    token_response = client.post(
+        "/auth/token",
+        data={"username": username, "password": password},
+    )
+    assert token_response.status_code == 200
+    return token_response.json()["access_token"]
+
+
+@pytest.fixture(scope="session")
+def shared_auth_username():
+    return "shared_test_user"
+
+
+@pytest.fixture(scope="session")
+def shared_auth_token(client, shared_auth_username):
+    return _register_and_login(client, shared_auth_username, TEST_PASSWORD)
+
+
+@pytest.fixture(scope="session")
+def shared_auth_headers(shared_auth_token):
+    return {"Authorization": f"Bearer {shared_auth_token}"}
+
+
+@pytest.fixture
+def unique_test_username():
+    return f"testuser_{uuid.uuid4().hex[:8]}"
+
+
+@pytest.fixture
+def test_user_credentials(unique_test_username):
+    return {"username": unique_test_username, "password": TEST_PASSWORD}
+
+
+@pytest.fixture
+def test_username(unique_test_username):
+    return unique_test_username
+
+
+def _build_auth_client(client, default_headers):
+    class AuthClient:
+        def request(self, method: str, url: str, **kwargs):
+            headers = kwargs.pop("headers", {})
+            return client.request(
+                method,
+                url,
+                headers={**default_headers, **headers},
+                **kwargs,
+            )
+
+        def get(self, url: str, **kwargs):
+            return self.request("GET", url, **kwargs)
+
+        def post(self, url: str, **kwargs):
+            return self.request("POST", url, **kwargs)
+
+        def patch(self, url: str, **kwargs):
+            return self.request("PATCH", url, **kwargs)
+
+        def delete(self, url: str, **kwargs):
+            return self.request("DELETE", url, **kwargs)
+
+    return AuthClient()
+
+
+@pytest.fixture
+def shared_auth_client(client, shared_auth_headers):
+    return _build_auth_client(client, shared_auth_headers)
+
+
+@pytest.fixture
+def auth_token(client, test_user_credentials):
+    return _register_and_login(
+        client,
+        test_user_credentials["username"],
+        test_user_credentials["password"],
+    )
+
+
+@pytest.fixture
+def auth_headers(auth_token):
+    return {"Authorization": f"Bearer {auth_token}"}
+
+
+@pytest.fixture
+def auth_client(client, auth_headers):
+    return _build_auth_client(client, auth_headers)
