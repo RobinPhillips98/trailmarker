@@ -17,7 +17,7 @@ from api.auth_helpers import (
 from api.exceptions import BadRequestException, InternalServerError
 from db import get_db
 from models import User
-from schemas import BasicResponse, UserDelete, UserResponse, UserUpdate
+from schemas import UserDelete, UserResponse, UserUpdate
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -97,13 +97,13 @@ async def update_user(
 
 
 @router.delete(
-    "/", response_model=BasicResponse, status_code=status.HTTP_200_OK
+    "/", response_model=None, status_code=status.HTTP_204_NO_CONTENT
 )
 async def delete_user(
     request: UserDelete,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
-) -> BasicResponse:
+) -> None:
     """Deletes the current user's account and all records associated with it.
 
     Args:
@@ -122,16 +122,14 @@ async def delete_user(
     Returns:
         BasicResponse: A message confirming account deletion.
     """
-    if not verify_password(request.password, current_user.hashed_password):
-        raise BadRequestException(
-            detail="Password invalid. Please try again",
-        )
-
     try:
+        if not verify_password(request.password, current_user.hashed_password):
+            raise BadRequestException(
+                detail="Password invalid. Please try again",
+            )
+
         await db.delete(current_user)
         await db.commit()
-
-        return {"message": "User deleted"}
     except HTTPException as http_err:
         raise http_err
     except Exception as e:
