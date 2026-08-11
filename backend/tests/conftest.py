@@ -7,6 +7,7 @@ from pathlib import Path
 # Set test DB env before importing app/db modules that create engines.
 os.environ["ENVIRONMENT"] = "test"
 os.environ["DATABASE_URL"] = "postgres://postgres:postgres@localhost:5432/TEST"
+os.environ["SECRET_KEY"] = "secret-key-for-testing"
 
 import pytest  # noqa: E402
 from sqlalchemy import create_engine, text  # noqa: E402
