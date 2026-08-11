@@ -31,6 +31,7 @@ def test_sim_enemies_win():
         + test_enemies
         + test_enemies
         + test_enemies
+        + test_enemies
     )
     players = test_party
 
