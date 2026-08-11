@@ -7,16 +7,8 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from models import Base, Character, Enemy, User
-from tests.sample_data import (
-    test_enemy,
-    test_enemy_2,
-    test_enemy_3,
-    test_player,
-    test_player_2,
-    test_player_3,
-    test_player_4,
-)
+from models import Base, Enemy, User
+from tests.sample_data import test_enemy, test_enemy_2, test_enemy_3
 
 TEST_DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/TEST"
 TEST_DATABASE_URL_ASYNC = TEST_DATABASE_URL.replace(
@@ -43,15 +35,6 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 database_initialized = False
-
-
-def build_character_kwargs(character_data: dict, user_id: int) -> dict:
-    payload = character_data.copy()
-    payload.pop("user_id", None)
-    payload["user_id"] = user_id
-    if "class" in payload:
-        payload["class_"] = payload.pop("class")
-    return payload
 
 
 def initialize_test_database():
@@ -83,8 +66,6 @@ class TestDatabase:
         # Create a test user
         test_user = User(username="testuser", hashed_password="hashedpassword")
         self.session.add(test_user)
-        # Flush first so we can link characters by user_id.
-        self.session.flush()
 
         # Create all enemies
         enemies = [
@@ -93,15 +74,7 @@ class TestDatabase:
             Enemy(**test_enemy_3),
         ]
 
-        # Create all characters with the test user
-        characters = [
-            Character(**build_character_kwargs(test_player, test_user.id)),
-            Character(**build_character_kwargs(test_player_2, test_user.id)),
-            Character(**build_character_kwargs(test_player_3, test_user.id)),
-            Character(**build_character_kwargs(test_player_4, test_user.id)),
-        ]
-
-        self.session.add_all(enemies + characters)
+        self.session.add_all(enemies)
         self.session.commit()
 
 
