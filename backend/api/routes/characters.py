@@ -5,6 +5,8 @@ route of the API including creating, reading, updating, and deleting characters
 
 """
 
+from types import SimpleNamespace
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,6 +26,7 @@ from api.exceptions import (
 from api.import_helpers import convert_import_to_character
 from db import get_db
 from schemas import (
+    Attributes,
     BasicResponse,
     Character,
     CharacterCreate,
@@ -236,8 +239,48 @@ async def update_character(
             raise ForbiddenException(action="update", route="character")
 
         update_data = character_update.model_dump(exclude_unset=True)
-        update_data["actions"]["attacks"] = build_attack_list(character_update)
-        update_data["actions"]["spells"] = build_spell_list(character_update)
+
+        if character_update.actions:
+            # Need to fill in values needed by build_attack_list and
+            # build_spell_list that aren't included in the update_data
+            effective_character_data = SimpleNamespace(
+                actions=character_update.actions,
+                level=(
+                    character_update.level
+                    if character_update.level is not None
+                    else db_character.level
+                ),
+                attribute_modifiers=(
+                    character_update.attribute_modifiers
+                    if character_update.attribute_modifiers is not None
+                    else Attributes.model_validate(
+                        db_character.attribute_modifiers
+                    )
+                ),
+                proficiencies=(
+                    character_update.proficiencies
+                    if "proficiencies" in update_data
+                    else db_character.proficiencies
+                ),
+                extra_proficiencies=(
+                    character_update.extra_proficiencies
+                    if "extra_proficiencies" in update_data
+                    else db_character.extra_proficiencies
+                ),
+                other_features=(
+                    character_update.other_features
+                    if "other_features" in update_data
+                    else db_character.other_features
+                ),
+            )
+            if character_update.actions.attacks is not None:
+                update_data["actions"]["attacks"] = build_attack_list(
+                    effective_character_data
+                )
+            if character_update.actions.spells is not None:
+                update_data["actions"]["spells"] = build_spell_list(
+                    effective_character_data
+                )
 
         for key, value in update_data.items():
             setattr(db_character, key, value)
