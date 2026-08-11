@@ -1,6 +1,8 @@
 import asyncio
+import json
 import os
 import uuid
+from pathlib import Path
 
 # Set test DB env before importing app/db modules that create engines.
 os.environ["ENVIRONMENT"] = "test"
@@ -155,3 +157,41 @@ def auth_headers(auth_token):
 @pytest.fixture
 def auth_client(client, auth_headers):
     return _build_auth_client(client, auth_headers)
+
+
+@pytest.fixture
+def character_payload():
+    payload = _load_character_template("fighter")
+    payload["name"] = f"fighter_{uuid.uuid4().hex[:8]}"
+    return payload
+
+
+@pytest.fixture
+def character_factory(auth_client):
+    def create(template: str = "fighter", **overrides):
+        payload = _load_character_template(template)
+        payload["name"] = overrides.pop(
+            "name", f"{template}_{uuid.uuid4().hex[:8]}"
+        )
+
+        for key, value in overrides.items():
+            payload[key] = value
+
+        response = auth_client.post("/characters/", json=payload)
+        assert response.status_code == 201
+        return response.json()
+
+    return create
+
+
+@pytest.fixture
+def created_character(character_factory):
+    return character_factory()
+
+
+def _load_character_template(name: str) -> dict:
+    path = Path("data/characters") / f"{name}.json"
+    payload = json.loads(path.read_text())
+    payload.pop("id", None)
+    payload.pop("user_id", None)
+    return payload
