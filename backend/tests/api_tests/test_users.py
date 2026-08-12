@@ -10,7 +10,7 @@ def test_read_user(shared_auth_client, shared_auth_username):
 def test_read_user_unauthenticated(client):
     response = client.get("/users/me/")
     assert response.status_code == 401
-    assert response.json() == {"detail": "Could not validate credentials"}
+    assert response.json()["detail"] == "Could not validate credentials"
 
 
 def test_read_user_invalid_token(client):
@@ -18,7 +18,7 @@ def test_read_user_invalid_token(client):
         "/users/me/", headers={"Authorization": "Bearer invalidtoken"}
     )
     assert response.status_code == 401
-    assert response.json() == {"detail": "Could not validate credentials"}
+    assert response.json()["detail"] == "Could not validate credentials"
 
 
 def test_update_user(auth_client, test_username):
@@ -59,9 +59,7 @@ def test_update_user_internal_error(auth_client, test_username, monkeypatch):
     }
     response = auth_client.patch("/users/", json=request)
     assert response.status_code == 500
-    assert response.json() == {
-        "detail": "Internal Server Error: forced failure"
-    }
+    assert response.json()["detail"] == "Internal Server Error"
 
 
 def test_delete_user(auth_client):
@@ -83,6 +81,4 @@ def test_delete_user_internal_error(auth_client, monkeypatch):
     request = {"password": "testpassword"}
     response = auth_client.delete("/users/", json=request)
     assert response.status_code == 500
-    assert response.json() == {
-        "detail": "Internal Server Error: forced failure"
-    }
+    assert response.json()["detail"] == "Internal Server Error"
