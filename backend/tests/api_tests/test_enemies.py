@@ -18,9 +18,7 @@ def test_enemies_get_internal_error(client, monkeypatch):
     monkeypatch.setattr(AsyncSession, "scalars", async_failure)
     response = client.get("/enemies")
     assert response.status_code == 500
-    assert response.json()["detail"] == (
-        "Internal Server Error: An error occurred while fetching enemies"
-    )
+    assert response.json()["detail"] == ("Internal Server Error")
 
 
 def test_enemies_get_by_id(client):
@@ -100,9 +98,7 @@ def test_enemy_get_by_id_internal_error(client, monkeypatch):
     monkeypatch.setattr(AsyncSession, "get", async_failure)
     response = client.get("/enemies/1")
     assert response.status_code == 500
-    assert response.json()["detail"] == (
-        "Internal Server Error: An error occurred while fetching the enemy"
-    )
+    assert response.json()["detail"] == ("Internal Server Error")
 
 
 def test_enemies_get_by_invalid_id(client):
@@ -216,9 +212,7 @@ def test_enemy_post_internal_error(client, monkeypatch):
 
     response = client.post("/enemies/", json=request)
     assert response.status_code == 500
-    assert response.json()["detail"] == (
-        "Internal Server Error: An error occurred while creating the enemy"
-    )
+    assert response.json()["detail"] == ("Internal Server Error")
 
 
 def test_enemies_patch(client):
@@ -343,18 +337,14 @@ def test_enemy_patch_internal_error(client, monkeypatch):
     request = {"actions": {"attacks": ["Longsword"], "spells": {}}}
     response = client.patch("/enemies/1", json=request)
     assert response.status_code == 500
-    assert response.json()["detail"] == (
-        "Internal Server Error: An error occurred while updating the enemy"
-    )
+    assert response.json()["detail"] == ("Internal Server Error")
 
 
 def test_enemy_delete_internal_error(client, monkeypatch):
     monkeypatch.setattr(AsyncSession, "delete", async_failure)
     response = client.delete("/enemies/1")
     assert response.status_code == 500
-    assert response.json()["detail"] == (
-        "Internal Server Error: An error occurred while deleting the enemy"
-    )
+    assert response.json()["detail"] == ("Internal Server Error")
 
 
 def test_enemies_delete(client):

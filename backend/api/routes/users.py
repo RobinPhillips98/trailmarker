@@ -5,6 +5,8 @@ API, including getting the current user.
 
 """
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -20,6 +22,7 @@ from models import User
 from schemas import UserDelete, UserResponse, UserUpdate
 
 router = APIRouter(prefix="/users", tags=["users"])
+logger = logging.getLogger(__name__)
 
 
 @router.get("/me/", response_model=UserResponse)
@@ -54,7 +57,6 @@ async def update_user(
     Raises:
         BadRequestException: If the user's password is incorrect, or if
             the requested username already exists.
-        http_err: A caught HTTP error
         InternalServerError: A non-HTTP exception caught and raised as an HTTP
             500 exception
 
@@ -89,11 +91,11 @@ async def update_user(
 
         return current_user
 
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in update_user: {str(e)}")
-        raise InternalServerError(message=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in update_user")
+        raise InternalServerError()
 
 
 @router.delete(
@@ -115,7 +117,6 @@ async def delete_user(
 
     Raises:
         BadRequestException: If the user's password is incorrect
-        http_err: A caught HTTP error
         InternalServerError: A non-HTTP exception caught and raised as an HTTP
             500 exception
 
@@ -130,8 +131,8 @@ async def delete_user(
 
         await db.delete(current_user)
         await db.commit()
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in delete_user: {str(e)}")
-        raise InternalServerError(message=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in delete_user")
+        raise InternalServerError()

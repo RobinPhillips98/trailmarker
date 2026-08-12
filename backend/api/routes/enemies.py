@@ -4,6 +4,8 @@ Defines functions that are called when a request is made to the /enemies
 route of the API.
 """
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -19,6 +21,7 @@ from db import get_db
 from schemas import BasicResponse, Enemy, EnemyCreate, EnemyUpdate
 
 router = APIRouter(prefix="/enemies", tags=["enemies"])
+logger = logging.getLogger(__name__)
 
 
 @router.get("/", response_model=list[Enemy], status_code=status.HTTP_200_OK)
@@ -35,9 +38,9 @@ async def get_enemies(db: AsyncSession = Depends(get_db)) -> list[Enemy]:
         stmt = select(models.Enemy).order_by(models.Enemy.name)
         enemies = (await db.scalars(stmt)).all()
         return enemies
-    except Exception as e:
-        print(f"Error in get_enemies: {str(e)}")
-        raise InternalServerError("An error occurred while fetching enemies")
+    except Exception:
+        logger.exception("Error in get_enemies")
+        raise InternalServerError()
 
 
 @router.get(
@@ -60,11 +63,11 @@ async def get_enemy(
         if not enemy:
             raise NotFoundException("Enemy")
         return enemy
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in get_enemy: {str(e)}")
-        raise InternalServerError("An error occurred while fetching the enemy")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in get_enemy")
+        raise InternalServerError()
 
 
 @router.post("/", response_model=Enemy, status_code=status.HTTP_201_CREATED)
@@ -89,9 +92,9 @@ async def create_enemy(
 
         created_enemy = Enemy.model_validate(db_enemy)
         return created_enemy
-    except Exception as e:
-        print(f"Error in create_enemy: {str(e)}")
-        raise InternalServerError("An error occurred while creating the enemy")
+    except Exception:
+        logger.exception("Error in create_enemy")
+        raise InternalServerError()
 
 
 @router.patch(
@@ -132,11 +135,11 @@ async def update_enemy(
 
         updated_enemy = Enemy.model_validate(db_enemy)
         return updated_enemy
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in update_enemy: {str(e)}")
-        raise InternalServerError("An error occurred while updating the enemy")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in update_enemy")
+        raise InternalServerError()
 
 
 @router.delete(
@@ -171,8 +174,8 @@ async def delete_enemy(
         await db.commit()
 
         return {"message": "Enemy deleted successfully."}
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in delete_enemy: {str(e)}")
-        raise InternalServerError("An error occurred while deleting the enemy")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in delete_enemy")
+        raise InternalServerError()

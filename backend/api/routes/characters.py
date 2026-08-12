@@ -5,6 +5,7 @@ route of the API including creating, reading, updating, and deleting characters
 
 """
 
+import logging
 from types import SimpleNamespace
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -35,6 +36,7 @@ from schemas import (
 )
 
 router = APIRouter(prefix="/characters", tags=["characters"])
+logger = logging.getLogger(__name__)
 
 
 @router.get(
@@ -56,11 +58,9 @@ async def get_characters(
     """
     try:
         return await fetch_characters_from_db(current_user, db)
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in get_characters: {str(e)}")
-        raise InternalServerError(message=str(e))
+    except Exception:
+        logger.exception("Error in get_characters")
+        raise InternalServerError()
 
 
 @router.get(
@@ -83,7 +83,6 @@ async def get_character(
         NotFoundException: A 404 exception if the character is not found.
         ForbiddenException: A 403 exception if the character does not
             belong to the current user
-        http_err: A caught HTTP error
         InternalServerError: A non-HTTP exception caught and raised as an HTTP
             500 exception
     Returns:
@@ -99,11 +98,11 @@ async def get_character(
             raise ForbiddenException(action="view", route="character")
 
         return character
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in get_character: {str(e)}")
-        raise InternalServerError(message=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in get_character")
+        raise InternalServerError()
 
 
 @router.post(
@@ -124,7 +123,6 @@ async def add_character(
 
     Raises:
         BadRequestException: On a duplicate character name for the same user.
-        http_err: A caught HTTP error
         InternalServerError: A non-HTTP exception caught and raised as an HTTP
             500 exception
 
@@ -137,11 +135,11 @@ async def add_character(
         db.add(db_character)
         await db.commit()
         await db.refresh(db_character)
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in add_character: {str(e)}")
-        raise InternalServerError(message=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in add_character")
+        raise InternalServerError()
     return db_character
 
 
@@ -169,7 +167,6 @@ async def import_character(
 
     Raises:
         BadRequestException: On a duplicate character name for the same user.
-        http_err: A caught HTTP error
         InternalServerError: A non-HTTP exception caught and raised as an HTTP
             500 exception
 
@@ -186,11 +183,11 @@ async def import_character(
         db.add(db_character)
         await db.commit()
         await db.refresh(db_character)
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in import_character: {str(e)}")
-        raise InternalServerError(message=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in import_character")
+        raise InternalServerError()
     return db_character
 
 
@@ -222,7 +219,6 @@ async def update_character(
         NotFoundException: A 404 exception if the character is not found.
         ForbiddenException: A 403 exception if the character does not
             belong to the current user
-        http_err: A caught HTTP error
         InternalServerError: A non-HTTP exception caught and raised as an HTTP
             500 exception
 
@@ -291,11 +287,11 @@ async def update_character(
         updated_character = Character.model_validate(db_character)
         return updated_character
 
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in update_character: {str(e)}")
-        raise InternalServerError(message=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in update_character")
+        raise InternalServerError()
 
 
 @router.delete(

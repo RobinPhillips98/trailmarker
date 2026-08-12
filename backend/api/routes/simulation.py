@@ -8,6 +8,7 @@ stats about the simulations.
 
 """
 
+import logging
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -22,6 +23,7 @@ from schemas import Character, Enemy, SimRequest, SimResponse
 from simulation.core.simulation import run_simulation
 
 router = APIRouter(prefix="/simulation", tags=["simulation"])
+logger = logging.getLogger(__name__)
 
 
 @router.post("/", response_model=SimResponse, status_code=status.HTTP_200_OK)
@@ -44,8 +46,8 @@ async def init_sim_with_auth(
              Defaults to Depends(get_current_user).
 
     Raises:
-        http_err: Any HTTPException, raised as-is.
-        HTTPException: Any other caught exception, raised as an HTTP 500 error.
+        InternalServerError: Any other caught exception, raised as an HTTP 500
+            error.
 
     Returns:
         SimResponse: Overall data and data from each simulation.
@@ -53,11 +55,11 @@ async def init_sim_with_auth(
     try:
         return await run_simulations(current_user, request, db)
 
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in init_sim_with_auth: {str(e)}")
-        raise InternalServerError(message=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in init_sim_with_auth")
+        raise InternalServerError()
 
 
 @router.post(
@@ -83,8 +85,8 @@ async def init_sim_with_pregens(
         db (AsyncSession): A SQLAlchemy database session.
 
     Raises:
-        http_err: Any HTTPException, raised as-is.
-        HTTPException: Any other caught exception, raised as an HTTP 500 error.
+        InternalServerError: Any other caught exception, raised as an HTTP 500
+            error.
 
     Returns:
         SimResponse: Overall data and data from each simulation.
@@ -94,11 +96,11 @@ async def init_sim_with_pregens(
         user = await db.get(models.User, 1)
         return await run_simulations(user, request, db)
 
-    except HTTPException as http_err:
-        raise http_err
-    except Exception as e:
-        print(f"Error in init_sim_with_pregens: {str(e)}")
-        raise InternalServerError(message=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in init_sim_with_pregens")
+        raise InternalServerError()
 
 
 async def run_simulations(
