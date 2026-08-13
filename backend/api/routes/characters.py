@@ -182,8 +182,6 @@ async def import_character(
         db.add(db_character)
         await db.commit()
         await db.refresh(db_character)
-    except HTTPException:
-        raise
     except Exception:
         logger.exception("Error in import_character")
         raise InternalServerError()

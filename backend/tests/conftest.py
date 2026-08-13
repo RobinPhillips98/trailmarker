@@ -190,6 +190,32 @@ def created_character(character_factory):
     return character_factory()
 
 
+@pytest.fixture
+def import_payload_fighter():
+    return _load_import_payload("fighter")
+
+
+@pytest.fixture()
+def import_payload_cleric():
+    return _load_import_payload("cleric")
+
+
+@pytest.fixture()
+def import_payload_wizard():
+    return _load_import_payload("wizard")
+
+
+@pytest.fixture()
+def import_payload_rogue():
+    return _load_import_payload("rogue")
+
+
+def _load_import_payload(name: str) -> dict:
+    path = Path("tests/data/imports") / f"{name}.json"
+    payload = json.loads(path.read_text())["build"]
+    return payload
+
+
 def _load_character_template(name: str) -> dict:
     path = Path("data/characters") / f"{name}.json"
     payload = json.loads(path.read_text())
