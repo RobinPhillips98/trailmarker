@@ -78,7 +78,7 @@
     "damage_type": "bludgeoning",
     "range": 30,
     "area": {},
-    "targets": 0,
+    "targets": 1,
     "actions": "2",
     "description": "You hurl a rock or other small object at one target within 30 feet. Make a spell attack roll against the target's AC. If you hit, the target takes 2d6 bludgeoning damage. On a critical hit, you deal double damage."
   },

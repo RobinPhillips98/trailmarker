@@ -1,0 +1,243 @@
+{
+  "success": true,
+  "build": {
+    "name": "Ezren",
+    "class": "Wizard",
+    "dualClass": null,
+    "level": 1,
+    "xp": 0,
+    "ancestry": "Human",
+    "heritage": "Skilled (BB)",
+    "background": "Scholar (Arcana)",
+    "alignment": "N",
+    "gender": "Not set",
+    "age": "Not set",
+    "deity": "Not set",
+    "size": 2,
+    "sizeName": "Medium",
+    "keyability": "int",
+    "languages": ["None selected"],
+    "rituals": [],
+    "resistances": [],
+    "inventorMods": [],
+    "abilities": {
+      "str": 10,
+      "dex": 14,
+      "con": 14,
+      "int": 18,
+      "wis": 12,
+      "cha": 10,
+      "breakdown": {
+        "ancestryFree": ["Int", "Dex"],
+        "ancestryBoosts": [],
+        "ancestryFlaws": [],
+        "backgroundBoosts": ["Int", "Con"],
+        "classBoosts": ["Int"],
+        "mapLevelledBoosts": { "1": ["Int", "Dex", "Con", "Wis"] }
+      }
+    },
+    "attributes": {
+      "ancestryhp": 8,
+      "classhp": 6,
+      "bonushp": 0,
+      "bonushpPerLevel": 0,
+      "speed": 25,
+      "speedBonus": 0
+    },
+    "proficiencies": {
+      "classDC": 2,
+      "perception": 2,
+      "fortitude": 2,
+      "reflex": 2,
+      "will": 4,
+      "heavy": 0,
+      "medium": 0,
+      "light": 0,
+      "unarmored": 2,
+      "advanced": 0,
+      "martial": 0,
+      "simple": 2,
+      "unarmed": 2,
+      "castingArcane": 2,
+      "castingDivine": 0,
+      "castingOccult": 0,
+      "castingPrimal": 0,
+      "acrobatics": 2,
+      "arcana": 2,
+      "athletics": 0,
+      "crafting": 2,
+      "deception": 0,
+      "diplomacy": 2,
+      "intimidation": 0,
+      "medicine": 2,
+      "nature": 2,
+      "occultism": 2,
+      "performance": 0,
+      "religion": 2,
+      "society": 2,
+      "stealth": 0,
+      "survival": 2,
+      "thievery": 2,
+      "piloting": 0,
+      "computers": 0
+    },
+    "mods": {},
+    "feats": [
+      ["Assurance", "Arcana", "Awarded Feat", 1],
+      ["Skill Training", "Society", "Awarded Feat", 1],
+      ["Skill Training", "Survival", "Awarded Feat", 1],
+      ["Skill Training", "Thievery", "Awarded Feat", 1],
+      [
+        "Skilled (BB)",
+        null,
+        "Heritage",
+        1,
+        "Heritage Feat",
+        "standardChoice",
+        null
+      ]
+    ],
+    "specials": [
+      "Arcane School: School of Battle Magic",
+      "Arcane Thesis: Spell Substitution",
+      "Arcane Bond",
+      "Drain Bonded Item",
+      "Spellbook",
+      "Wizard Spellcasting",
+      "Skilled (BB)"
+    ],
+    "lores": [["Academia", 2]],
+    "equipmentContainers": {},
+    "equipment": [],
+    "specificProficiencies": {
+      "trained": [],
+      "expert": [],
+      "master": [],
+      "legendary": []
+    },
+    "weapons": [
+      {
+        "name": "Dagger",
+        "qty": 1,
+        "prof": "simple",
+        "die": "d4",
+        "pot": 0,
+        "str": "",
+        "mat": null,
+        "display": "Dagger",
+        "runes": [],
+        "damageType": "P",
+        "attack": 5,
+        "damageBonus": 0,
+        "extraDamage": [],
+        "increasedDice": false,
+        "isInventor": false,
+        "grade": ""
+      },
+      {
+        "name": "Staff",
+        "qty": 1,
+        "prof": "simple",
+        "die": "d8",
+        "pot": 0,
+        "str": "",
+        "mat": null,
+        "display": "Staff (2h)",
+        "runes": [],
+        "damageType": "B",
+        "attack": 3,
+        "damageBonus": 0,
+        "extraDamage": [],
+        "increasedDice": false,
+        "isInventor": false,
+        "grade": ""
+      },
+      {
+        "name": "Crossbow",
+        "qty": 1,
+        "prof": "simple",
+        "die": "d8",
+        "pot": 0,
+        "str": "",
+        "mat": null,
+        "display": "Crossbow",
+        "runes": [],
+        "damageType": "P",
+        "attack": 5,
+        "damageBonus": 0,
+        "extraDamage": [],
+        "increasedDice": false,
+        "isInventor": false,
+        "grade": ""
+      }
+    ],
+    "money": { "cp": 0, "sp": 0, "gp": 15, "pp": 0 },
+    "armor": [],
+    "spellCasters": [
+      {
+        "name": "Wizard",
+        "magicTradition": "arcane",
+        "spellcastingType": "prepared",
+        "ability": "int",
+        "proficiency": 2,
+        "focusPoints": 0,
+        "innate": false,
+        "perDay": [6, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        "spells": [
+          { "spellLevel": 1, "list": ["Force Barrage", "Mystic Armor"] },
+          {
+            "spellLevel": 0,
+            "list": [
+              "Telekinetic Projectile",
+              "Daze",
+              "Detect Magic",
+              "Gouging Claw",
+              "Light",
+              "Message",
+              "Electric Arc",
+              "Shield"
+            ]
+          },
+          { "spellLevel": 2, "list": ["Acid Grip"] }
+        ],
+        "prepared": [
+          {
+            "spellLevel": 0,
+            "list": [
+              "Daze",
+              "Detect Magic",
+              "Gouging Claw",
+              "Light",
+              "Message",
+              "Telekinetic Projectile"
+            ]
+          },
+          { "spellLevel": 1, "list": ["Force Barrage", "Force Barrage"] }
+        ],
+        "blendedSpells": []
+      }
+    ],
+    "focusPoints": 1,
+    "focus": {
+      "arcane": {
+        "int": {
+          "abilityBonus": 4,
+          "proficiency": 2,
+          "itemBonus": 0,
+          "focusCantrips": [],
+          "focusSpells": ["Force Bolt"]
+        }
+      }
+    },
+    "formula": [],
+    "acTotal": {
+      "acProfBonus": 3,
+      "acAbilityBonus": 2,
+      "acItemBonus": 0,
+      "acTotal": 15,
+      "shieldBonus": null
+    },
+    "pets": [],
+    "familiars": []
+  }
+}
