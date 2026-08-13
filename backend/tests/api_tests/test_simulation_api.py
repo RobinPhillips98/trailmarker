@@ -1,3 +1,5 @@
+from tests.failures import sync_failure
+
 SIMULATION_ROUTE = "/simulation/"
 
 
@@ -32,3 +34,40 @@ def test_run_simulation(auth_client, character_factory):
 
     total_rounds = sum(data["rounds"] for data in sim_response["sim_data"])
     assert sim_response["average_rounds"] == total_rounds / total_sims
+
+
+def test_run_simulation_with_invalid_enemy(auth_client, character_factory):
+    character_factory(template="fighter")
+    character_factory(template="cleric")
+
+    enemy_list = [
+        {"id": 999, "quantity": 1},  # Invalid enemy ID
+    ]
+
+    request = {"enemies": enemy_list}
+
+    response = auth_client.post(SIMULATION_ROUTE, json=request)
+
+    assert response.status_code == 404
+    assert "Enemy with ID 999 not found" in response.json()["detail"]
+
+
+def test_run_simulation_internal_server_error(
+    auth_client, character_factory, monkeypatch
+):
+    character_factory(template="fighter")
+    character_factory(template="cleric")
+
+    enemy_list = [
+        {"id": 1, "quantity": 1},
+    ]
+
+    request = {"enemies": enemy_list}
+
+    # Patch the run_simulation function to raise an exception
+    monkeypatch.setattr("api.routes.simulation.run_simulation", sync_failure)
+
+    response = auth_client.post(SIMULATION_ROUTE, json=request)
+
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"
