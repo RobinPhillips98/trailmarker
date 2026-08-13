@@ -11,6 +11,11 @@ def test_register(client):
 
 
 def test_register_existing_user(client):
+    client.post(
+        "/auth/register",
+        json={"username": "testuser2", "password": "testpassword"},
+    )
+
     response = client.post(
         "/auth/register",
         json={"username": "testuser2", "password": "testpassword"},
@@ -20,6 +25,11 @@ def test_register_existing_user(client):
 
 
 def test_login(client):
+    client.post(
+        "/auth/register",
+        json={"username": "testuser2", "password": "testpassword"},
+    )
+
     response = client.post(
         "/auth/token",
         data={"username": "testuser2", "password": "testpassword"},
@@ -32,6 +42,11 @@ def test_login(client):
 
 
 def test_login_invalid_credentials(client):
+    client.post(
+        "/auth/register",
+        json={"username": "testuser2", "password": "testpassword"},
+    )
+
     response = client.post(
         "/auth/token",
         data={"username": "testuser2", "password": "wrongpassword"},

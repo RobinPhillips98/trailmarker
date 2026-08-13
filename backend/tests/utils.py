@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
@@ -76,6 +76,17 @@ class TestDatabase:
 
         self.session.add_all(enemies)
         self.session.commit()
+
+
+def reset_test_database_state():
+    with SessionLocal() as session:
+        session.execute(
+            text(
+                "TRUNCATE TABLE encounters, characters, enemies, users "
+                "RESTART IDENTITY CASCADE"
+            )
+        )
+        TestDatabase(session=session).populate_test_database()
 
 
 async def override_get_db():
