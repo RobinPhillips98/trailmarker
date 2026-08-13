@@ -59,7 +59,6 @@ export default function EncounterControls(props) {
     }));
 
     const encounter = {
-      id: 0,
       name: encounterName,
       enemies: enemy_array,
     };

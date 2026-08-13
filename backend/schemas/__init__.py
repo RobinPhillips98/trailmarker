@@ -18,6 +18,13 @@ class Encounter(BaseModel):
     enemies: list[dict[str, str | int]]
 
 
+class EncounterCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str
+    enemies: list[dict[str, str | int]]
+
+
 class EncounterUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

@@ -19,7 +19,7 @@ from api.exceptions import (
     NotFoundException,
 )
 from db import get_db
-from schemas import BasicResponse, Encounter, EncounterUpdate
+from schemas import BasicResponse, Encounter, EncounterCreate, EncounterUpdate
 
 router = APIRouter(prefix="/encounters", tags=["encounters"])
 logger = logging.getLogger(__name__)
@@ -103,7 +103,7 @@ async def get_encounter(
     "/", response_model=Encounter, status_code=status.HTTP_201_CREATED
 )
 async def add_encounter(
-    encounter: Encounter,
+    encounter: EncounterCreate,
     db: AsyncSession = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ) -> Encounter:
