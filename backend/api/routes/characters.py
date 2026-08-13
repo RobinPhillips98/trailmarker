@@ -135,12 +135,11 @@ async def add_character(
         db.add(db_character)
         await db.commit()
         await db.refresh(db_character)
-    except HTTPException:
-        raise
+
+        return db_character
     except Exception:
         logger.exception("Error in add_character")
         raise InternalServerError()
-    return db_character
 
 
 @router.post(
@@ -320,15 +319,22 @@ async def delete_character(
     Returns:
         BasicResponse: A response object confirming the character was deleted.
     """
-    character = await db.get(models.Character, character_id)
+    try:
+        character = await db.get(models.Character, character_id)
 
-    if not character:
-        raise NotFoundException(route="character")
+        if not character:
+            raise NotFoundException(route="character")
 
-    if character.user_id != current_user.id:
-        raise ForbiddenException(action="delete", route="character")
+        if character.user_id != current_user.id:
+            raise ForbiddenException(action="delete", route="character")
 
-    await db.delete(character)
-    await db.commit()
+        await db.delete(character)
+        await db.commit()
+    except HTTPException:
+        raise
+    except Exception:
+        await db.rollback()
+        logger.exception("Error in delete_character")
+        raise InternalServerError()
 
     return {"message": "Character deleted"}
