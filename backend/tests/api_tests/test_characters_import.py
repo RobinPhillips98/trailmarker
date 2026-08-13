@@ -18,8 +18,8 @@ def test_import_character_fighter(shared_auth_client, import_payload_fighter):
     assert response.status_code == 201
     created_character = response.json()
     import_fighter_data.pop("user_id")
-    for key in import_fighter_data.keys():
-        assert created_character[key] == import_fighter_data[key]
+    for key, value in import_fighter_data.items():
+        assert created_character[key] == value
 
 
 def test_import_character_cleric(shared_auth_client, import_payload_cleric):
@@ -31,8 +31,8 @@ def test_import_character_cleric(shared_auth_client, import_payload_cleric):
     for spell in created_character["actions"]["spells"]:
         spell.pop("description")
     import_cleric_data.pop("user_id")
-    for key in import_cleric_data.keys():
-        assert created_character[key] == import_cleric_data[key]
+    for key, value in import_cleric_data.items():
+        assert created_character[key] == value
 
 
 def test_import_character_rogue(shared_auth_client, import_payload_rogue):
@@ -40,8 +40,8 @@ def test_import_character_rogue(shared_auth_client, import_payload_rogue):
     assert response.status_code == 201
     created_character = response.json()
     import_rogue_data.pop("user_id")
-    for key in import_rogue_data.keys():
-        assert created_character[key] == import_rogue_data[key]
+    for key, value in import_rogue_data.items():
+        assert created_character[key] == value
 
 
 def test_import_character_wizard(shared_auth_client, import_payload_wizard):
@@ -57,8 +57,8 @@ def test_import_character_wizard(shared_auth_client, import_payload_wizard):
 
     import_wizard_data.pop("user_id")
     print(json.dumps(created_character, indent=4))
-    for key in import_wizard_data.keys():
-        assert created_character[key] == import_wizard_data[key]
+    for key, value in import_wizard_data.items():
+        assert created_character[key] == value
 
 
 def test_import_character_unauthenticated(client, import_payload_fighter):
