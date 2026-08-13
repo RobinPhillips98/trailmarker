@@ -1,9 +1,6 @@
-def test_read_character(auth_client, created_character):
-    response = auth_client.get(f"/characters/{created_character['id']}/")
-    assert response.status_code == 200
-    character_data = response.json()
-    for key in created_character.keys():
-        assert character_data[key] == created_character[key]
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from tests.failures import async_failure, sync_failure
 
 
 def test_read_characters(auth_client, character_factory):
@@ -27,9 +24,58 @@ def test_read_characters(auth_client, character_factory):
             assert character[key] == characters[character["id"]][key]
 
 
-def test_create_character(auth_client, character_payload):
-    request = character_payload
-    response = auth_client.post("/characters/", json=request)
+def test_read_characters_unauthenticated(client):
+    response = client.get("/characters/")
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_read_characters_internal_error(shared_auth_client, monkeypatch):
+    monkeypatch.setattr(
+        "api.routes.characters.fetch_characters_from_db", sync_failure
+    )
+    response = shared_auth_client.get("/characters/")
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"
+
+
+def test_read_character(auth_client, created_character):
+    response = auth_client.get(f"/characters/{created_character['id']}/")
+    assert response.status_code == 200
+    character_data = response.json()
+    for key in created_character.keys():
+        assert character_data[key] == created_character[key]
+
+
+def test_read_character_unauthenticated(client):
+    response = client.get("/characters/1/")
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_read_character_not_found(shared_auth_client):
+    response = shared_auth_client.get("/characters/9999999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "character not found"
+
+
+def test_read_character_forbidden(shared_auth_client, created_character):
+    response = shared_auth_client.get(
+        f"/characters/{created_character['id']}/"
+    )
+    assert response.status_code == 403
+    assert response.json()["detail"] == "Not authorized to view this character"
+
+
+def test_read_character_internal_error(shared_auth_client, monkeypatch):
+    monkeypatch.setattr(AsyncSession, "get", async_failure)
+    response = shared_auth_client.get("/characters/1/")
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"
+
+
+def test_create_character(shared_auth_client, character_payload):
+    response = shared_auth_client.post("/characters/", json=character_payload)
     assert response.status_code == 201
     character_data = response.json()
 
@@ -53,6 +99,32 @@ def test_create_character(auth_client, character_payload):
 
     for key in character_payload.keys():
         assert character_data[key] == character_payload[key]
+
+
+def test_create_character_unauthenticated(client, character_payload):
+    request = character_payload
+    response = client.post("/characters/", json=request)
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_create_character_invalid(shared_auth_client):
+    request = {"name": "Invalid"}
+    response = shared_auth_client.post("/characters/", json=request)
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["msg"] == "Field required"
+
+
+def test_create_character_internal_error(
+    shared_auth_client, character_payload, monkeypatch
+):
+    monkeypatch.setattr(
+        "api.routes.characters.convert_to_db_character", sync_failure
+    )
+    request = character_payload
+    response = shared_auth_client.post("/characters/", json=request)
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"
 
 
 def test_update_character(auth_client, created_character):
@@ -113,10 +185,84 @@ def test_update_character(auth_client, created_character):
     )
 
 
-def test_delete_character(auth_client, created_character):
+def test_update_character_unauthenticated(client):
+    request = {"name": "test"}
+    response = client.patch("/characters/1", json=request)
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_update_character_invalid(shared_auth_client):
+    response = shared_auth_client.patch("/characters/1")
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["msg"] == "Field required"
+
+
+def test_update_character_not_found(shared_auth_client):
+    request = {"name": "test"}
+    response = shared_auth_client.patch("/characters/999999999", json=request)
+    assert response.status_code == 404
+    assert response.json()["detail"] == "character not found"
+
+
+def test_update_character_forbidden(shared_auth_client, created_character):
+    request = {"name": "test"}
+    response = shared_auth_client.patch(
+        f"/characters/{created_character["id"]}", json=request
+    )
+    assert response.status_code == 403
+    assert (
+        response.json()["detail"] == "Not authorized to update this character"
+    )
+
+
+def test_update_character_internal_error(shared_auth_client, monkeypatch):
+    monkeypatch.setattr(AsyncSession, "get", async_failure)
+    request = {"name": "test"}
+    response = shared_auth_client.patch("/characters/1", json=request)
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"
+
+
+def test_delete_character(auth_client, character_payload):
+    creation_response = auth_client.post(
+        "/characters/", json=character_payload
+    )
+    created_character = creation_response.json()
     character_id = created_character["id"]
     response = auth_client.delete(f"/characters/{character_id}")
     assert response.status_code == 200
 
     response = auth_client.get(f"/characters/{character_id}")
     assert response.status_code == 404
+
+
+def test_delete_character_unauthenticated(client):
+    response = client.delete("/characters/1")
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_delete_character_not_found(shared_auth_client):
+    response = shared_auth_client.delete("/characters/999999999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "character not found"
+
+
+def test_delete_character_forbidden(shared_auth_client, created_character):
+    response = shared_auth_client.delete(
+        f"/characters/{created_character["id"]}"
+    )
+    assert response.status_code == 403
+    assert (
+        response.json()["detail"] == "Not authorized to delete this character"
+    )
+
+
+def test_delete_character_internal_error(
+    auth_client, created_character, monkeypatch
+):
+    monkeypatch.setattr(AsyncSession, "delete", async_failure)
+    response = auth_client.delete(f"/characters/{created_character["id"]}")
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"
