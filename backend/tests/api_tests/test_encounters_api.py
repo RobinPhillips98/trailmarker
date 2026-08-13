@@ -1,3 +1,7 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from tests.failures import async_failure, sync_failure
+
 ENCOUNTERS_ROUTE = "/encounters/"
 
 
@@ -69,3 +73,141 @@ def test_delete_encounter(shared_auth_client, encounter_payload):
 
     response = shared_auth_client.get(f"{ENCOUNTERS_ROUTE}{encounter_id}")
     assert response.status_code == 404
+
+
+def test_read_encounters_unauthenticated(client):
+    response = client.get(ENCOUNTERS_ROUTE)
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_read_encounters_internal_error(shared_auth_client, monkeypatch):
+    monkeypatch.setattr(AsyncSession, "scalars", async_failure)
+    response = shared_auth_client.get(ENCOUNTERS_ROUTE)
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"
+
+
+def test_read_encounter_unauthenticated(client):
+    response = client.get(f"{ENCOUNTERS_ROUTE}1")
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_read_encounter_not_found(shared_auth_client):
+    response = shared_auth_client.get(f"{ENCOUNTERS_ROUTE}999999999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "encounter not found"
+
+
+def test_read_encounter_forbidden(shared_auth_client, created_encounter):
+    response = shared_auth_client.get(
+        f"{ENCOUNTERS_ROUTE}{created_encounter["id"]}"
+    )
+    assert response.status_code == 403
+    assert response.json()["detail"] == "Not authorized to view this encounter"
+
+
+def test_read_encounter_internal_error(shared_auth_client, monkeypatch):
+    monkeypatch.setattr(AsyncSession, "get", async_failure)
+    response = shared_auth_client.get(f"{ENCOUNTERS_ROUTE}1")
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"
+
+
+def test_create_encounter_unauthenticated(client, encounter_payload):
+    response = client.post(ENCOUNTERS_ROUTE, json=encounter_payload)
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_create_encounter_invalid(shared_auth_client):
+    request = {"name": "Invalid"}
+    response = shared_auth_client.post(ENCOUNTERS_ROUTE, json=request)
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["msg"] == "Field required"
+
+
+def test_create_encounter_internal_error(
+    shared_auth_client, encounter_payload, monkeypatch
+):
+    monkeypatch.setattr(AsyncSession, "add", sync_failure)
+    response = shared_auth_client.post(
+        ENCOUNTERS_ROUTE, json=encounter_payload
+    )
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"
+
+
+def test_update_encounter_unauthenticated(client):
+    request = {"name": "test"}
+    response = client.patch(f"{ENCOUNTERS_ROUTE}1", json=request)
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_update_encounter_invalid(shared_auth_client):
+    response = shared_auth_client.patch(f"{ENCOUNTERS_ROUTE}1")
+    assert response.status_code == 422
+    assert response.json()["detail"][0]["msg"] == "Field required"
+
+
+def test_update_encounter_not_found(shared_auth_client):
+    request = {"name": "test"}
+    response = shared_auth_client.patch(
+        f"{ENCOUNTERS_ROUTE}999999999", json=request
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "encounter not found"
+
+
+def test_update_encounter_forbidden(shared_auth_client, created_encounter):
+    request = {"name": "test"}
+    response = shared_auth_client.patch(
+        f"{ENCOUNTERS_ROUTE}{created_encounter["id"]}", json=request
+    )
+    assert response.status_code == 403
+    assert (
+        response.json()["detail"] == "Not authorized to update this encounter"
+    )
+
+
+def test_update_encounter_internal_error(shared_auth_client, monkeypatch):
+    monkeypatch.setattr(AsyncSession, "get", async_failure)
+    request = {"name": "test"}
+    response = shared_auth_client.patch(f"{ENCOUNTERS_ROUTE}1", json=request)
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"
+
+
+def test_delete_encounter_unauthenticated(client):
+    response = client.delete(f"{ENCOUNTERS_ROUTE}1")
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_delete_encounter_not_found(shared_auth_client):
+    response = shared_auth_client.delete(f"{ENCOUNTERS_ROUTE}999999999")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "encounter not found"
+
+
+def test_delete_encounter_forbidden(shared_auth_client, created_encounter):
+    response = shared_auth_client.delete(
+        f"{ENCOUNTERS_ROUTE}{created_encounter['id']}"
+    )
+    assert response.status_code == 403
+    assert (
+        response.json()["detail"] == "Not authorized to delete this encounter"
+    )
+
+
+def test_delete_encounter_internal_error(
+    auth_client, created_encounter, monkeypatch
+):
+    monkeypatch.setattr(AsyncSession, "delete", async_failure)
+    response = auth_client.delete(
+        f"{ENCOUNTERS_ROUTE}{created_encounter['id']}"
+    )
+    assert response.status_code == 500
+    assert response.json()["detail"] == "Internal Server Error"

@@ -217,15 +217,21 @@ async def delete_encounter(
     Returns:
         BasicResponse: A response object confirming the encounter was deleted.
     """
-    encounter = await db.get(models.Encounter, encounter_id)
+    try:
+        encounter = await db.get(models.Encounter, encounter_id)
 
-    if not encounter:
-        raise NotFoundException(route="encounter")
+        if not encounter:
+            raise NotFoundException(route="encounter")
 
-    if encounter.user_id != current_user.id:
-        raise ForbiddenException(action="delete", route="encounter")
+        if encounter.user_id != current_user.id:
+            raise ForbiddenException(action="delete", route="encounter")
 
-    await db.delete(encounter)
-    await db.commit()
+        await db.delete(encounter)
+        await db.commit()
 
-    return {"message": "Encounter deleted"}
+        return {"message": "Encounter deleted"}
+    except HTTPException:
+        raise
+    except Exception:
+        logger.exception("Error in delete_encounter")
+        raise InternalServerError()
