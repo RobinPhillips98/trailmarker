@@ -222,3 +222,31 @@ def _load_character_template(name: str) -> dict:
     payload.pop("id", None)
     payload.pop("user_id", None)
     return payload
+
+
+@pytest.fixture
+def encounter_payload():
+    return {
+        "name": f"encounter_{uuid.uuid4().hex[:8]}",
+        "enemies": [{"id": 1, "quantity": 2}],
+    }
+
+
+@pytest.fixture
+def encounter_factory(auth_client):
+    def create(**overrides):
+        payload = {
+            "name": f"encounter_{uuid.uuid4().hex[:8]}",
+            "enemies": [{"id": 1, "quantity": 2}],
+        }
+        payload.update(overrides)
+        response = auth_client.post("/encounters/", json=payload)
+        assert response.status_code == 201
+        return response.json()
+
+    return create
+
+
+@pytest.fixture
+def created_encounter(encounter_factory):
+    return encounter_factory()
