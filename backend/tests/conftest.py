@@ -22,6 +22,7 @@ from tests.utils import (  # noqa: E402
     dispose_test_engines,
     initialize_test_database,
     override_get_db,
+    reset_test_database_state,
 )
 
 TEST_PASSWORD = "testpassword"
@@ -85,12 +86,12 @@ def shared_auth_username():
     return "shared_test_user"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def shared_auth_token(client, shared_auth_username):
     return _register_and_login(client, shared_auth_username, TEST_PASSWORD)
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def shared_auth_headers(shared_auth_token):
     return {"Authorization": f"Bearer {shared_auth_token}"}
 
@@ -136,7 +137,7 @@ def _build_auth_client(client, default_headers):
     return AuthClient()
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def shared_auth_client(client, shared_auth_headers):
     return _build_auth_client(client, shared_auth_headers)
 
@@ -250,3 +251,9 @@ def encounter_factory(auth_client):
 @pytest.fixture
 def created_encounter(encounter_factory):
     return encounter_factory()
+
+
+@pytest.fixture(scope="module", autouse=True)
+def reset_database_between_tests():
+    reset_test_database_state()
+    yield
