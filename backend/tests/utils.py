@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
+from api.auth_helpers import get_password_hash
 from models import Base, Enemy, User
 from tests.sample_data import test_enemy, test_enemy_2, test_enemy_3
 
@@ -63,9 +64,16 @@ class TestDatabase:
         self.session = session
 
     def populate_test_database(self):
-        # Create a test user
-        test_user = User(username="testuser", hashed_password="hashedpassword")
-        self.session.add(test_user)
+        # Create base test users used by the auth fixtures and reset logic.
+        test_user = User(
+            username="testuser",
+            hashed_password=get_password_hash("testpassword"),
+        )
+        shared_test_user = User(
+            username="shared_test_user",
+            hashed_password=get_password_hash("testpassword"),
+        )
+        self.session.add_all([test_user, shared_test_user])
 
         # Create all enemies
         enemies = [

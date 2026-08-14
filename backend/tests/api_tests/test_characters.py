@@ -64,11 +64,11 @@ class TestCharacterCreate:
 
 
 class TestCharacterRead:
-    def test_read_characters_list(self, auth_client, character_factory):
-        fighter = character_factory()
-        wizard = character_factory("wizard")
-        rogue = character_factory("rogue")
-        cleric = character_factory("cleric")
+    def test_read_characters_list(self, auth_client, owned_character_factory):
+        fighter = owned_character_factory()
+        wizard = owned_character_factory("wizard")
+        rogue = owned_character_factory("rogue")
+        cleric = owned_character_factory("cleric")
         characters = {
             fighter["id"]: fighter,
             wizard["id"]: wizard,
