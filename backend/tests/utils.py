@@ -38,11 +38,34 @@ AsyncSessionLocal = async_sessionmaker(
 database_initialized = False
 
 
+def terminate_test_db_connections(db_url: str, db_name: str):
+    admin_url = db_url.rsplit("/", 1)[0] + "/postgres"
+    engine = create_engine(admin_url, isolation_level="AUTOCOMMIT")
+    try:
+        with engine.connect() as conn:
+            conn.execute(
+                text(
+                    """
+                    SELECT pg_terminate_backend(pid)
+                    FROM pg_stat_activity
+                    WHERE datname = :db_name
+                      AND pid <> pg_backend_pid()
+                    """
+                ),
+                {"db_name": db_name},
+            )
+    finally:
+        engine.dispose()
+
+
 def initialize_test_database():
     global database_initialized
     if database_initialized:
         return
 
+    terminate_test_db_connections(
+        TEST_DATABASE_URL, TEST_DATABASE_URL.rsplit("/", 1)[-1]
+    )
     if database_exists(TEST_DATABASE_URL):
         drop_database(TEST_DATABASE_URL)
     create_database(TEST_DATABASE_URL)
@@ -86,18 +109,11 @@ class TestDatabase:
         self.session.commit()
 
 
-def reset_test_database_state():
-    with SessionLocal() as session:
-        session.execute(
-            text(
-                "TRUNCATE TABLE encounters, characters, enemies, users "
-                "RESTART IDENTITY CASCADE"
-            )
-        )
-        TestDatabase(session=session).populate_test_database()
-
-
 async def override_get_db():
-    initialize_test_database()
-    async with AsyncSessionLocal() as db:
+    db = AsyncSessionLocal()
+    try:
+        await db.begin()
         yield db
+    finally:
+        await db.rollback()
+        await db.close()
