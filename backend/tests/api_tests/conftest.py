@@ -1,4 +1,5 @@
 import asyncio
+import copy
 import json
 import os
 import uuid
@@ -22,6 +23,8 @@ from tests.utils import (  # noqa: E402
 )
 
 TEST_PASSWORD = "testpassword"
+_CHARACTER_TEMPLATES: dict[str, dict] = {}
+_IMPORT_PAYLOADS: dict[str, dict] = {}
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -213,17 +216,21 @@ def import_payload_rogue():
 
 
 def _load_import_payload(name: str) -> dict:
-    path = Path("tests/data/imports") / f"{name}.json"
-    payload = json.loads(path.read_text())["build"]
-    return payload
+    if name not in _IMPORT_PAYLOADS:
+        path = Path("tests/data/imports") / f"{name}.json"
+        payload = json.loads(path.read_text())["build"]
+        _IMPORT_PAYLOADS[name] = payload
+    return copy.deepcopy(_IMPORT_PAYLOADS[name])
 
 
 def _load_character_template(name: str) -> dict:
-    path = Path("data/characters") / f"{name}.json"
-    payload = json.loads(path.read_text())
-    payload.pop("id", None)
-    payload.pop("user_id", None)
-    return payload
+    if name not in _CHARACTER_TEMPLATES:
+        path = Path("data/characters") / f"{name}.json"
+        payload = json.loads(path.read_text())
+        payload.pop("id", None)
+        payload.pop("user_id", None)
+        _CHARACTER_TEMPLATES[name] = payload
+    return copy.deepcopy(_CHARACTER_TEMPLATES[name])
 
 
 @pytest.fixture
