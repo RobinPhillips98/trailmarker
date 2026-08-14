@@ -3,18 +3,27 @@ from tests.failures import sync_failure
 SIMULATION_ROUTE = "/simulation/"
 
 
+def _get_enemy_ids(client, count=2):
+    response = client.get("/enemies/")
+    assert response.status_code == 200
+
+    enemies = response.json()
+    assert len(enemies) >= count
+
+    selected = enemies[:count]
+    return [
+        {"id": enemy["id"], "quantity": 2 if index == 0 else 1}
+        for index, enemy in enumerate(selected)
+    ]
+
+
 def test_run_simulation(auth_client, character_factory):
     character_factory(template="fighter")
     character_factory(template="cleric")
     character_factory(template="rogue")
     character_factory(template="wizard")
 
-    enemy_list = [
-        {"id": 1, "quantity": 2},
-        {"id": 2, "quantity": 1},
-    ]
-
-    request = {"enemies": enemy_list}
+    request = {"enemies": _get_enemy_ids(auth_client)}
 
     response = auth_client.post(SIMULATION_ROUTE, json=request)
 
@@ -58,11 +67,11 @@ def test_run_simulation_internal_server_error(
     character_factory(template="fighter")
     character_factory(template="cleric")
 
-    enemy_list = [
-        {"id": 1, "quantity": 1},
-    ]
+    # enemy_list = [
+    #     {"id": 1, "quantity": 1},
+    # ]
 
-    request = {"enemies": enemy_list}
+    request = {"enemies": _get_enemy_ids(auth_client)}
 
     # Patch the run_simulation function to raise an exception
     monkeypatch.setattr("api.routes.simulation.run_simulation", sync_failure)
