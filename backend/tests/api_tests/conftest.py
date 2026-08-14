@@ -10,8 +10,8 @@ os.environ["DATABASE_URL"] = "postgres://postgres:postgres@localhost:5432/TEST"
 os.environ["SECRET_KEY"] = "secret-key-for-testing"
 
 import pytest  # noqa: E402
-from sqlalchemy import create_engine, text  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+from sqlalchemy import create_engine, text  # noqa: E402
 from sqlalchemy.orm.session import close_all_sessions  # noqa: E402
 from sqlalchemy_utils import drop_database  # noqa: E402
 
@@ -81,6 +81,15 @@ def _register_and_login(client, username: str, password: str) -> str:
     return token_response.json()["access_token"]
 
 
+def _login(client, username: str, password: str) -> str:
+    token_response = client.post(
+        "/auth/token",
+        data={"username": username, "password": password},
+    )
+    assert token_response.status_code == 200
+    return token_response.json()["access_token"]
+
+
 @pytest.fixture(scope="session")
 def shared_auth_username():
     return "shared_test_user"
@@ -88,7 +97,7 @@ def shared_auth_username():
 
 @pytest.fixture(scope="module")
 def shared_auth_token(client, shared_auth_username):
-    return _register_and_login(client, shared_auth_username, TEST_PASSWORD)
+    return _login(client, shared_auth_username, TEST_PASSWORD)
 
 
 @pytest.fixture(scope="module")
@@ -169,7 +178,25 @@ def character_payload():
 
 
 @pytest.fixture
-def character_factory(auth_client):
+def character_factory(shared_auth_client):
+    def create(template: str = "fighter", **overrides):
+        payload = _load_character_template(template)
+        payload["name"] = overrides.pop(
+            "name", f"{template}_{uuid.uuid4().hex[:8]}"
+        )
+
+        for key, value in overrides.items():
+            payload[key] = value
+
+        response = shared_auth_client.post("/characters/", json=payload)
+        assert response.status_code == 201
+        return response.json()
+
+    return create
+
+
+@pytest.fixture
+def owned_character_factory(auth_client):
     def create(template: str = "fighter", **overrides):
         payload = _load_character_template(template)
         payload["name"] = overrides.pop(
@@ -187,8 +214,8 @@ def character_factory(auth_client):
 
 
 @pytest.fixture
-def created_character(character_factory):
-    return character_factory()
+def created_character(owned_character_factory):
+    return owned_character_factory()
 
 
 @pytest.fixture
@@ -234,7 +261,22 @@ def encounter_payload():
 
 
 @pytest.fixture
-def encounter_factory(auth_client):
+def encounter_factory(shared_auth_client):
+    def create(**overrides):
+        payload = {
+            "name": f"encounter_{uuid.uuid4().hex[:8]}",
+            "enemies": [{"id": 1, "quantity": 2}],
+        }
+        payload.update(overrides)
+        response = shared_auth_client.post("/encounters/", json=payload)
+        assert response.status_code == 201
+        return response.json()
+
+    return create
+
+
+@pytest.fixture
+def owned_encounter_factory(auth_client):
     def create(**overrides):
         payload = {
             "name": f"encounter_{uuid.uuid4().hex[:8]}",
@@ -249,8 +291,8 @@ def encounter_factory(auth_client):
 
 
 @pytest.fixture
-def created_encounter(encounter_factory):
-    return encounter_factory()
+def created_encounter(owned_encounter_factory):
+    return owned_encounter_factory()
 
 
 @pytest.fixture(scope="module", autouse=True)

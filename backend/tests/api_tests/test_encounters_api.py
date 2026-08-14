@@ -41,9 +41,9 @@ class TestEncounterCreate:
 
 
 class TestEncounterRead:
-    def test_read_encounters_list(self, auth_client, encounter_factory):
+    def test_read_encounters_list(self, auth_client, owned_encounter_factory):
         for i in range(4):
-            encounter_factory()
+            owned_encounter_factory()
         response = auth_client.get(ENCOUNTERS_ROUTE)
         assert response.status_code == 200
         encounter_list = response.json()
